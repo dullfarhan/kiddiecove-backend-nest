@@ -1,19 +1,19 @@
 function getDate() {
   const today = new Date();
-  const monthNames: string[] = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
+  // const monthNames: string[] = [
+  //   'January',
+  //   'February',
+  //   'March',
+  //   'April',
+  //   'May',
+  //   'June',
+  //   'July',
+  //   'August',
+  //   'September',
+  //   'October',
+  //   'November',
+  //   'December',
+  // ];
   //   const mm = monthNames[today.getMonth()] // January is 0!
   const dd = today.getDate() < 10 ? '0' + today.getDate() : today.getDate();
   const mm = today.getMonth() < 10 ? '0' + today.getMonth() : today.getMonth();
@@ -22,7 +22,7 @@ function getDate() {
   //   today = mm + ', ' + dd + ' ' + yyyy
   const todayStr: string = dd + '-' + mm + '-' + yyyy;
 
-  return today;
+  return todayStr;
 }
 
 function getTime() {
