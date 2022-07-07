@@ -13,8 +13,10 @@ async function bootstrap() {
   app.use(helmet());
   // Setting Templeting Engine
   // app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useStaticAssets(join(__dirname, '..', 'public'));
-  await app.listen(3001);
+  await app.listen(3000);
+
+  console.log('Listening on Port: 3000');
 }
 bootstrap();
