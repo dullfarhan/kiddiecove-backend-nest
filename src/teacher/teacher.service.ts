@@ -22,7 +22,7 @@ export class TeacherService {
   create(createTeacherDto: CreateTeacherDto) {
     return 'This action adds a new teacher';
   }
-  getAllForAdmin() {}
+  // getAllForAdmin() {}
 
   findAll() {
     return `This action returns all teacher`;
@@ -54,7 +54,6 @@ export class TeacherService {
       .sort({ name: 1 })
       .select(selects)
       .then((result) => {
-        // this.logger.log('hello');
         serviceDebugger(result);
         return Util.getOkRequest(
           result,
