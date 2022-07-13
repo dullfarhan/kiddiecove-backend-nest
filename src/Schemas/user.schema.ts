@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
-import { Role } from './role.schema';
-@Injectable()
+import mongoose, { ObjectId } from 'mongoose';
+
 @Schema()
 export class User {
   @Prop()
   _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({ required: true, maxlength: 40, minlength: 3, trim: true })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
@@ -18,7 +17,7 @@ export class User {
     maxlength: 50,
     trim: true,
   })
-  user_name: String;
+  user_name: string;
 
   @Prop({
     type: String,
@@ -27,7 +26,7 @@ export class User {
     maxlength: 1024,
     trim: true,
   })
-  password;
+  password: string;
 
   @Prop({
     type: String,
@@ -38,7 +37,7 @@ export class User {
     uppercase: true,
     trim: true,
   })
-  gender: String;
+  gender: string;
 
   @Prop({
     type: String,
@@ -49,7 +48,7 @@ export class User {
     uppercase: true,
     trim: true,
   })
-  type;
+  type: string;
 
   @Prop({
     type: String,
@@ -63,7 +62,7 @@ export class User {
       'Please fill a valid email address',
     ],
   })
-  email;
+  email: string;
 
   @Prop({
     type: String,
@@ -78,7 +77,7 @@ export class User {
       'Please fill a valid phone number',
     ],
   })
-  phone_number;
+  phone_number: string;
 
   @Prop({ type: Date, required: true })
   birthday_date;
@@ -93,29 +92,29 @@ export class User {
   updated_at: Date;
 
   @Prop({ type: Boolean, default: true, minlength: 3, maxlength: 4 })
-  enable: Boolean;
+  enable: boolean;
 
   @Prop({
     type: String,
     default: 'https://www.pngarts.com/files/5/User-Avatar-Transparent.png',
   })
-  avatar: String;
+  avatar: string;
 
   @Prop({ type: Boolean, default: false, minlength: 3, maxlength: 4 })
-  deleted: Boolean;
+  deleted: boolean;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Address',
     required: true,
   })
-  address_id;
+  address_id: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true })
-  role;
+  role: ObjectId;
 
   @Prop({ type: Boolean, required: true, minlength: 3, maxlength: 4 })
-  connected:Boolean;
+  connected: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

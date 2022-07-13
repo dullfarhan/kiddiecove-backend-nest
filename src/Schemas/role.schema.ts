@@ -15,7 +15,7 @@ export class Role {
     uppercase: true,
     trim: true,
   })
-  name;
+  name: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -31,10 +31,10 @@ export class Role {
   updated_at: Date;
 
   @Prop({ type: Boolean, default: true, minlength: 3, maxlength: 4 })
-  enable: Boolean;
+  enable: boolean;
 
   @Prop({ type: Boolean, default: false, minlength: 3, maxlength: 4 })
-  deleted: Boolean;
+  deleted: boolean;
 }
 
 export const RoleSchema = SchemaFactory.createForClass(Role);

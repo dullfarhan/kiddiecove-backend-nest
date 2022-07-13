@@ -1,13 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 
 @Schema()
-export class Permission {
-  _id: mongoose.Schema.Types.ObjectId;
+export class City {
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  _id: ObjectId;
 
   @Prop({
     type: String,
     required: true,
+    minlength: 3,
+    maxlength: 40,
     unique: true,
   })
   name: string;
@@ -15,19 +20,23 @@ export class Permission {
   @Prop({
     type: String,
     required: true,
+    minlength: 2,
+    maxlength: 40,
+    uppercase: true,
     unique: true,
+    trim: true,
   })
-  endpoint: string;
+  code: string;
 
   @Prop({
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   })
   created_at: Date;
 
   @Prop({
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   })
   updated_at: Date;
 
@@ -46,8 +55,15 @@ export class Permission {
     maxlength: 4,
   })
   deleted: boolean;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Country',
+    required: true,
+  })
+  country_id: ObjectId;
 }
 
-export const PermissionSchema = SchemaFactory.createForClass(Permission);
+export const CitySchema = SchemaFactory.createForClass(City);
 
-export type PermissionDocument = Permission & Document;
+export type CityDocument = City & Document;

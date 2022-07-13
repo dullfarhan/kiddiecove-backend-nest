@@ -11,7 +11,7 @@ export class School {
     maxlength: 40,
     trim: true,
   })
-  name: String;
+  name: string;
 
   @Prop({
     type: String,
@@ -19,7 +19,7 @@ export class School {
     minlength: 2,
     maxlength: 300,
   })
-  description: String;
+  description: string;
 
   @Prop({
     type: String,
@@ -30,7 +30,7 @@ export class School {
     uppercase: true,
     trim: true,
   })
-  type: String;
+  type: string;
 
   @Prop({
     type: String,
@@ -40,7 +40,7 @@ export class School {
     maxlength: 50,
     trim: true,
   })
-  campus_code: String;
+  campus_code: string;
 
   @Prop({
     type: String,
@@ -50,7 +50,7 @@ export class School {
     maxlength: 50,
     trim: true,
   })
-  branch_name: String;
+  branch_name: string;
 
   @Prop({
     type: String,
@@ -64,7 +64,7 @@ export class School {
       'Please fill a valid email address',
     ],
   })
-  email: String;
+  email: string;
 
   @Prop({
     type: String,
@@ -78,7 +78,7 @@ export class School {
       'Please fill a valid phone number',
     ],
   })
-  phone_number: String;
+  phone_number: string;
 
   @Prop({
     type: Date,
@@ -98,7 +98,7 @@ export class School {
     minlength: 3,
     maxlength: 4,
   })
-  enable: Boolean;
+  enable: boolean;
 
   @Prop({
     type: Boolean,
@@ -106,13 +106,13 @@ export class School {
     minlength: 3,
     maxlength: 4,
   })
-  delete: Boolean;
+  delete: boolean;
 
   @Prop({
     type: String, //to be determined
     required: true,
   })
-  address: String;
+  address: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -127,7 +127,7 @@ export class School {
     minlength: 2,
     maxlength: 50,
   })
-  school_admin_name: String;
+  school_admin_name: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

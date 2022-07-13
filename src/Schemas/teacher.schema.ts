@@ -1,8 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId } from 'mongoose';
+import { CustomUser } from './customUser.schema';
 
 @Schema()
-export class Driver {
+export class Teacher {
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+  })
   _id: ObjectId;
 
   @Prop({
@@ -17,11 +21,13 @@ export class Driver {
   @Prop({
     type: String,
     required: true,
+    enum: ['SENIOR', 'JUNIOR'],
     minlength: 3,
     maxlength: 40,
+    uppercase: true,
     trim: true,
   })
-  license_number: string;
+  designation: string;
 
   @Prop({
     type: Number,
@@ -30,18 +36,22 @@ export class Driver {
     },
     min: 10000,
     max: 100000,
-    set: (v: number) => Math.round(v),
-    get: (v: number) => Math.round(v),
+    set: (v: number): number => Math.round(v),
+    get: (v: number): number => Math.round(v),
   })
   salary: number;
 
   @Prop({
-    type: String, // to be determined
+    type: CustomUser,
     required: true,
   })
-  user: string;
+  user: CustomUser;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  })
   user_id: ObjectId;
 
   @Prop({
@@ -50,16 +60,32 @@ export class Driver {
   })
   created_at: Date;
 
-  @Prop({ type: Date, default: Date.now })
+  @Prop({
+    type: Date,
+    default: Date.now,
+  })
   updated_at: Date;
 
-  @Prop({ type: Boolean, default: true, minlength: 3, maxlength: 4 })
+  @Prop({
+    type: Boolean,
+    default: true,
+    minlength: 3,
+    maxlength: 4,
+  })
   enable: boolean;
 
-  @Prop({ type: Boolean, default: false, minlength: 3, maxlength: 4 })
+  @Prop({
+    type: Boolean,
+    default: false,
+    minlength: 3,
+    maxlength: 4,
+  })
   deleted: boolean;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School' })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'School',
+  })
   school_id: ObjectId;
 
   @Prop({
@@ -72,6 +98,6 @@ export class Driver {
   school_name: string;
 }
 
-export const DriverSchema = SchemaFactory.createForClass(Driver);
+export const TeacherSchema = SchemaFactory.createForClass(Teacher);
 
-export type DriverDocument = Driver & Document;
+export type TeacherDocument = Teacher & Document;

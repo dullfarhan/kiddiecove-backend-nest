@@ -1,33 +1,28 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 
 @Schema()
-export class Permission {
-  _id: mongoose.Schema.Types.ObjectId;
-
+class EndPoint {
   @Prop({
-    type: String,
-    required: true,
-    unique: true,
+    type: mongoose.Schema.Types.ObjectId,
   })
-  name: string;
+  _id: ObjectId;
 
   @Prop({
     type: String,
     required: true,
-    unique: true,
   })
   endpoint: string;
 
   @Prop({
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   })
   created_at: Date;
 
   @Prop({
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   })
   updated_at: Date;
 
@@ -48,6 +43,6 @@ export class Permission {
   deleted: boolean;
 }
 
-export const PermissionSchema = SchemaFactory.createForClass(Permission);
+export const EndPointSchema = SchemaFactory.createForClass(EndPoint);
 
-export type PermissionDocument = Permission & Document;
+export type EndPointDocument = EndPoint & Document;

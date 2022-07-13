@@ -27,6 +27,7 @@
     "@nestjs/mongoose": "^9.1.1",
     "@nestjs/passport": "^8.2.2",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/swagger": "^5.2.1",
     "@types/debug": "^4.1.7",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
@@ -43,6 +44,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "swagger-ui-express": "^4.4.0",
     "tea-school": "^1.5.0",
     "twilio": "^3.78.0"
   },
