@@ -1,21 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from 'src/Schemas';
+import { User, UserDocument, UserSchema } from 'src/Schemas';
 import { UserSignInDto } from './dtos';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private jwtService: JwtService,
-    @InjectModel(User.name) private user: Model<UserDocument>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async signIn(userSignInDto: UserSignInDto): Promise<String> {
+  async signIn(userSignInDto: UserSignInDto): Promise<string> {
     try {
-      const user = await this.user
+      const user: User = await this.userModel
         .findOne({ user_name: userSignInDto.name })
         .populate({
           path: 'role',
@@ -28,33 +25,23 @@ export class AuthService {
           },
         })
         .exec();
-      const validPassword = await bcrypt.compare(
-        userSignInDto.password,
-        user.password,
-      );
-      if (!validPassword) return 'Invalid user name or password';
-      else {
-        const token = this.jwtService.signAsync(
-          {
-            _id: user._id,
-            type: user.type,
-            user_name: user.user_name,
-            avatar: user.avatar,
-            connected: user.connected,
-            name: user.name,
-            email: user.email,
-          },
-          {
-            secret: 'mySecureKey',
-          },
+      if (user) {
+        const validPassword = await bcrypt.compare(
+          userSignInDto.password,
+          user.password,
         );
-
-        console.log(user);
-        return token;
+        if (!validPassword) return 'Invalid user name or password';
+        else {
+          const token = user.generateAuthtoken();
+          console.log(user);
+          return token;
+        }
+      } else {
+        return 'Could not find the user';
       }
     } catch (ex) {
-      console.log(ex);
-      return 'Error While Authenticating';
+      console.log(ex.message);
+      return ex.message;
     }
   }
 }

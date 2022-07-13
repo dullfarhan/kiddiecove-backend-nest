@@ -18,6 +18,14 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
   const config = new DocumentBuilder()
+    .addSecurity('basic', {
+      type: 'http',
+      scheme: 'basic',
+    })
+    .addSecurity('bearer', {
+      type: 'http',
+      scheme: 'bearer',
+    })
     .setTitle('KiddieCove-nestjs')
     .setDescription('The kiddiecove API description')
     .setVersion('1.0')

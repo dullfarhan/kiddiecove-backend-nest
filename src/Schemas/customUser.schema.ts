@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId } from 'mongoose';
-import { CustomAddress } from './customAddress.schema';
+import { CustomAddress, CustomAddressSchema } from './customAddress.schema';
 
 @Schema()
 export class CustomUser {
@@ -59,7 +59,7 @@ export class CustomUser {
   phone_number: string;
 
   @Prop({
-    type: CustomAddress,
+    type: CustomAddressSchema,
     required: true,
   })
   address: CustomAddress;

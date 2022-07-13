@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId } from 'mongoose';
+import { Permission } from './permissions.schema';
 
 @Schema()
 export class User {
@@ -115,8 +117,37 @@ export class User {
 
   @Prop({ type: Boolean, required: true, minlength: 3, maxlength: 4 })
   connected: boolean;
+
+  generateAuthtoken: Function;
 }
 
+function extractPermissions(role) {
+  let simplePermissions = [];
+  for (const [key, value] of Object.entries(role.permissions._doc)) {
+    if (key === 'endpoint') {
+      simplePermissions.push(role.permissions[key]);
+    }
+  }
+
+  return simplePermissions;
+}
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.methods.generateAuthtoken = function () {
+  const simplePermissions = extractPermissions(this.role);
+  const token = new JwtService({
+    secret: 'mySecureKey',
+  }).sign({
+    _id: this._id,
+    type: this.type,
+    user_name: this.user_name,
+    avatar: this.avatar,
+    connected: this.connected,
+    name: this.name,
+    email: this.email,
+    permissions: simplePermissions,
+  });
+  return token;
+};
 
 export type UserDocument = User & Document;

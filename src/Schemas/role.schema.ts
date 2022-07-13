@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 
 @Schema()
 export class Role {
@@ -22,7 +22,7 @@ export class Role {
     ref: 'Permission',
     required: true,
   })
-  permissions: [];
+  permissions: [ObjectId];
 
   @Prop({ type: Date, default: Date.now() })
   created_at: Date;
