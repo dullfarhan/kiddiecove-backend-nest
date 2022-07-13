@@ -12,3 +12,7 @@ export * from './kid.schema';
 export * from './parent.schema';
 export * from './post.schema';
 export * from './chat.schema';
+export * from './school.schema';
+export * from './schoolAdmin.schema';
+export * from './clientSecret.schema';
+export * from './country.schema';
