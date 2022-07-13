@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Post,
   Req,
   Res,
@@ -12,15 +13,17 @@ import { ApiBasicAuth, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { UserSignInDto } from './dtos';
+import { JwtAuthGuard } from './Strategy/jwt.authguard';
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger('Authentication');
   constructor(private authService: AuthService) {}
 
   @ApiBasicAuth()
   @Post('signin')
   signIn(@Body() userSignInDto: UserSignInDto) {
-    console.log({ userSignInDto });
+    this.logger.log('signing in ...');
     return this.authService.signIn(userSignInDto);
   }
 
@@ -28,8 +31,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('verify')
   verify(@Req() req: Request, @Res() res: Response) {
-    console.log(req.user);
-    console.log(req.user);
-    res.send('HELLO WORLD');
+    this.logger.log('Verifying...');
+    res.send(req.user);
   }
 }

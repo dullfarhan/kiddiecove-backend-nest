@@ -16,7 +16,7 @@ async function bootstrap() {
   // app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useStaticAssets(join(__dirname, '..', 'public'));
-
+  app.enableCors({ origin: 'http://localhost:3000' });
   const config = new DocumentBuilder()
     .addSecurity('basic', {
       type: 'http',
@@ -33,8 +33,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  await app.listen(3000);
+  await app.listen(3001);
 
-  console.log('Listening on Port: 3000');
+  console.log('Listening on Port: 3001');
 }
 bootstrap();

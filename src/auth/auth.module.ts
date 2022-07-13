@@ -32,7 +32,6 @@ import { AuthMiddleware } from './Middlewares/authentication.middleware';
       { name: ClientSecret.name, schema: ClientSecretSchema },
     ]),
   ],
-  exports: [JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule implements NestModule {

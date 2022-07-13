@@ -12,6 +12,7 @@ import { Database } from './database';
 import { TeacherModule } from './teacher/teacher.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuthModule } from './auth/auth.module';
     DatabaseModule,
     TeacherModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],
