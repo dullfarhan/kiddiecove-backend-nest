@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
-import Util from '../../utils/util';
+import Util from '../utils/util';
 import Constant from 'src/utils/Constant';
 @Injectable()
 export class PermissionGuard implements CanActivate {

@@ -10,8 +10,9 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { ObjectId } from 'mongoose';
-import { PermissionGuard } from './Guard/permission.guard';
+import mongoose, { ObjectId } from 'mongoose';
+import Util from 'src/utils/util';
+import { PermissionGuard } from '../Guard/permission.guard';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -41,11 +42,15 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/me')
   getCurrentUser(@Req() req: Request, @Res() res: Response) {
-    this.userService.getCurrentUser(req, res);
+    return this.userService.getCurrentUser(req, res);
   }
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/:id')
-  getById(@Param('id') id: ObjectId) {}
+  getById(@Param('id') id: mongoose.Types.ObjectId, @Res() res: Response) {
+    if (!mongoose.Types.ObjectId.isValid(id))
+      Util.getBadRequest('invalid user id', res);
+    else return this.userService.getUserForAdmin(id, res);
+  }
 }

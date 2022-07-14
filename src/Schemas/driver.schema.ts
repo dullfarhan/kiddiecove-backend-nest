@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 @Schema()
 export class Driver {
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -42,7 +42,7 @@ export class Driver {
   user: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  user_id: ObjectId;
+  user_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: Date,
@@ -60,7 +60,7 @@ export class Driver {
   deleted: boolean;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School' })
-  school_id: ObjectId;
+  school_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,

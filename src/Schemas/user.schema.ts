@@ -1,12 +1,10 @@
-import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId } from 'mongoose';
-import { Permission } from './permissions.schema';
 
 @Schema()
 export class User {
-  @Prop()
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
   _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({ required: true, maxlength: 40, minlength: 3, trim: true })
@@ -113,7 +111,7 @@ export class User {
   address_id: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true })
-  role: ObjectId;
+  role: mongoose.Schema.Types.ObjectId;
 
   @Prop({ type: Boolean, required: true, minlength: 3, maxlength: 4 })
   connected: boolean;

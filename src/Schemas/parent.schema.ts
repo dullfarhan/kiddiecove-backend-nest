@@ -1,17 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import {
   CustomParentSchool,
   CustomParentSchoolSchema,
 } from './customParentSchool.schema';
-import { CustomUser } from './customUser.schema';
+import { CustomUser, CustomUserSchema } from './customUser.schema';
 
 @Schema()
 export class Parent {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -34,7 +34,7 @@ export class Parent {
   type: string;
 
   @Prop({
-    type: CustomUser,
+    type: CustomUserSchema,
     required: true,
   })
   user: CustomUser;
@@ -44,7 +44,7 @@ export class Parent {
     ref: 'User',
     required: true,
   })
-  user_id: ObjectId;
+  user_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: Date,

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import { Model } from 'mongoose';
@@ -6,10 +6,10 @@ import { User } from 'src/Schemas';
 import Util from '../utils/util';
 import { UserType } from '../utils/enums/UserType.enum';
 import Constant from 'src/utils/Constant';
-import { getCurrentUserDetails } from '../utils/CurrentUser';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger('User Service');
   pageNumber = 1;
   pageSize = 20;
   constructor(
@@ -54,10 +54,9 @@ export class UserService {
       });
   }
   async getCurrentUser(req: Request, res: Response) {
-    const response = await getCurrentUserDetails(req, this.userModel);
+    const response = await this.getCurrentUserDetails(req);
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-
     return Util.getOkRequest(response.data, 'Current User Found', res);
   }
 
@@ -78,5 +77,36 @@ export class UserService {
       .catch((ex) => {
         return Util.getBadRequest(ex.message, res);
       });
+  }
+
+  async getUserForAdmin(_id, res: Response) {
+    try {
+      const user = await this.userModel.findOne({ _id });
+      if (!user) return Util.getBadRequest('User Not Found with given id', res);
+      this.logger.log('User Details Fetched Succesfully');
+      return Util.getOkRequest(user, 'Admin Details Fetched Successfully', res);
+    } catch (ex) {
+      this.logger.log(ex);
+      return Util.getBadRequest(ex.message, res);
+    }
+  }
+
+  async getCurrentUserDetails(req) {
+    try {
+      console.log('User from request', req.user._id);
+      const user = await this.userModel
+        .findById(req.user._id)
+        .select('-password')
+        .populate('address_id')
+        .exec();
+      console.log(user);
+      if (!user) Util.getBadResponse('Current User Not Found with given id');
+      return Util.getOkResponse(
+        user,
+        'Current User Self Details Fetched Succesfully',
+      );
+    } catch (ex) {
+      return Util.getBadResponse(ex.message);
+    }
   }
 }

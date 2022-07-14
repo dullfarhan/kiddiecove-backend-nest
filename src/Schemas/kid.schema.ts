@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { CustomAddress, CustomAddressSchema } from './customAddress.schema';
 
 @Schema()
@@ -7,7 +7,7 @@ export class Kid {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -87,7 +87,7 @@ export class Kid {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Parent',
   })
-  parent_id: ObjectId;
+  parent_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -102,7 +102,7 @@ export class Kid {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'School',
   })
-  school_id: ObjectId;
+  school_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -116,7 +116,7 @@ export class Kid {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Class',
   })
-  class_id: ObjectId;
+  class_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
