@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './Strategy/jwt.strategy';
+import { JwtStrategy } from '../Strategy/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import {

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { Point } from './point.schema';
 
 @Schema()
@@ -7,7 +7,7 @@ export class Address {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -64,7 +64,7 @@ export class Address {
     ref: 'City',
     required: true,
   })
-  city_id: ObjectId;
+  city_id: mongoose.Schema.Types.ObjectId;
 }
 
 export const AddressSchema = SchemaFactory.createForClass(Address);

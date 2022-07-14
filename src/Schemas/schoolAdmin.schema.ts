@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { CustomSchool, CustomSchoolSchema } from './customSchool.schema';
 import { CustomUser, CustomUserSchema } from './customUser.schema';
 
 @Schema()
 export class SchoolAdmin {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -41,7 +41,7 @@ export class SchoolAdmin {
   user: CustomUser;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  user_id: ObjectId;
+  user_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({ type: Date, default: Date.now })
   created_at: Date;
@@ -75,7 +75,7 @@ export class SchoolAdmin {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'School',
   })
-  school_id: ObjectId;
+  school_id: mongoose.Schema.Types.ObjectId;
 }
 
 export const SchoolAdminSchema = SchemaFactory.createForClass(SchoolAdmin);

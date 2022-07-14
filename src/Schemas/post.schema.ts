@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
-import { CustomComment } from './customComment.schema';
+import mongoose from 'mongoose';
+import { CustomComment, CustomCommentSchema } from './customComment.schema';
 
 @Schema()
 export class Post {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -85,7 +85,7 @@ export class Post {
   })
   liked: boolean;
 
-  @Prop({ type: CustomComment })
+  @Prop({ type: CustomCommentSchema })
   comments: CustomComment;
 
   @Prop({
@@ -113,7 +113,7 @@ export class Post {
     ref: 'User',
     required: true,
   })
-  user_id: ObjectId;
+  user_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -154,7 +154,7 @@ export class Post {
       return this.type === 'UNICAST';
     },
   })
-  school_id: ObjectId;
+  school_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: Date,

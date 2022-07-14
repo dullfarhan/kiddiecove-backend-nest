@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { CustomAddress, CustomAddressSchema } from './customAddress.schema';
 
 @Schema()
@@ -7,7 +7,7 @@ export class CustomUser {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,

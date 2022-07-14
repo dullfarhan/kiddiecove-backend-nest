@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 enum Level {
   'ONE',
@@ -19,7 +19,7 @@ export class Class {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -43,14 +43,14 @@ export class Class {
   strength: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true })
-  school_id: ObjectId;
+  school_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Teacher',
     required: true,
   })
-  teacher_id: ObjectId;
+  teacher_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,

@@ -13,6 +13,7 @@ import { TeacherModule } from './teacher/teacher.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { DriverModule } from './driver/driver.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     TeacherModule,
     AuthModule,
     UserModule,
+    DriverModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],

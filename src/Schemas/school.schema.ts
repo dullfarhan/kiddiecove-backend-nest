@@ -1,8 +1,8 @@
 import { Prop, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 export class School {
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -119,7 +119,7 @@ export class School {
     ref: 'Address',
     required: true,
   })
-  address_id: ObjectId;
+  address_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -134,7 +134,7 @@ export class School {
     ref: 'SchoolAdmin',
     required: true,
   })
-  school_admin_id: ObjectId;
+  school_admin_id: mongoose.Schema.Types.ObjectId;
 }
 
 export const SchoolSchema = SchemaFactory.createForClass(School);

@@ -22,7 +22,7 @@ export class Role {
     ref: 'Permission',
     required: true,
   })
-  permissions: [ObjectId];
+  permissions: [mongoose.Schema.Types.ObjectId];
 
   @Prop({ type: Date, default: Date.now() })
   created_at: Date;

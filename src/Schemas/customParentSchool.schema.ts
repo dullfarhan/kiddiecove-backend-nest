@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 @Schema()
 export class CustomParentSchool {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
-  _id: ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School' })
-  school_id: ObjectId;
+  school_id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: String,
