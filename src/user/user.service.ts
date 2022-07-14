@@ -60,4 +60,23 @@ export class UserService {
 
     return Util.getOkRequest(response.data, 'Current User Found', res);
   }
+
+  getAllForParentListing(req: Request, res: Response) {
+    this.userModel
+      .find({ type: UserType.ADMIN })
+      .skip((this.pageNumber - 1) * this.pageSize)
+      .limit(this.pageSize)
+      .sort({ name: 1 })
+      .select({ name: 1, type: 1 })
+      .then((result) => {
+        return Util.getOkRequest(
+          result,
+          'Users Listing Fetched Successfully',
+          res,
+        );
+      })
+      .catch((ex) => {
+        return Util.getBadRequest(ex.message, res);
+      });
+  }
 }

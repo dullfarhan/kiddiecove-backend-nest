@@ -33,14 +33,12 @@ export class AuthService {
         if (!validPassword) return 'Invalid user name or password';
         else {
           const token = user.generateAuthtoken();
-          console.log(user);
           return token;
         }
       } else {
         return 'Could not find the user';
       }
     } catch (ex) {
-      console.log(ex.message);
       return ex.message;
     }
   }
