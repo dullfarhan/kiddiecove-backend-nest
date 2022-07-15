@@ -19,6 +19,7 @@ import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
+import { UserType } from 'src/utils/enums/UserType.enum';
 
 @ApiTags('Teacher')
 @Controller('teacher')
@@ -49,6 +50,41 @@ export class TeacherController {
       res,
       { _id: req.params.id, enable: true },
       {},
+    );
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/get/all/for/school/admin')
+  getAllTeachersForSchoolAdmin(@Req() req: Request, @Res() res: Response) {
+    // this.logger.log('getting Teachers list for school admin');
+    // const response = await CurrentUser.getCurrentUser(
+    //   req,
+    //   UserType.SCHOOL_ADMIN,
+    // );
+    // if (response.status === utils.Constant.FAIL)
+    //   return Util.getBadRequest(response.message, res);
+    // this.logger.log('Current School Admin User Found');
+    // const schoolAdmin = response.data;
+    // this.teacherService.getAllTeachers(
+    //   req,
+    //   res,
+    //   {
+    //     enable: true,
+    //     school_id: schoolAdmin.school_id,
+    //   },
+    //   {},
+    // );
+  }
+  @Get('/get/all/as/lisitng/for/admin/:id')
+  getAllTeachersAsListingForAdmin(req, res) {
+    this.logger.log('getting Teacher listing for admin');
+    this.teacherService.getAllTeachers(
+      req,
+      res,
+      {
+        enable: true,
+        school_id: req.params.id,
+      },
+      { _id: 1, name: 1 },
     );
   }
 
