@@ -18,7 +18,9 @@ import { UpdateTeacherDto } from './dto/update-teacher.dto';
 
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Teacher')
 @Controller('teacher')
 export class TeacherController {
   private readonly logger = new Logger('teacher');
