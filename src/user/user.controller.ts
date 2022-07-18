@@ -30,13 +30,13 @@ export class UserController {
   }
 
   @Post('getAll/for/admin')
-  getAllForAdminListing(@Req() req: Request, @Res() res: Response) {
-    return this.userService.getAllForAdminListing(req, res);
+  getAllForAdminListing(@Res() res: Response) {
+    return this.userService.getAllForAdminListing(res);
   }
 
   @Post('/getAll')
-  getAllForParentListing(@Req() req: Request, @Res() res: Response) {
-    return this.userService.getAllForParentListing(req, res);
+  getAllForParentListing(@Res() res: Response) {
+    return this.userService.getAllForParentListing(res);
   }
 
   @ApiBearerAuth()

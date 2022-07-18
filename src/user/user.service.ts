@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { User } from 'src/Schemas';
 import Util from '../utils/util';
 import { UserType } from '../utils/enums/UserType.enum';
@@ -31,7 +31,7 @@ export class UserService {
       });
   }
 
-  getAllForAdminListing(req: Request, res: Response) {
+  getAllForAdminListing(res: Response) {
     this.userModel
       .find({
         type: {
@@ -60,7 +60,7 @@ export class UserService {
     return Util.getOkRequest(response.data, 'Current User Found', res);
   }
 
-  getAllForParentListing(req: Request, res: Response) {
+  getAllForParentListing(res: Response) {
     this.userModel
       .find({ type: UserType.ADMIN })
       .skip((this.pageNumber - 1) * this.pageSize)
@@ -79,7 +79,7 @@ export class UserService {
       });
   }
 
-  async getUserForAdmin(_id, res: Response) {
+  async getUserForAdmin(_id: mongoose.Types.ObjectId, res: Response) {
     try {
       const user = await this.userModel.findOne({ _id });
       if (!user) return Util.getBadRequest('User Not Found with given id', res);
