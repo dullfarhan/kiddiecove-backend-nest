@@ -49,7 +49,11 @@ export class CityController {
   }
 
   @Post('/create')
-  createByAdmin(@Req() req: Request, @Res() res: Response) {
+  createByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createCityDto: CreateCityDto,
+  ) {
     this.cityService.createByAdmin(req, res);
   }
 
