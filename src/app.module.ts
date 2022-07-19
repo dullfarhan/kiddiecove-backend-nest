@@ -16,6 +16,9 @@ import { UserModule } from './user/user.module';
 import { CityModule } from './city/city.module';
 import { DriverModule } from './driver/driver.module';
 import { AddressModule } from './address/address.module';
+import { RolesModule } from './roles/roles.module';
+import { EndpointModule } from './endpoint/endpoint.module';
+import { PermissionModule } from './permission/permission.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { AddressModule } from './address/address.module';
     CityModule,
     DriverModule,
     AddressModule,
+    // RolesModule,
+    EndpointModule,
+    // PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],

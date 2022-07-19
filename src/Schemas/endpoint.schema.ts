@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
 @Schema()
-class EndPoint {
+export class EndPoint {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })

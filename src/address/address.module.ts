@@ -5,11 +5,14 @@ import { Address, AddressSchema } from 'src/Schemas';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
+  imports: [
+    MongooseModule.forFeature([
+      { name: Address.name, schema: AddressSchema },
+      // { name: Country.name, schema: CountrySchema },
+    ]),
+  ],
   controllers: [AddressController],
   providers: [AddressService],
-  imports: [
-    MongooseModule.forFeature([{ name: Address.name, schema: AddressSchema }]),
-  ],
   exports: [AddressService],
 })
 export class AddressModule {}
