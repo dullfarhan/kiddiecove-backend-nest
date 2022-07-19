@@ -96,10 +96,11 @@ export class DriverController {
   updateDriverByAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverByAdmin(id, res);
+    } else this.driverService.updateDriverByAdmin(id, res, req);
   }
 
   @ApiBearerAuth()
@@ -109,10 +110,11 @@ export class DriverController {
   updateDriverDirectlyByAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverByAdmin(id, res);
+    } else this.driverService.updateDriverByAdmin(id, res, req);
   }
 
   @ApiBearerAuth()

@@ -6,6 +6,9 @@ import { Driver, SchoolAdmin, User } from 'src/Schemas';
 import Util from 'src/utils/util';
 import Constant from 'src/utils/Constant';
 import Debug from 'debug';
+import { CityService } from 'src/city/city.service';
+import { SchoolService } from 'src/school/school.service';
+import { AddressService } from 'src/address/address.service';
 
 @Injectable()
 export class DriverService {
@@ -18,6 +21,9 @@ export class DriverService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(SchoolAdmin.name)
     private readonly schoolAdminModel: Model<SchoolAdmin>,
+    private readonly cityService: CityService,
+    private readonly schoolService: SchoolService,
+    private readonly addressService: AddressService,
   ) {}
 
   getAllDrivers(res: Response, filter: Object, selects: Object) {
@@ -158,9 +164,13 @@ export class DriverService {
     );
   }
 
-  async updateDriverByAdmin(id: mongoose.Types.ObjectId, res: Response) {
+  async updateDriverByAdmin(
+    id: mongoose.Types.ObjectId,
+    res: Response,
+    req: Request,
+  ) {
     this.logger.log('Admin is updating Driver Details');
-    // return await updateDriver(req, res, req.body.school_id);
+    return await this.updateDriver(id, res, req);
   }
 
   async updateDriverBySchoolAdmin(req: Request, res: Response) {
@@ -179,4 +189,32 @@ export class DriverService {
   createDriverByAdmin(req: Request, res: Response) {}
 
   createDriverBySchoolAdmin(req: Request, res: Response) {}
+
+  async updateDriver(id: mongoose.Types.ObjectId, res: Response, req: Request) {
+    const session = await mongoose.startSession();
+
+    try {
+      const driver = await this.driverModel.findOne({ _id: id });
+      if (!driver)
+        return Util.getBadRequest('Driver Not Found with given id', res);
+      this.serviceDebugger('Driver found');
+      const city = await this.cityService.checkCityExistOrNot(req.body.city_id);
+      if (!city) return Util.getBadRequest('City Not Found with given id', res);
+      this.serviceDebugger('City found');
+      const school = await this.schoolService.checkSchoolExistOrNot(
+        req.body.school_id,
+      );
+      if (!school) return Util.getBadRequest('School Not Found', res);
+      this.serviceDebugger('School found');
+      const user = await this.userModel.findOne({ _id: driver.user_id });
+      if (!user) return Util.getBadRequest('User Not Found with given id', res);
+      this.serviceDebugger('user found');
+
+      const address = await this.addressService.findOne({
+        _id: user.address_id,
+      });
+      if (!address)
+        return Util.getBadRequest('Address Not Found with given id', res);
+    } catch {}
+  }
 }

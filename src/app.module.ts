@@ -15,6 +15,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CityModule } from './city/city.module';
 import { DriverModule } from './driver/driver.module';
+import { SchoolModule } from './school/school.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { DriverModule } from './driver/driver.module';
     UserModule,
     CityModule,
     DriverModule,
+    SchoolModule,
+    AddressModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],

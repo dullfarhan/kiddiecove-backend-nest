@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AddressModule } from 'src/address/address.module';
+import { CityModule } from 'src/city/city.module';
 import {
   Driver,
   DriverSchema,
@@ -8,6 +10,7 @@ import {
   User,
   UserSchema,
 } from 'src/Schemas';
+import { SchoolModule } from 'src/school/school.module';
 import { DriverController } from './driver.controller';
 import { DriverService } from './driver.service';
 
@@ -20,6 +23,9 @@ import { DriverService } from './driver.service';
       { name: User.name, schema: UserSchema },
       { name: SchoolAdmin.name, schema: SchoolAdminSchema },
     ]),
+    CityModule,
+    SchoolModule,
+    AddressModule,
   ],
 })
 export class DriverModule {}
