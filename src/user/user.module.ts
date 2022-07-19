@@ -13,5 +13,6 @@ import { UserService } from './user.service';
       { name: Address.name, schema: AddressSchema },
     ]),
   ],
+  exports: [UserService],
 })
 export class UserModule {}

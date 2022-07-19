@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -16,6 +17,13 @@ import { PermissionGuard } from 'src/Guard/permission.guard';
 import { DriverService } from './driver.service';
 import Util from 'src/utils/util';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/user/Dtos/create-user.dto';
+import { CreateDriverDto } from './dtos/create-driver.dto';
+import { CreateAddressDto } from 'src/address/dto/create-address.dto';
+import {
+  UpdateDriverDto,
+  UpdateDriverDtoWithUserAndAddress,
+} from './dtos/update-driver.dto';
 
 @ApiTags('Driver')
 @Controller('driver')
@@ -62,7 +70,7 @@ export class DriverController {
   ) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       Util.getBadRequest('invalid user id', res);
-    } else return this.driverService.getDriverForSchoolAdmin(req, res);
+    } else return this.driverService.getDriverForSchoolAdmin(id, req, res);
   }
 
   @ApiBearerAuth()
@@ -94,13 +102,14 @@ export class DriverController {
   @UseGuards(AuthGuard('jwt'))
   @Put('/update/by/admin/:id')
   updateDriverByAdmin(
+    @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     @Param('id') id: mongoose.Types.ObjectId,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverByAdmin(id, res, req);
+    } else this.driverService.updateDriverByAdmin(id, res, updateDriverDto);
   }
 
   @ApiBearerAuth()
@@ -110,11 +119,12 @@ export class DriverController {
   updateDriverDirectlyByAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
     @Res() res: Response,
-    @Req() req: Request,
+    @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverByAdmin(id, res, req);
+    } else
+      this.driverService.updateDriverByAdmin(id, res, updateDriverDto, true);
   }
 
   @ApiBearerAuth()
@@ -124,11 +134,18 @@ export class DriverController {
   updateDriverBySchoolAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
     @Res() res: Response,
+    @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     @Req() req: Request,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverBySchoolAdmin(req, res);
+    } else
+      this.driverService.updateDriverBySchoolAdmin(
+        id,
+        res,
+        updateDriverDto,
+        req,
+      );
   }
 
   @ApiBearerAuth()
@@ -138,11 +155,18 @@ export class DriverController {
   updateDriverDirectlyBySchoolAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
     @Res() res: Response,
+    @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     @Req() req: Request,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverBySchoolAdmin(req, res);
+    } else
+      this.driverService.updateDriverBySchoolAdmin(
+        id,
+        res,
+        updateDriverDto,
+        req,
+      );
   }
 
   @ApiBearerAuth()
@@ -156,7 +180,7 @@ export class DriverController {
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.deleteDriverByAdmin(req, res);
+    } else this.driverService.deleteDriverByAdmin(id, res);
   }
 
   @ApiBearerAuth()
@@ -170,7 +194,7 @@ export class DriverController {
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.deleteDriverBySchoolAdmin(req, res);
+    } else this.driverService.deleteDriverBySchoolAdmin(id, req, res);
   }
 
   @ApiBearerAuth()

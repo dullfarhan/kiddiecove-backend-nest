@@ -5,7 +5,7 @@ import mongoose, { ObjectId } from 'mongoose';
 @Schema()
 export class User {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
 
   @Prop({ required: true, maxlength: 40, minlength: 3, trim: true })
   name: string;

@@ -1,15 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { ClientSession, Model } from 'mongoose';
 import { User } from 'src/Schemas';
 import Util from '../utils/util';
 import { UserType } from '../utils/enums/UserType.enum';
 import Constant from 'src/utils/Constant';
+import { ParentType } from 'src/utils/enums/ParentType.enum';
+import { GenderType } from 'src/utils/enums/GenderType.enum';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger('User Service');
+  serviceDebugger = require('debug')('app:services');
   pageNumber = 1;
   pageSize = 20;
   constructor(
@@ -108,5 +111,95 @@ export class UserService {
     } catch (ex) {
       return Util.getBadResponse(ex.message);
     }
+  }
+
+  async setUserAndSave(user, userObj, session) {
+    await user.set(userObj);
+    this.serviceDebugger('updating user');
+    return await user.save({ session });
+  }
+
+  async updateUser(user, reqBody, session) {
+    return await this.setUserAndSave(
+      user,
+      {
+        name: reqBody.name,
+        password: reqBody.password,
+        gender:
+          reqBody.gender != null
+            ? reqBody.gender
+            : reqBody.type.toUpperCase() === ParentType.FATHER
+            ? GenderType.MALE
+            : GenderType.FEMALE,
+        email: reqBody.email,
+        phone_number: reqBody.phone_number,
+        birthday_date: reqBody.birthday_date,
+        updated_at: Date.now(),
+      },
+      session,
+    );
+  }
+
+  async updateDirectly(userId, reqBody, session) {
+    return await this.userModel.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          name: reqBody.name,
+          email: reqBody.email,
+          gender:
+            reqBody.gender != null
+              ? reqBody.gender
+              : reqBody.type.toUpperCase() === ParentType.FATHER
+              ? GenderType.MALE
+              : GenderType.FEMALE,
+          phone_number: reqBody.phone_number,
+          birthday_date: reqBody.birthday_date,
+          updated_at: Date.now(),
+        },
+      },
+      { session, new: true, runValidators: true },
+    );
+  }
+
+  async checkUserAlreadyRegisteredOrNot(user_name) {
+    this.serviceDebugger('checking if user already registered or not?');
+    return await this.userModel.findOne({ user_name: user_name });
+  }
+
+  async createAndSave(reqBody, role, address, userType, session) {
+    this.serviceDebugger('creating new user');
+    return await this.save(
+      {
+        _id: new mongoose.Types.ObjectId(),
+        name: reqBody.name,
+        user_name: reqBody.user_name,
+        password: reqBody.password,
+        gender:
+          reqBody.gender != null
+            ? reqBody.gender
+            : reqBody.type.toUpperCase() === ParentType.FATHER
+            ? GenderType.MALE
+            : GenderType.FEMALE,
+        type: userType,
+        connected: userType === UserType.PARENT ? false : true,
+        role: role,
+        email: reqBody.email,
+        phone_number: reqBody.phone_number,
+        birthday_date: reqBody.birthday_date,
+        address_id: address._id,
+        avatar:
+          reqBody.avatar !== undefined
+            ? reqBody.avatar
+            : 'https://www.pngarts.com/files/5/User-Avatar-Transparent.png',
+      },
+      session,
+    );
+  }
+
+  async save(userObj, session: ClientSession) {
+    const user = new Model<User>(userObj);
+    this.serviceDebugger('saving user...');
+    return await user.save({ session });
   }
 }

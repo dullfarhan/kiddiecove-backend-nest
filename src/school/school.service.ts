@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { School } from 'src/Schemas';
+import mongoose, { Model } from 'mongoose';
+import { School, SchoolDocument } from 'src/Schemas';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
 import Debug from 'debug';
@@ -33,7 +33,9 @@ export class SchoolService {
     return `This action removes a #${id} school`;
   }
 
-  async checkSchoolExistOrNot(school_id) {
+  async checkSchoolExistOrNot(
+    school_id: mongoose.Types.ObjectId,
+  ): Promise<SchoolDocument> {
     this.serviceDebugger('checking if school exist or not');
     return await this.schoolModel.findOne({ _id: school_id });
   }
