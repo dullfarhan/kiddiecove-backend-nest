@@ -20,23 +20,22 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  //to be completed
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Post('/get/all/for/admin')
   getAllForAdmin(@Req() req: Request, @Res() res: Response) {
-    this.userService.getAllForAdmin(req, res);
+    this.userService.getAllForAdmin(res);
   }
 
   @Post('getAll/for/admin')
-  getAllForAdminListing(@Req() req: Request, @Res() res: Response) {
-    return this.userService.getAllForAdminListing(req, res);
+  getAllForAdminListing(@Res() res: Response) {
+    return this.userService.getAllForAdminListing(res);
   }
 
   @Post('/getAll')
-  getAllForParentListing(@Req() req: Request, @Res() res: Response) {
-    return this.userService.getAllForParentListing(req, res);
+  getAllForParentListing(@Res() res: Response) {
+    return this.userService.getAllForParentListing(res);
   }
 
   @ApiBearerAuth()
@@ -45,6 +44,7 @@ export class UserController {
   getCurrentUser(@Req() req: Request, @Res() res: Response) {
     return this.userService.getCurrentUser(req, res);
   }
+
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))

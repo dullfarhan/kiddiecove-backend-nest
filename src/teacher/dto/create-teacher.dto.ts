@@ -1,8 +1,8 @@
-import { isString } from 'class-validator';
+import { IsString } from 'class-validator';
 import mongoose from 'mongoose';
 
 export class CreateTeacherDto {
-  // _id: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
 
   // @isString()
   name: string;

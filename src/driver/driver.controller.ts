@@ -1,7 +1,9 @@
 import {
   Controller,
+  Delete,
   Get,
   Param,
+  Post,
   Put,
   Req,
   Res,
@@ -24,8 +26,8 @@ export class DriverController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/all/for/admin')
-  getAllDriversForAdmin(@Req() req: Request, @Res() res: Response) {
-    return this.driverService.getAllDriversForAdmin(req, res);
+  getAllDriversForAdmin(@Res() res: Response) {
+    return this.driverService.getAllDriversForAdmin(res);
   }
 
   @ApiBearerAuth()
@@ -34,12 +36,11 @@ export class DriverController {
   @Get('/get/for/admin/:id')
   getDriverForAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
-    @Req() req: Request,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       Util.getBadRequest('invalid user id', res);
-    } else return this.driverService.getDriverForAdmin(req, res);
+    } else return this.driverService.getDriverForAdmin(id, res);
   }
 
   @ApiBearerAuth()
@@ -70,12 +71,11 @@ export class DriverController {
   @Get('/get/all/as/lisitng/for/admin/:id')
   getAllDriversAsListingForAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
-    @Req() req: Request,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid(id))
       Util.getBadRequest('invalid user id', res);
-    else return this.driverService.getAllDriversAsListingForAdmin(req, res);
+    else return this.driverService.getAllDriversAsListingForAdmin(id, res);
   }
 
   @ApiBearerAuth()
@@ -89,14 +89,101 @@ export class DriverController {
     this.driverService.getAllDriversAsListingForSchoolAdmin(req, res);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Put('/update/by/admin/:id')
   updateDriverByAdmin(
+    @Param('id') id: mongoose.Types.ObjectId,
+    @Res() res: Response,
+  ) {
+    if (!mongoose.Types.ObjectId.isValid) {
+      Util.getBadRequest('invalid user id', res);
+    } else this.driverService.updateDriverByAdmin(id, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/update/directly/by/admin/:id')
+  updateDriverDirectlyByAdmin(
+    @Param('id') id: mongoose.Types.ObjectId,
+    @Res() res: Response,
+  ) {
+    if (!mongoose.Types.ObjectId.isValid) {
+      Util.getBadRequest('invalid user id', res);
+    } else this.driverService.updateDriverByAdmin(id, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/update/by/school/admin/:id')
+  updateDriverBySchoolAdmin(
+    @Param('id') id: mongoose.Types.ObjectId,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (!mongoose.Types.ObjectId.isValid) {
+      Util.getBadRequest('invalid user id', res);
+    } else this.driverService.updateDriverBySchoolAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/update/directly/by/school/admin/:id')
+  updateDriverDirectlyBySchoolAdmin(
+    @Param('id') id: mongoose.Types.ObjectId,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (!mongoose.Types.ObjectId.isValid) {
+      Util.getBadRequest('invalid user id', res);
+    } else this.driverService.updateDriverBySchoolAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/delete/by/admin/:id')
+  deleteDriverByAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverByAdmin(req, res);
+    } else this.driverService.deleteDriverByAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/delete/by/school/admin/:id')
+  deleteDriverBySchoolAdmin(
+    @Param('id') id: mongoose.Types.ObjectId,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    if (!mongoose.Types.ObjectId.isValid) {
+      Util.getBadRequest('invalid user id', res);
+    } else this.driverService.deleteDriverBySchoolAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/')
+  createDriverByAdmin(@Req() req: Request, @Res() res: Response) {
+    this.driverService.createDriverByAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/create/by/school/admin')
+  createDriverBySchoolAdmin(@Req() req: Request, @Res() res: Response) {
+    this.driverService.createDriverBySchoolAdmin(req, res);
   }
 }

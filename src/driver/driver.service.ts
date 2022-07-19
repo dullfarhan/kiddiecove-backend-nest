@@ -5,10 +5,11 @@ import mongoose, { Model } from 'mongoose';
 import { Driver, SchoolAdmin, User } from 'src/Schemas';
 import Util from 'src/utils/util';
 import Constant from 'src/utils/Constant';
-import { UserType } from 'src/utils/enums/UserType.enum';
+import Debug from 'debug';
 
 @Injectable()
 export class DriverService {
+  serviceDebugger = Debug('app:services:teacher');
   private readonly logger = new Logger('Driver Service');
   private pageNumber = 1;
   private pageSize = 10;
@@ -19,7 +20,7 @@ export class DriverService {
     private readonly schoolAdminModel: Model<SchoolAdmin>,
   ) {}
 
-  getAllDrivers(req, res, filter, selects) {
+  getAllDrivers(res: Response, filter: Object, selects: Object) {
     this.logger.log('getting driver list');
     this.driverModel
       .find(filter)
@@ -41,7 +42,7 @@ export class DriverService {
       });
   }
 
-  async getDriver(req, res, filter) {
+  async getDriver(res: Response, filter: Object) {
     try {
       this.logger.log('checking if Driver with given id exist or not');
       const driver = await this.driverModel.findOne(filter);
@@ -60,7 +61,7 @@ export class DriverService {
     }
   }
 
-  async getCurrentUser(req) {
+  async getCurrentUser(req: any) {
     try {
       let currentUser: any;
       this.logger.log('user id is ' + req.user._id);
@@ -82,66 +83,14 @@ export class DriverService {
     }
   }
 
-  //   async updateDriver(req, res, schoolId) {
-  //   const session = await mongoose.startSession()
-  //   this.logger.log('validating req body')
-  //   const { error } = validateDriver(req.body)
-  //   if (error) return Util.getBadRequest(error.details[0].message, res)
-  //   this.logger.log('req body is valid')
-  //   try {
-  //     session.startTransaction()
-  //     const driver = await Driver.findOne({ _id: req.params.id })
-  //     if (!driver)
-  //       return Util.getBadRequest('Driver Not Found with given id', res)
-  //     this.logger.log('Driver found');
-  //     const city = await cityService.checkCityExistOrNot(req.body.city_id)
-  //     if (!city) return Util.getBadRequest('City Not Found with given id', res)
-  //     this.logger.log('city found');
-  //     const school = await schoolService.checkSchoolExistOrNot(schoolId)
-  //     if (!school) return Util.getBadRequest('School Not Found', res)
-  //     this.logger.log('School found');
-  //     const user = await User.findOne({ _id: Driver.user_id })
-  //     if (!user) return Util.getBadRequest('User Not Found with given id', res)
-  //     this.logger.log('user found');
-  //     const address = await Address.findOne({ _id: user.address_id })
-  //     if (!address)
-  //       return Util.getBadRequest('Address Not Found with given id', res)
-  //     this.logger.log('address found');
-  //     if (req.url.includes('directly')) {
-  //       await updateDirectly(req, city, school, session)
-  //       this.logger.log(`Driver directly updated successfully`);
-  //     } else {
-  //       await update(req, address, city, school, user, driver, session)
-  //       this.logger.log(`Driver updated successfully`);
-  //     }
-  //     await session.commitTransaction()
-  //     this.logger.log('Driver and Driver User Updated Successfully');
-  //     return Util.getSimpleOkRequest('Driver Successfully Updated', res)
-  //   } catch (ex) {
-  //     this.logger.error(ex);
-  //     await session.abortTransaction()
-  //     return Util.getBadRequest(ex.message, res)
-  //   } finally {
-  //     session.endSession()
-  //   }
-  // }
-
-  // async update(req, address, city, school, user, driver, session) {
-  //   await addressService.updateAddress(address, req.body, city, session)
-  //   this.logger.log(`updated address ${address}`)
-  //   await userService.updateUser(user, req.body, session)
-  //   this.logger.log(`updated user ${user}`);
-  //   return await updateAndSaveDriver(driver, req.body, city, school, session)
-  // }
-
-  getAllDriversForAdmin(req: Request, res: Response) {
+  getAllDriversForAdmin(res: Response) {
     this.logger.log('getting Driver listing for admin');
-    this.getAllDrivers(req, res, { enable: true }, {});
+    this.getAllDrivers(res, { enable: true }, {});
   }
 
-  async getDriverForAdmin(req: Request, res: Response) {
+  async getDriverForAdmin(id: mongoose.Types.ObjectId, res: Response) {
     this.logger.log('getting Driver detail for admin');
-    this.getDriver(req, res, { _id: req.params.id, enable: true });
+    this.getDriver(res, { _id: id, enable: true });
   }
 
   async getAllDriversForSchoolAdmin(req: Request, res: Response) {
@@ -152,7 +101,6 @@ export class DriverService {
     this.logger.log('Current School Admin User Found');
     const schoolAdmin: any = response.data;
     this.getAllDrivers(
-      req,
       res,
       {
         enable: true,
@@ -174,7 +122,7 @@ export class DriverService {
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
     const schoolAdmin: any = response.data;
-    this.getDriver(req, res, {
+    this.getDriver(res, {
       enable: true,
       _id: req.params.id,
       school_id: schoolAdmin.school_id,
@@ -189,7 +137,6 @@ export class DriverService {
     this.logger.log('Current School Admin User Found');
     const schoolAdmin: any = response.data;
     this.getAllDrivers(
-      req,
       res,
       {
         enable: true,
@@ -199,21 +146,37 @@ export class DriverService {
     );
   }
 
-  getAllDriversAsListingForAdmin(req: Request, res: Response) {
+  getAllDriversAsListingForAdmin(id: mongoose.Types.ObjectId, res: Response) {
     this.logger.log('getting Driver listing for admin');
     this.getAllDrivers(
-      req,
       res,
       {
         enable: true,
-        school_id: req.params.id,
+        school_id: id,
       },
       { _id: 1, name: 1 },
     );
   }
 
-  async updateDriverByAdmin(req: Request, res: Response) {
+  async updateDriverByAdmin(id: mongoose.Types.ObjectId, res: Response) {
     this.logger.log('Admin is updating Driver Details');
     // return await updateDriver(req, res, req.body.school_id);
   }
+
+  async updateDriverBySchoolAdmin(req: Request, res: Response) {
+    this.serviceDebugger('School Admin is updating Driver Details');
+    const response = await this.getCurrentUser(req);
+    if (response.status === Constant.FAIL)
+      return Util.getBadRequest(response.message, res);
+    this.serviceDebugger('Current School Admin User Found');
+    const schoolAdmin = response.data;
+  }
+
+  deleteDriverByAdmin(req: Request, res: Response) {}
+
+  deleteDriverBySchoolAdmin(req: Request, res: Response) {}
+
+  createDriverByAdmin(req: Request, res: Response) {}
+
+  createDriverBySchoolAdmin(req: Request, res: Response) {}
 }
