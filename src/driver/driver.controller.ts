@@ -36,7 +36,6 @@ export class DriverController {
   @Get('/get/for/admin/:id')
   getDriverForAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
-    @Req() req: Request,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -72,12 +71,11 @@ export class DriverController {
   @Get('/get/all/as/lisitng/for/admin/:id')
   getAllDriversAsListingForAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
-    @Req() req: Request,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid(id))
       Util.getBadRequest('invalid user id', res);
-    else return this.driverService.getAllDriversAsListingForAdmin(req, res);
+    else return this.driverService.getAllDriversAsListingForAdmin(id, res);
   }
 
   @ApiBearerAuth()
@@ -97,12 +95,11 @@ export class DriverController {
   @Put('/update/by/admin/:id')
   updateDriverByAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
-    @Req() req: Request,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverByAdmin(req, res);
+    } else this.driverService.updateDriverByAdmin(id, res);
   }
 
   @ApiBearerAuth()
@@ -111,12 +108,11 @@ export class DriverController {
   @Put('/update/directly/by/admin/:id')
   updateDriverDirectlyByAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
-    @Req() req: Request,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
-    } else this.driverService.updateDriverByAdmin(req, res);
+    } else this.driverService.updateDriverByAdmin(id, res);
   }
 
   @ApiBearerAuth()
@@ -125,8 +121,8 @@ export class DriverController {
   @Put('/update/by/school/admin/:id')
   updateDriverBySchoolAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
-    @Req() req: Request,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
@@ -139,8 +135,8 @@ export class DriverController {
   @Put('/update/directly/by/school/admin/:id')
   updateDriverDirectlyBySchoolAdmin(
     @Param('id') id: mongoose.Types.ObjectId,
-    @Req() req: Request,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);

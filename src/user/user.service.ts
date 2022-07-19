@@ -16,7 +16,7 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  getAllForAdmin(req: Request, res: Response) {
+  getAllForAdmin(res: Response) {
     this.userModel
       .find()
       .skip((this.pageNumber - 1) * this.pageSize)

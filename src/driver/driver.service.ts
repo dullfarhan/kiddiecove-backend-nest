@@ -5,10 +5,11 @@ import mongoose, { Model } from 'mongoose';
 import { Driver, SchoolAdmin, User } from 'src/Schemas';
 import Util from 'src/utils/util';
 import Constant from 'src/utils/Constant';
-import { UserType } from 'src/utils/enums/UserType.enum';
+import Debug from 'debug';
 
 @Injectable()
 export class DriverService {
+  serviceDebugger = Debug('app:services:teacher');
   private readonly logger = new Logger('Driver Service');
   private pageNumber = 1;
   private pageSize = 10;
@@ -145,24 +146,31 @@ export class DriverService {
     );
   }
 
-  getAllDriversAsListingForAdmin(req: Request, res: Response) {
+  getAllDriversAsListingForAdmin(id: mongoose.Types.ObjectId, res: Response) {
     this.logger.log('getting Driver listing for admin');
     this.getAllDrivers(
       res,
       {
         enable: true,
-        school_id: req.params.id,
+        school_id: id,
       },
       { _id: 1, name: 1 },
     );
   }
 
-  async updateDriverByAdmin(req: Request, res: Response) {
+  async updateDriverByAdmin(id: mongoose.Types.ObjectId, res: Response) {
     this.logger.log('Admin is updating Driver Details');
     // return await updateDriver(req, res, req.body.school_id);
   }
 
-  updateDriverBySchoolAdmin(req: Request, res: Response) {}
+  async updateDriverBySchoolAdmin(req: Request, res: Response) {
+    this.serviceDebugger('School Admin is updating Driver Details');
+    const response = await this.getCurrentUser(req);
+    if (response.status === Constant.FAIL)
+      return Util.getBadRequest(response.message, res);
+    this.serviceDebugger('Current School Admin User Found');
+    const schoolAdmin = response.data;
+  }
 
   deleteDriverByAdmin(req: Request, res: Response) {}
 
