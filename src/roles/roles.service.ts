@@ -6,10 +6,14 @@ import { Role, RoleDocument } from 'src/Schemas';
 import Util from 'src/utils/util';
 import mongoose, { Model } from 'mongoose';
 import { Request, Response } from 'express';
+import { PermissionService } from 'src/permission/permission.service';
 
 @Injectable()
 export class RolesService {
-  constructor(@InjectModel(Role.name) private RoleModel: Model<RoleDocument>) {}
+  constructor(
+    @InjectModel(Role.name) private RoleModel: Model<RoleDocument>,
+    private readonly permissionService: PermissionService,
+  ) {}
 
   readonly logger = new Logger(RolesService.name);
   getList(req, res) {
@@ -57,14 +61,16 @@ export class RolesService {
       this.logger.log('role found');
       this.logger.log('updating existing role');
       const permissionsArray =
-        await permissionService.validateAndMakePermissionArray(
+        await this.permissionService.validateAndMakePermissionArray(
           req.body.permissions,
         );
       this.logger.log(
         `returning permission array after validating permissions ${permissionsArray}`,
       );
       if (req.query.addNew) {
-        role.permissions.push(permissionsArray);
+        permissionsArray.forEach((permissionID) => {
+          role.permissions.push(permissionID);
+        });
         await this.updateRoleAndAddNewPermission(role, req.body);
       } else await this.updateRole(role, req.body, permissionsArray);
       this.logger.log(`updated role ${role}`);
@@ -101,7 +107,7 @@ export class RolesService {
       this.logger.log('Role not exists');
       this.logger.log('creating new role');
       const permissionsArray =
-        await permissionService.validateAndMakePermissionArray(
+        await this.permissionService.validateAndMakePermissionArray(
           req.body.permissions,
         );
       this.logger.log(

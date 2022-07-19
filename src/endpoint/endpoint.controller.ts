@@ -18,7 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { PermissionGuard } from 'src/Guard/permission.guard';
 import { Request, Response } from 'express';
 
-@Controller('endpoint')
+@Controller('endpoints')
 export class EndpointController {
   constructor(private readonly endpointService: EndpointService) {}
   @ApiBearerAuth()
@@ -40,7 +40,11 @@ export class EndpointController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Post('/create/by/admin')
-  createByAdmin(@Req() req: Request, @Res() res: Response) {
+  createByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createEndpointDto: CreateEndpointDto,
+  ) {
     this.endpointService.createByAdmin(req, res);
   }
 

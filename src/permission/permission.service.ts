@@ -12,6 +12,7 @@ export class PermissionService {
   constructor(
     @InjectModel(Permission.name)
     private PermissionModel: Model<PermissionDocument>,
+    private readonly endpointService: EndpointService,
   ) {}
 
   readonly logger = new Logger(PermissionService.name);
@@ -57,15 +58,15 @@ export class PermissionService {
     this.logger.log('req body is valid');
     try {
       this.logger.log('checking if Permission already exists or not?');
-      let result = await this.PermissionModel.findOne({
+      const result = await this.PermissionModel.findOne({
         $or: [{ name: req.body.name }, { endpoint: req.body.endpoint }],
       });
       if (result) return Util.getBadRequest('Permission Already exists', res);
       this.logger.log('Permission not exists');
-      result = await endpointService.checkEndpointsExistOrNot(
+      const result1 = await this.endpointService.checkEndpointsExistOrNot(
         req.body.endpoint,
       );
-      if (!result) return Util.getBadRequest('Endpoint Does not exists', res);
+      if (!result1) return Util.getBadRequest('Endpoint Does not exists', res);
       this.logger.log('creating new Permission');
       await this.createAndSave(req.body);
       this.logger.log('Permission Created Successfully');

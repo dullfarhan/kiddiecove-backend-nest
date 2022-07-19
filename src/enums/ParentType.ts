@@ -1,4 +1,4 @@
-enum ParentType {
+export enum ParentType {
   FATHER = 'FATHER',
   MOTHER = 'MOTHER',
   GAURDIAN = 'GAURDIAN',

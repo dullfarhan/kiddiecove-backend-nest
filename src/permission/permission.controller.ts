@@ -1,11 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-
+import { Request, Response } from 'express';
 @Controller('permission')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
+
+  @Get('/get/list')
+  getList(@Req() req: Request, @Res() res: Response) {
+    this.permissionService.getList;
+  }
+
+  @Delete('/delete/by/admin/:id')
+  deleteByAdmin(@Req() req: Request, @Res() res: Response) {
+    this.permissionService.deleteByAdmin;
+  }
+
+  @Post('/create/by/admin')
+  createByAdmin(@Req() req: Request, @Res() res: Response) {
+    this.permissionService.createByAdmin;
+  }
+  ////////////////////////////////////////////////////////////////
 
   @Post()
   create(@Body() createPermissionDto: CreatePermissionDto) {
@@ -23,7 +49,10 @@ export class PermissionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePermissionDto: UpdatePermissionDto,
+  ) {
     return this.permissionService.update(+id, updatePermissionDto);
   }
 

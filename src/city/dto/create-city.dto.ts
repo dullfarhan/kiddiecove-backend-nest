@@ -1,4 +1,10 @@
-import { IsBoolean, IsMongoId, IsString, Length } from 'class-validator';
+import {
+  IsBoolean,
+  IsMongoId,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class CreateCityDto {
   // _id: mongoose.Types.ObjectId;
@@ -14,9 +20,11 @@ export class CreateCityDto {
   @IsMongoId()
   country_id: string;
 
+  @IsOptional()
   @IsBoolean()
   enable: boolean;
 
+  @IsOptional()
   @IsBoolean()
   deleted: boolean;
 }

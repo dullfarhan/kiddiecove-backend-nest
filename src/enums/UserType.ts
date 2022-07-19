@@ -1,4 +1,4 @@
-enum UserType {
+export enum UserType {
   ADMIN = 'ADMIN',
   SCHOOL_ADMIN = 'SCHOOL_ADMIN',
   PARENT = 'PARENT',
