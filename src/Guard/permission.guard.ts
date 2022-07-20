@@ -26,7 +26,9 @@ export class PermissionGuard implements CanActivate {
             .replace('/' + req.params.id, '')
         : req.originalUrl;
 
+    console.log('REQUESTEDURL', requestedUrl);
     const currentUser: any = req.user;
+    this.logger.log(currentUser);
 
     if (
       currentUser.permissions.includes(Constant.ROOT_PERMISSION) ||
@@ -34,9 +36,9 @@ export class PermissionGuard implements CanActivate {
     ) {
       this.logger.log('Verified user...');
       return true;
+    } else {
+      this.logger.log('unverified user...');
+      return false;
     }
-    this.logger.log('unverified user...');
-
-    return Util.getForbiddenRequest('Forbidden!!! Access Denied.', res);
   }
 }

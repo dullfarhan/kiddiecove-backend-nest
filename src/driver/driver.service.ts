@@ -49,14 +49,14 @@ export class DriverService {
 
   getAllDrivers(res: Response, filter: Object, selects: Object) {
     this.logger.log('getting driver list');
-    this.driverModel
+    const result = this.driverModel
       .find(filter)
       .skip((this.pageNumber - 1) * this.pageSize)
       .limit(this.pageSize)
       .sort({ name: 1 })
       .select(selects)
       .then((result) => {
-        this.logger.log(result);
+        console.log(result);
         return Util.getOkRequest(
           result,
           'Drivers Listing Fetched Successfully',
@@ -64,7 +64,7 @@ export class DriverService {
         );
       })
       .catch((ex) => {
-        this.logger.error(ex);
+        this.logger.error(ex.message);
         return Util.getBadRequest(ex.message, res);
       });
   }
@@ -98,6 +98,7 @@ export class DriverService {
       if (!user) Util.getBadResponse('Current User Not Found with given id');
       this.logger.log('Current User Details Fetched Succesfully');
       currentUser = await this.getCurrentSchoolAdmin(user._id);
+      console.log(currentUser);
       return !currentUser
         ? Util.getBadResponse('Current User Not Found')
         : Util.getOkResponse(
@@ -123,6 +124,7 @@ export class DriverService {
   async getAllDriversForSchoolAdmin(req: Request, res: Response) {
     this.logger.log('getting Drivers list for school admin');
     const response = await this.getCurrentUser(req);
+    this.logger.log('Response: ', response.status);
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -138,8 +140,8 @@ export class DriverService {
   }
 
   async getCurrentSchoolAdmin(_id: mongoose.Types.ObjectId) {
-    this.logger.log('getting current school admin');
-    return await this.schoolAdminModel.findOne({ user_id: _id });
+    this.logger.log('getting current school admin', _id);
+    return this.schoolAdminModel.findOne({ user_id: _id });
   }
 
   async getDriverForSchoolAdmin(

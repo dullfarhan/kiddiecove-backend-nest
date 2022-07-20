@@ -16,7 +16,12 @@ import mongoose, { ObjectId } from 'mongoose';
 import { PermissionGuard } from 'src/Guard/permission.guard';
 import { DriverService } from './driver.service';
 import Util from 'src/utils/util';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateUserDto } from 'src/user/Dtos/create-user.dto';
 import { CreateDriverDto } from './dtos/create-driver.dto';
 import { CreateAddressDto } from 'src/address/dto/create-address.dto';
@@ -32,6 +37,7 @@ export class DriverController {
 
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
+  @ApiOperation({ summary: 'Get All Drivers for Admin' })
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/all/for/admin')
   getAllDriversForAdmin(@Res() res: Response) {
@@ -54,7 +60,7 @@ export class DriverController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Get('/get/all/for/school/admin')
+  @Get('api/get/all/for/school/admin')
   getAllDriversForSchoolAdmin(@Req() req: Request, @Res() res: Response) {
     return this.driverService.getAllDriversForSchoolAdmin(req, res);
   }
