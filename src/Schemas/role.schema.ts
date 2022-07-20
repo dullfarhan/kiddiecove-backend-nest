@@ -18,11 +18,11 @@ export class Role {
   name: string;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: [mongoose.Schema.Types.ObjectId],
     ref: 'Permission',
     required: true,
   })
-  permissions: [mongoose.Schema.Types.ObjectId];
+  permissions: mongoose.Schema.Types.ObjectId[];
 
   @Prop({ type: Date, default: Date.now() })
   created_at: Date;

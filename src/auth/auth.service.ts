@@ -28,7 +28,6 @@ export class AuthService {
           },
         })
         .exec();
-      console.log(user);
       if (user) {
         const validPassword = await bcrypt.compare(
           userSignInDto.password,
