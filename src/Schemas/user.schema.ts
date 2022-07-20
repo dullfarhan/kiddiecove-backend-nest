@@ -121,9 +121,14 @@ export class User {
 
 function extractPermissions(role) {
   let simplePermissions = [];
-  for (const [key, value] of Object.entries(role.permissions._doc)) {
-    if (key === 'endpoint') {
-      simplePermissions.push(role.permissions[key]);
+  console.log('OUTSIDE');
+  console.log('ROLE', role);
+  if (role['permissions'] !== undefined) {
+    console.log('INSIDE');
+    for (const [key, value] of Object.entries(role.permissions._doc)) {
+      if (key === 'endpoint') {
+        simplePermissions.push(role.permissions[key]);
+      }
     }
   }
 
