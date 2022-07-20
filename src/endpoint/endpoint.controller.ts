@@ -50,31 +50,4 @@ export class EndpointController {
   }
 
   //////////////////////////////////////////////////////////////////
-  @Post()
-  create(@Body() createEndpointDto: CreateEndpointDto) {
-    return this.endpointService.create(createEndpointDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.endpointService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.endpointService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateEndpointDto: UpdateEndpointDto,
-  ) {
-    return this.endpointService.update(+id, updateEndpointDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.endpointService.remove(+id);
-  }
 }

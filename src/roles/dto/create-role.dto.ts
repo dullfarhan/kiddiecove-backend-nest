@@ -11,12 +11,14 @@ import {
 import mongoose, { isValidObjectId } from 'mongoose';
 import { Type } from 'class-transformer';
 import { RoleType } from 'src/enums/RoleType';
+import { ApiProperty } from '@nestjs/swagger';
 
 class permissionItem {
-  @IsNotEmpty()
+  @ApiProperty()
   _id: mongoose.Types.ObjectId;
-
+  @ApiProperty()
   @IsString()
+  @IsOptional()
   name: string;
 }
 export class CreateRoleDto {
@@ -28,10 +30,11 @@ export class CreateRoleDto {
   @IsUppercase()
   name: string;
 
-  @IsArray()
-  @IsNotEmpty()
+  // @IsArray()
+  // @IsNotEmpty()
+  @ApiProperty()
   @Type(() => permissionItem)
-  permissions: permissionItem;
+  permissions: [permissionItem] | null;
 
   @IsOptional()
   @IsBoolean()

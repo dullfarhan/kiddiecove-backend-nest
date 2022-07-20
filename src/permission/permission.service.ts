@@ -22,7 +22,7 @@ export class PermissionService {
       .sort({ endpoint: 1 })
       .select({ _id: 1, name: 1, endpoint: 1, enable: 1, deleted: 1 })
       .then((result) => {
-        this.logger.log(result);
+        // this.logger.log(result);
         return Util.getOkRequest(
           result,
           'Permission Listing Fetched Successfully',
@@ -95,12 +95,14 @@ export class PermissionService {
   async validateAndMakePermissionArray(permissionsArray) {
     this.logger.log('checking weather Permissions exists or not');
     const permissionsGlobalArray = [];
-    for (const permissions of permissionsArray) {
-      const permission = await this.PermissionModel.findOne({
-        _id: permissions._id,
-      });
-      if (permission) {
-        permissionsGlobalArray.push(permissions._id);
+    if (permissionsArray) {
+      for (const permissions of permissionsArray) {
+        const permission = await this.PermissionModel.findOne({
+          _id: permissions._id,
+        });
+        if (permission) {
+          permissionsGlobalArray.push(permissions._id);
+        }
       }
     }
     console.log(permissionsGlobalArray);

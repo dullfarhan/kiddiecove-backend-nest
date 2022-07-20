@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId } from 'mongoose';
+import { Document } from 'mongoose';
 
 @Schema()
 export class Role {
@@ -36,6 +37,8 @@ export class Role {
   @Prop({ type: Boolean, default: false, minlength: 3, maxlength: 4 })
   deleted: boolean;
 }
+
+type permissionType = [mongoose.Schema.Types.ObjectId] | null;
 
 export const RoleSchema = SchemaFactory.createForClass(Role);
 

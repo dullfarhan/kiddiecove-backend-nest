@@ -22,45 +22,21 @@ export class PermissionController {
 
   @Get('/get/list')
   getList(@Req() req: Request, @Res() res: Response) {
-    this.permissionService.getList;
+    this.permissionService.getList(req, res);
   }
 
   @Delete('/delete/by/admin/:id')
   deleteByAdmin(@Req() req: Request, @Res() res: Response) {
-    this.permissionService.deleteByAdmin;
+    this.permissionService.deleteByAdmin(req, res);
   }
 
   @Post('/create/by/admin')
-  createByAdmin(@Req() req: Request, @Res() res: Response) {
-    this.permissionService.createByAdmin;
+  createByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createPermissionDto: CreatePermissionDto,
+  ) {
+    this.permissionService.createByAdmin(req, res);
   }
   ////////////////////////////////////////////////////////////////
-
-  @Post()
-  create(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.permissionService.create(createPermissionDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.permissionService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.permissionService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePermissionDto: UpdatePermissionDto,
-  ) {
-    return this.permissionService.update(+id, updatePermissionDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.permissionService.remove(+id);
-  }
 }
