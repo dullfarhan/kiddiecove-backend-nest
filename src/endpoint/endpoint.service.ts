@@ -20,12 +20,12 @@ export class EndpointService {
     this.logger.log('getting endpoints list for admin');
     this.endpointModel
       .find({ enable: true })
-      .skip((this.pageNumber - 1) * parseInt(req.query.this.pageSize))
-      .limit(parseInt(req.query.this.pageSize))
+      .skip((this.pageNumber - 1) * parseInt(req.query.pageSize))
+      .limit(parseInt(req.query.pageSize))
       .sort({ endpoint: 1 })
       .select({ endpoint: 1 })
       .then((result) => {
-        this.logger.log(result);
+        // this.logger.log(result);
         return Util.getOkRequest(
           result,
           'Endpoints Listing Fetched Successfully',

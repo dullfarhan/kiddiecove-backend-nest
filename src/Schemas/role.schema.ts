@@ -1,5 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId } from 'mongoose';
+import { Document } from 'mongoose';
+
+// @Schema()
+// class permissionItem extends Document {
+//   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId })
+//   type: mongoose.Schema.Types.ObjectId;
+
+//   @Prop({
+//     required: false,
+//   })
+//   content: string;
+// }
+
+// export const permissionItemSchema =
+//   SchemaFactory.createForClass(permissionItem);
 
 @Schema()
 export class Role {
@@ -18,11 +33,15 @@ export class Role {
   name: string;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: [
+      { type: mongoose.Schema.Types.ObjectId },
+      { type: null },
+      { type: String },
+    ],
     ref: 'Permission',
     required: true,
   })
-  permissions: [mongoose.Schema.Types.ObjectId];
+  permissions: [mongoose.Schema.Types.ObjectId, string] | null;
 
   @Prop({ type: Date, default: Date.now() })
   created_at: Date;
@@ -36,6 +55,8 @@ export class Role {
   @Prop({ type: Boolean, default: false, minlength: 3, maxlength: 4 })
   deleted: boolean;
 }
+
+type permissionType = [mongoose.Schema.Types.ObjectId] | null;
 
 export const RoleSchema = SchemaFactory.createForClass(Role);
 

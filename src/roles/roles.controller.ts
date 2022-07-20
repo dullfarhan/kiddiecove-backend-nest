@@ -43,7 +43,7 @@ export class RolesController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Get('/@Get/:id')
+  @Get('/get/:id')
   get(@Req() req: Request, @Res() res: Response) {
     this.rolesService.get(req, res);
   }
@@ -60,32 +60,12 @@ export class RolesController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Post('/create/by/admin')
-  createByAdmin(@Req() req: Request, @Res() res: Response) {
+  createByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createRoleDto: CreateRoleDto,
+  ) {
     this.rolesService.createByAdmin(req, res);
   }
   ///////////////////////////////////////////////////////////////////
-  @Post()
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.rolesService.create(createRoleDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.rolesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(+id, updateRoleDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(+id);
-  }
 }
