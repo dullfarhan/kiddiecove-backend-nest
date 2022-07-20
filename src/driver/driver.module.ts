@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AddressModule } from 'src/address/address.module';
 import { CityModule } from 'src/city/city.module';
+import { RolesModule } from 'src/roles/roles.module';
 import {
   Address,
   AddressSchema,
@@ -31,6 +32,7 @@ import { DriverService } from './driver.service';
     SchoolModule,
     AddressModule,
     UserModule,
+    RolesModule,
   ],
 })
 export class DriverModule {}

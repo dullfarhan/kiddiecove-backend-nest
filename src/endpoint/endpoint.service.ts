@@ -9,7 +9,8 @@ import { InjectModel } from '@nestjs/mongoose';
 @Injectable()
 export class EndpointService {
   constructor(
-    @InjectModel(EndPoint.name) private EndpointModel: Model<EndPointDocument>,
+    @InjectModel(EndPoint.name)
+    private readonly endpointModel: Model<EndPointDocument>,
   ) {}
 
   readonly logger = new Logger(EndpointService.name);
@@ -17,7 +18,8 @@ export class EndpointService {
   pageSize = 10;
   getList(req, res) {
     this.logger.log('getting endpoints list for admin');
-    this.EndpointModel.find({ enable: true })
+    this.endpointModel
+      .find({ enable: true })
       .skip((this.pageNumber - 1) * parseInt(req.query.this.pageSize))
       .limit(parseInt(req.query.this.pageSize))
       .sort({ endpoint: 1 })
@@ -38,7 +40,7 @@ export class EndpointService {
 
   async deleteByAdmin(req, res) {
     try {
-      const endpoints = await this.EndpointModel.findByIdAndRemove(
+      const endpoints = await this.endpointModel.findByIdAndRemove(
         req.params.id,
       );
       if (!endpoints)
@@ -59,7 +61,7 @@ export class EndpointService {
     this.logger.log('req body is valid');
     try {
       this.logger.log('checking if Endpoints already exists or not?');
-      const result = await this.EndpointModel.findOne({
+      const result = await this.endpointModel.findOne({
         endpoint: req.body.endpoint,
       });
       if (result) return Util.getBadRequest('Endpoints Already exists', res);
@@ -76,7 +78,7 @@ export class EndpointService {
 
   async checkEndpointsExistOrNot(endpoint) {
     this.logger.log('checking if Endpoint exists or not?');
-    return await this.EndpointModel.findOne({ endpoint: endpoint });
+    return await this.endpointModel.findOne({ endpoint: endpoint });
   }
 
   // async  updateEndpoints(endpoints, endpointsObj) {
@@ -94,7 +96,7 @@ export class EndpointService {
 
   async save(endpointObj) {
     this.logger.log('creating new Endpoint');
-    const endpoint = new this.EndpointModel(endpointObj);
+    const endpoint = new this.endpointModel(endpointObj);
     this.logger.log('saving Endpoints...');
     return await endpoint.save();
   }

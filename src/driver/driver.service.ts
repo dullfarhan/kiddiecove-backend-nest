@@ -9,6 +9,7 @@ import {
   Driver,
   DriverDocument,
   SchoolAdmin,
+  SchoolAdminDocument,
   SchoolDocument,
   User,
   UserDocument,
@@ -27,6 +28,7 @@ import {
   UpdateDriverDtoWithUserAndAddress,
 } from './dtos/update-driver.dto';
 import { UserType } from 'src/utils/enums/UserType.enum';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class DriverService {
@@ -35,15 +37,18 @@ export class DriverService {
   private pageNumber = 1;
   private pageSize = 10;
   constructor(
-    @InjectModel(Driver.name) private readonly driverModel: Model<Driver>,
-    @InjectModel(Address.name) private readonly addressModel: Model<Address>,
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(Driver.name)
+    private readonly driverModel: Model<DriverDocument>,
+    @InjectModel(Address.name)
+    private readonly addressModel: Model<AddressDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(SchoolAdmin.name)
-    private readonly schoolAdminModel: Model<SchoolAdmin>,
+    private readonly schoolAdminModel: Model<SchoolAdminDocument>,
     private readonly cityService: CityService,
     private readonly schoolService: SchoolService,
     private readonly addressService: AddressService,
     private readonly userService: UserService,
+    private readonly rolService: RolesService,
   ) {}
 
   getAllDrivers(res: Response, filter: Object, selects: Object) {
