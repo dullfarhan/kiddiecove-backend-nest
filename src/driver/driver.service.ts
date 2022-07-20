@@ -21,14 +21,10 @@ import { CityService } from 'src/city/city.service';
 import { SchoolService } from 'src/school/school.service';
 import { AddressService } from 'src/address/address.service';
 import { UserService } from 'src/user/user.service';
-import { CreateAddressDto } from 'src/address/dto/create-address.dto';
-import { CreateUserDto } from 'src/user/Dtos/create-user.dto';
-import {
-  UpdateDriverDto,
-  UpdateDriverDtoWithUserAndAddress,
-} from './dtos/update-driver.dto';
-import { UserType } from 'src/utils/enums/UserType.enum';
+import { UpdateDriverDtoWithUserAndAddress } from './dtos/update-driver.dto';
 import { RolesService } from 'src/roles/roles.service';
+import { RoleType } from 'src/enums/RoleType';
+import { UserType } from 'src/enums/UserType';
 
 @Injectable()
 export class DriverService {
@@ -48,7 +44,7 @@ export class DriverService {
     private readonly schoolService: SchoolService,
     private readonly addressService: AddressService,
     private readonly userService: UserService,
-    private readonly rolService: RolesService,
+    private readonly rolesService: RolesService,
   ) {}
 
   getAllDrivers(res: Response, filter: Object, selects: Object) {
@@ -323,7 +319,13 @@ export class DriverService {
     this.createDriver(req, res, req.body.school_id);
   }
 
-  async createAndSave(reqBody, user, city, school, session) {
+  async createAndSave(
+    reqBody: any,
+    user: UserDocument,
+    city: CityDocument,
+    school: SchoolDocument,
+    session: ClientSession,
+  ) {
     return await this.save(
       {
         _id: new mongoose.Types.ObjectId(),
@@ -351,7 +353,7 @@ export class DriverService {
     );
   }
 
-  async save(driverObj, session) {
+  async save(driverObj: any, session: ClientSession) {
     this.serviceDebugger('creating new Driver');
     const driver = new Model<Driver>(driverObj);
     this.serviceDebugger('saving Driver...');
@@ -360,7 +362,6 @@ export class DriverService {
 
   async createDriverBySchoolAdmin(req: Request, res: Response) {
     this.serviceDebugger('school admin is creating Driver');
-    //Checking Current User
     const response = await this.getCurrentUser(req);
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
@@ -369,8 +370,11 @@ export class DriverService {
     return await this.createDriver(req, res, schoolAdmin.school_id);
   }
 
-  async createDriver(req, res, schoolId) {
-    //Joi validation checking
+  async createDriver(
+    req: Request,
+    res: Response,
+    schoolId: mongoose.Types.ObjectId,
+  ) {
     const session = await mongoose.startSession();
     this.serviceDebugger('req body is valid');
     try {
@@ -388,8 +392,8 @@ export class DriverService {
       const school = await this.schoolService.checkSchoolExistOrNot(schoolId);
       if (!school) return Util.getBadRequest('School Not Found', res);
       this.serviceDebugger('School found');
-      // const role = await this.rolesService.getRole(RoleType.DRIVER)
-      // if (!role) return Util.getBadRequest('Role Not Found', res)
+      const role = await this.rolesService.getRole(RoleType.DRIVER);
+      if (!role) return Util.getBadRequest('Role Not Found', res);
       this.serviceDebugger('role found');
       const address = await this.addressService.createAndSave(
         req.body,
@@ -397,18 +401,23 @@ export class DriverService {
         session,
       );
       this.serviceDebugger('User Address Created Successfully');
-      // const user = await this.userService.createAndSave(
-      //   req.body,
-      //   role,
-      //   address,
-      //   UserType.DRIVER,
-      //   session
-      // )
+      const user = await this.userService.createAndSave(
+        req.body,
+        role,
+        address,
+        UserType.DRIVER,
+        session,
+      );
       this.serviceDebugger('Driver User Created Successfully');
-      // const driver = await this.createAndSave(req.body, user, city, school, session)
+      const driver = await this.createAndSave(
+        req.body,
+        user,
+        city,
+        school,
+        session,
+      );
       await session.commitTransaction();
       this.serviceDebugger('Driver Created Successfully');
-      // const token = user.generateAuthToken()
       return Util.getSimpleOkRequest('Driver Created Successfully', res);
     } catch (ex) {
       this.serviceDebugger('Error While Creating Admin ' + ex);
@@ -490,9 +499,9 @@ export class DriverService {
     updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     address: AddressDocument,
     city: CityDocument,
-    school,
+    school: SchoolDocument,
     user: UserDocument,
-    driver,
+    driver: DriverDocument,
     session: ClientSession,
   ) {
     await this.addressService.updateAddress(
@@ -515,7 +524,7 @@ export class DriverService {
 
   async updateAndSaveDriver(
     driver: DriverDocument,
-    reqBody,
+    reqBody: any,
     city: CityDocument,
     school: SchoolDocument,
     session: ClientSession,
@@ -541,7 +550,7 @@ export class DriverService {
     );
   }
 
-  async setDriverAndSave(driver, driverObj, session: ClientSession) {
+  async setDriverAndSave(driver: any, driverObj: any, session: ClientSession) {
     await driver.set(driverObj);
     this.serviceDebugger('updating Driver');
     await driver.save({ session });

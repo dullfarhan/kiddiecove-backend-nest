@@ -13,11 +13,12 @@ import {
 import { EndpointService } from './endpoint.service';
 import { CreateEndpointDto } from './dto/create-endpoint.dto';
 import { UpdateEndpointDto } from './dto/update-endpoint.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { PermissionGuard } from 'src/Guard/permission.guard';
 import { Request, Response } from 'express';
 
+@ApiTags('EndPoint')
 @Controller('endpoints')
 export class EndpointController {
   constructor(private readonly endpointService: EndpointService) {}
