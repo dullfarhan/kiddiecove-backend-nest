@@ -2,20 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId } from 'mongoose';
 import { Document } from 'mongoose';
 
-// @Schema()
-// class permissionItem extends Document {
-//   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId })
-//   type: mongoose.Schema.Types.ObjectId;
-
-//   @Prop({
-//     required: false,
-//   })
-//   content: string;
-// }
-
-// export const permissionItemSchema =
-//   SchemaFactory.createForClass(permissionItem);
-
 @Schema()
 export class Role {
   _id: mongoose.Schema.Types.ObjectId;
