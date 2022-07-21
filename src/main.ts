@@ -32,7 +32,8 @@ async function bootstrap() {
     .addTag('kiddiecove')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  app.setGlobalPrefix('api');
+  SwaggerModule.setup('swagger', app, document);
   await app.listen(3001);
 
   console.log('Listening on Port: 3001');
