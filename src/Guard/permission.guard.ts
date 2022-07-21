@@ -26,7 +26,6 @@ export class PermissionGuard implements CanActivate {
             .replace('/' + req.params.id, '')
         : req.originalUrl;
 
-    console.log('REQUESTEDURL', requestedUrl);
     const currentUser: any = req.user;
     this.logger.log(currentUser);
 

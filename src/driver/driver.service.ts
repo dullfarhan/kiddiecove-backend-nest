@@ -1,13 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import mongoose, { ClientSession, Model } from 'mongoose';
 import {
   Address,
   AddressDocument,
+  City,
   CityDocument,
   Driver,
   DriverDocument,
+  School,
   SchoolAdmin,
   SchoolAdminDocument,
   SchoolDocument,
@@ -28,7 +30,6 @@ import { UserType } from 'src/enums/UserType';
 
 @Injectable()
 export class DriverService {
-  serviceDebugger = Debug('app:services:teacher');
   private readonly logger = new Logger('Driver Service');
   private pageNumber = 1;
   private pageSize = 10;
@@ -45,6 +46,7 @@ export class DriverService {
     private readonly addressService: AddressService,
     private readonly userService: UserService,
     private readonly rolesService: RolesService,
+    @InjectConnection() private readonly connection: mongoose.Connection,
   ) {}
 
   getAllDrivers(res: Response, filter: Object, selects: Object) {
@@ -207,19 +209,19 @@ export class DriverService {
     updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     req,
   ) {
-    this.serviceDebugger('School Admin is updating Driver Details');
+    this.logger.log('School Admin is updating Driver Details');
     const response = await this.getCurrentUser(req);
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    this.serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     return await this.updateDriver(id, res, updateDriverDto);
   }
 
   async deleteDriverByAdmin(id: mongoose.Types.ObjectId, res: Response) {
-    this.serviceDebugger('Admin is deleting Driver');
+    this.logger.log('Admin is deleting Driver');
 
-    const session = await mongoose.startSession();
+    const session = await this.connection.startSession();
     try {
       session.startTransaction();
       const driver = await this.driverModel.findByIdAndRemove(id, {
@@ -227,12 +229,12 @@ export class DriverService {
       });
       if (!driver)
         return Util.getBadRequest('Driver Not Found with given id', res);
-      this.serviceDebugger('Driver Successfully Deleted');
+      this.logger.log('Driver Successfully Deleted');
       const user = await this.userModel.findByIdAndRemove(driver.user_id, {
         session,
       });
       if (!user) return Util.getBadRequest('User Not Found with given id', res);
-      this.serviceDebugger('User Successfully Deleted');
+      this.logger.log('User Successfully Deleted');
       const address = await this.addressModel.findByIdAndRemove(
         user.address_id,
         {
@@ -241,11 +243,11 @@ export class DriverService {
       );
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);
-      this.serviceDebugger('Address Successfully Deleted');
+      this.logger.log('Address Successfully Deleted');
       await session.commitTransaction();
       return Util.getSimpleOkRequest('Driver Successfully deleted', res);
     } catch (ex) {
-      this.serviceDebugger(ex);
+      this.logger.log(ex);
       await session.abortTransaction();
       return Util.getBadRequest(ex.message, res);
     } finally {
@@ -258,11 +260,11 @@ export class DriverService {
     req: Request,
     res: Response,
   ) {
-    this.serviceDebugger('School Admin is deleting Driver');
+    this.logger.log('School Admin is deleting Driver');
     const response = await this.getCurrentUser(req);
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    this.serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     const driver = await this.checkDriverExistenceWithSchool(
       id,
@@ -274,7 +276,7 @@ export class DriverService {
   }
 
   async checkDriverExistenceWithSchool(driverId, schoolId) {
-    this.serviceDebugger('checking school existence with Driver');
+    this.logger.log('checking school existence with Driver');
     return await this.driverModel.findOne({
       _id: driverId,
       school_id: schoolId,
@@ -282,7 +284,7 @@ export class DriverService {
   }
 
   async deleteDriver(id: mongoose.Types.ObjectId, res: Response) {
-    const session = await mongoose.startSession();
+    const session = await this.connection.startSession();
     try {
       session.startTransaction();
       const driver = await this.driverModel.findByIdAndRemove(id, {
@@ -290,12 +292,12 @@ export class DriverService {
       });
       if (!driver)
         return Util.getBadRequest('Driver Not Found with given id', res);
-      this.serviceDebugger('Driver Successfully Deleted');
+      this.logger.log('Driver Successfully Deleted');
       const user = await this.userModel.findByIdAndRemove(driver.user_id, {
         session,
       });
       if (!user) return Util.getBadRequest('User Not Found with given id', res);
-      this.serviceDebugger('User Successfully Deleted');
+      this.logger.log('User Successfully Deleted');
       const address = await this.addressModel.findByIdAndRemove(
         user.address_id,
         {
@@ -304,11 +306,11 @@ export class DriverService {
       );
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);
-      this.serviceDebugger('Address Successfully Deleted');
+      this.logger.log('Address Successfully Deleted');
       await session.commitTransaction();
       return Util.getSimpleOkRequest('Driver Successfully deleted', res);
     } catch (ex) {
-      this.serviceDebugger(ex);
+      this.logger.log(ex);
       await session.abortTransaction();
       return Util.getBadRequest(ex.message, res);
     } finally {
@@ -317,17 +319,21 @@ export class DriverService {
   }
 
   async createDriverByAdmin(req: Request, res: Response) {
-    this.serviceDebugger('admin is creating Driver');
+    this.logger.log('admin is creating Driver');
     this.createDriver(req, res, req.body.school_id);
   }
 
   async createAndSave(
-    reqBody: any,
-    user: UserDocument,
-    city: CityDocument,
-    school: SchoolDocument,
+    reqBody,
+    newUser,
+    city,
+    newSchool,
     session: ClientSession,
   ) {
+    const school = newSchool.toObject();
+
+    const user = newUser.toObject();
+    this.logger.log('Saving Driver...');
     return await this.save(
       {
         _id: new mongoose.Types.ObjectId(),
@@ -355,19 +361,22 @@ export class DriverService {
     );
   }
 
-  async save(driverObj: any, session: ClientSession) {
-    this.serviceDebugger('creating new Driver');
-    const driver = new Model<Driver>(driverObj);
-    this.serviceDebugger('saving Driver...');
-    return await driver.save({ session });
+  async save(driverObj, session: ClientSession) {
+    console.log(driverObj);
+    this.logger.log('creating new Driver');
+    const driver = new this.driverModel(driverObj);
+    this.logger.log('saving Driver...');
+    const driverCreated = await driver.save({ session });
+    console.log('DRIVERCREATED', driverCreated);
+    return driverCreated;
   }
 
   async createDriverBySchoolAdmin(req: Request, res: Response) {
-    this.serviceDebugger('school admin is creating Driver');
+    this.logger.log('school admin is creating Driver');
     const response = await this.getCurrentUser(req);
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    this.serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     return await this.createDriver(req, res, schoolAdmin.school_id);
   }
@@ -377,8 +386,7 @@ export class DriverService {
     res: Response,
     schoolId: mongoose.Types.ObjectId,
   ) {
-    const session = await mongoose.startSession();
-    this.serviceDebugger('req body is valid');
+    const session = await this.connection.startSession();
     try {
       session.startTransaction();
       if (
@@ -387,22 +395,23 @@ export class DriverService {
         )
       )
         return Util.getBadRequest('User already registered', res);
-      this.serviceDebugger('user not registered');
+      this.logger.log('user not registered');
       const city = await this.cityService.checkCityExistOrNot(req.body.city_id);
       if (!city) return Util.getBadRequest('City Not Found', res);
-      this.serviceDebugger('city found');
+      this.logger.log('city found');
       const school = await this.schoolService.checkSchoolExistOrNot(schoolId);
       if (!school) return Util.getBadRequest('School Not Found', res);
-      this.serviceDebugger('School found');
+      this.logger.log('School found');
       const role = await this.rolesService.getRole(RoleType.DRIVER);
       if (!role) return Util.getBadRequest('Role Not Found', res);
-      this.serviceDebugger('role found');
+      this.logger.log('role found');
       const address = await this.addressService.createAndSave(
         req.body,
         city,
         session,
       );
-      this.serviceDebugger('User Address Created Successfully');
+      console.log('address', address);
+      this.logger.log('User Address Created Successfully');
       const user = await this.userService.createAndSave(
         req.body,
         role,
@@ -410,7 +419,8 @@ export class DriverService {
         UserType.DRIVER,
         session,
       );
-      this.serviceDebugger('Driver User Created Successfully');
+      this.logger.log('Driver User Created Successfully');
+
       const driver = await this.createAndSave(
         req.body,
         user,
@@ -419,10 +429,10 @@ export class DriverService {
         session,
       );
       await session.commitTransaction();
-      this.serviceDebugger('Driver Created Successfully');
+      this.logger.log('Driver Created Successfully');
       return Util.getSimpleOkRequest('Driver Created Successfully', res);
     } catch (ex) {
-      this.serviceDebugger('Error While Creating Admin ' + ex);
+      this.logger.log('Error While Creating Admin ' + ex);
       await session.abortTransaction();
       return Util.getBadRequest(ex.message, res);
     } finally {
@@ -436,9 +446,7 @@ export class DriverService {
     updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     isDirect = false,
   ) {
-    this.serviceDebugger('Admin is updating Driver Details');
-    const session: ClientSession = await mongoose.startSession();
-
+    const session: ClientSession = await this.connection.startSession();
     try {
       const driver = await this.driverModel.findOne({
         _id: id,
@@ -446,33 +454,33 @@ export class DriverService {
 
       if (!driver)
         return Util.getBadRequest('Driver Not Found with given id', res);
-      this.serviceDebugger('Driver found');
+      this.logger.log('Driver found');
       const city = await this.cityService.checkCityExistOrNot(
         updateDriverDto.city_id,
       );
       if (!city) return Util.getBadRequest('City Not Found with given id', res);
-      this.serviceDebugger('City found');
+      this.logger.log('City found');
       const school: SchoolDocument =
         await this.schoolService.checkSchoolExistOrNot(
           updateDriverDto.school_id,
         );
       if (!school) return Util.getBadRequest('School Not Found', res);
-      this.serviceDebugger('School found');
+      this.logger.log('School found');
       const user: UserDocument = await this.userModel.findOne({
         _id: driver.user_id,
       });
       if (!user) return Util.getBadRequest('User Not Found with given id', res);
-      this.serviceDebugger('user found');
+      this.logger.log('user found');
 
       const address: AddressDocument = await this.addressModel.findOne({
         _id: user.address_id,
       });
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);
-      this.serviceDebugger('address found');
+      this.logger.log('address found');
       if (isDirect) {
         await this.updateDirectly(id, updateDriverDto, city, school, session);
-        this.serviceDebugger(`Driver directly updated successfully`);
+        this.logger.log(`Driver directly updated successfully`);
       } else {
         await this.update(
           updateDriverDto,
@@ -483,13 +491,13 @@ export class DriverService {
           driver,
           session,
         );
-        this.serviceDebugger(`Driver updated successfully`);
+        this.logger.log(`Driver updated successfully`);
       }
       await session.commitTransaction();
-      this.serviceDebugger('Driver and Driver User Updated Successfully');
+      this.logger.log('Driver and Driver User Updated Successfully');
       return Util.getSimpleOkRequest('Driver Successfully Updated', res);
     } catch (ex) {
-      this.serviceDebugger(ex);
+      this.logger.log(ex);
       await session.abortTransaction();
       return Util.getBadRequest(ex.message, res);
     } finally {
@@ -512,9 +520,9 @@ export class DriverService {
       city,
       session,
     );
-    this.serviceDebugger(`updated address ${address}`);
+    this.logger.log(`updated address ${address}`);
     await this.userService.updateUser(user, updateDriverDto, session);
-    this.serviceDebugger(`updated user ${user}`);
+    this.logger.log(`updated user ${user}`);
     return await this.updateAndSaveDriver(
       driver,
       updateDriverDto,
@@ -554,7 +562,7 @@ export class DriverService {
 
   async setDriverAndSave(driver: any, driverObj: any, session: ClientSession) {
     await driver.set(driverObj);
-    this.serviceDebugger('updating Driver');
+    this.logger.log('updating Driver');
     await driver.save({ session });
   }
 
@@ -572,13 +580,13 @@ export class DriverService {
       school,
       session,
     );
-    this.serviceDebugger(`updated Driver ${Driver}`);
+    this.logger.log(`updated Driver ${Driver}`);
     const user = await this.userService.updateDirectly(
       driver.user_id,
       updateDriverDto,
       session,
     );
-    this.serviceDebugger(`updated user ${user}`);
+    this.logger.log(`updated user ${user}`);
     return await this.addressService.updateDirectly(
       user.address_id,
       updateDriverDto,

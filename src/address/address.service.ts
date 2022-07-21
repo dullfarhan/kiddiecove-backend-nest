@@ -12,9 +12,8 @@ export class AddressService {
     @InjectModel(Address.name) private AddressModel: Model<AddressDocument>,
   ) {}
 
-  private readonly logger = new Logger(AppService.name);
+  private readonly logger = new Logger(AddressService.name);
   async save(addressObj, session) {
-    console.log(addressObj, 'addressObj');
     const address = new this.AddressModel(addressObj);
     this.logger.log('saving address...');
     return await address.save({ session });

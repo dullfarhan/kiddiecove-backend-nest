@@ -28,6 +28,7 @@ export class Address {
 
   @Prop({
     type: Point,
+    required: true,
   })
   location: Point;
 
@@ -53,7 +54,7 @@ export class Address {
 
   @Prop({
     type: Boolean,
-    default: true,
+    default: false,
     minlength: 3,
     maxlength: 4,
   })

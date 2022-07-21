@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 @Schema()
 export class User {
@@ -80,7 +80,7 @@ export class User {
   phone_number: string;
 
   @Prop({ type: Date, required: true })
-  birthday_date;
+  birthday_date: Date;
 
   @Prop({
     type: Date,
@@ -108,10 +108,10 @@ export class User {
     ref: 'Address',
     required: true,
   })
-  address_id: string;
+  address_id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true })
-  role: mongoose.Schema.Types.ObjectId;
+  role: mongoose.Types.ObjectId;
 
   @Prop({ type: Boolean, required: true, minlength: 3, maxlength: 4 })
   connected: boolean;

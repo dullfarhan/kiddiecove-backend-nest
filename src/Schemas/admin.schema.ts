@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId } from 'mongoose';
-import { CustomUser, CustomUserSchema } from './customUser.schema';
+import { CustomUser } from './customUser.schema';
 
 @Schema()
 export class Admin {
@@ -28,7 +28,7 @@ export class Admin {
   admin_type: string;
 
   @Prop({
-    type: CustomUserSchema,
+    type: CustomUser,
     required: true,
   })
   user: CustomUser;

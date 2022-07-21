@@ -17,6 +17,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.enableCors({ origin: 'http://localhost:3000' });
+  app.setGlobalPrefix('api');
   const config = new DocumentBuilder()
     .addSecurity('basic', {
       type: 'http',
@@ -32,7 +33,6 @@ async function bootstrap() {
     .addTag('kiddiecove')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  app.setGlobalPrefix('api');
   SwaggerModule.setup('swagger', app, document);
   await app.listen(3001);
 
