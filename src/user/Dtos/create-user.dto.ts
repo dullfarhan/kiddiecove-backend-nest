@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDataURI,
   IsDate,
@@ -12,6 +13,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { encode } from 'punycode';
 import { GenderType } from 'src/utils/enums/GenderType.enum';
 
 export class CreateUserDto {
@@ -49,11 +51,12 @@ export class CreateUserDto {
   @ApiProperty({ type: String, required: true })
   @IsPhoneNumber('PK')
   @MinLength(9)
-  @Max(15)
+  @MaxLength(15)
   @IsNotEmpty()
   phone_number: string;
 
   @ApiProperty({ type: Date, required: true })
+  @Type(() => Date)
   @IsDate()
   birthday_date: Date;
 

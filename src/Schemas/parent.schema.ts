@@ -4,7 +4,7 @@ import {
   CustomParentSchool,
   CustomParentSchoolSchema,
 } from './customParentSchool.schema';
-import { CustomUser, CustomUserSchema } from './customUser.schema';
+import { CustomUser } from './customUser.schema';
 
 @Schema()
 export class Parent {
@@ -34,7 +34,7 @@ export class Parent {
   type: string;
 
   @Prop({
-    type: CustomUserSchema,
+    type: CustomUser,
     required: true,
   })
   user: CustomUser;

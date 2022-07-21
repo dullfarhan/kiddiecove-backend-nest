@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { CustomUser } from './customUser.schema';
 
 @Schema()
 export class Driver {
@@ -36,10 +37,10 @@ export class Driver {
   salary: number;
 
   @Prop({
-    type: String, // to be determined
+    type: CustomUser,
     required: true,
   })
-  user: string;
+  user: CustomUser;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   user_id: mongoose.Schema.Types.ObjectId;

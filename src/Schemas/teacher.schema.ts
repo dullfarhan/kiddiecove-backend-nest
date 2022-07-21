@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { CustomUser, CustomUserSchema } from './customUser.schema';
+import { CustomUser } from './customUser.schema';
 
 @Schema()
 export class Teacher {
@@ -42,7 +42,7 @@ export class Teacher {
   salary: number;
 
   @Prop({
-    type: CustomUserSchema,
+    type: CustomUser,
     required: true,
   })
   user: CustomUser;

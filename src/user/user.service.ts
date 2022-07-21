@@ -12,7 +12,6 @@ import { GenderType } from 'src/utils/enums/GenderType.enum';
 @Injectable()
 export class UserService {
   private readonly logger = new Logger('User Service');
-  serviceDebugger = require('debug')('app:services');
   pageNumber = 1;
   pageSize = 20;
   constructor(
@@ -115,7 +114,7 @@ export class UserService {
 
   async setUserAndSave(user, userObj, session) {
     await user.set(userObj);
-    this.serviceDebugger('updating user');
+    this.logger.log('updating user');
     return await user.save({ session });
   }
 
@@ -163,12 +162,12 @@ export class UserService {
   }
 
   async checkUserAlreadyRegisteredOrNot(user_name) {
-    this.serviceDebugger('checking if user already registered or not?');
+    this.logger.log('checking if user already registered or not?');
     return await this.userModel.findOne({ user_name: user_name });
   }
 
   async createAndSave(reqBody, role, address, userType, session) {
-    this.serviceDebugger('creating new user');
+    this.logger.log('creating new user');
     return await this.save(
       {
         _id: new mongoose.Types.ObjectId(),
@@ -198,8 +197,10 @@ export class UserService {
   }
 
   async save(userObj, session: ClientSession) {
-    const user = new Model<User>(userObj);
-    this.serviceDebugger('saving user...');
+    console.log(userObj, 'USEROBJ');
+    const user = new this.userModel(userObj);
+    console.log(userObj, 'USERMODEL');
+    this.logger.log('saving user...');
     return await user.save({ session });
   }
 }

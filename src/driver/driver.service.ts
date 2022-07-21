@@ -5,9 +5,11 @@ import mongoose, { ClientSession, Model } from 'mongoose';
 import {
   Address,
   AddressDocument,
+  City,
   CityDocument,
   Driver,
   DriverDocument,
+  School,
   SchoolAdmin,
   SchoolAdminDocument,
   SchoolDocument,
@@ -322,12 +324,16 @@ export class DriverService {
   }
 
   async createAndSave(
-    reqBody: any,
-    user: UserDocument,
-    city: CityDocument,
-    school: SchoolDocument,
+    reqBody,
+    newUser,
+    city,
+    newSchool,
     session: ClientSession,
   ) {
+    const school = newSchool.toObject();
+
+    const user = newUser.toObject();
+    this.logger.log('Saving Driver...');
     return await this.save(
       {
         _id: new mongoose.Types.ObjectId(),
@@ -355,11 +361,14 @@ export class DriverService {
     );
   }
 
-  async save(driverObj: any, session: ClientSession) {
+  async save(driverObj, session: ClientSession) {
+    console.log(driverObj);
     this.logger.log('creating new Driver');
-    const driver = new Model<Driver>(driverObj);
+    const driver = new this.driverModel(driverObj);
     this.logger.log('saving Driver...');
-    return await driver.save({ session });
+    const driverCreated = await driver.save({ session });
+    console.log('DRIVERCREATED', driverCreated);
+    return driverCreated;
   }
 
   async createDriverBySchoolAdmin(req: Request, res: Response) {
@@ -378,7 +387,6 @@ export class DriverService {
     schoolId: mongoose.Types.ObjectId,
   ) {
     const session = await this.connection.startSession();
-    this.logger.log('req body is valid');
     try {
       session.startTransaction();
       if (
@@ -402,6 +410,7 @@ export class DriverService {
         city,
         session,
       );
+      console.log('address', address);
       this.logger.log('User Address Created Successfully');
       const user = await this.userService.createAndSave(
         req.body,
@@ -411,6 +420,7 @@ export class DriverService {
         session,
       );
       this.logger.log('Driver User Created Successfully');
+
       const driver = await this.createAndSave(
         req.body,
         user,

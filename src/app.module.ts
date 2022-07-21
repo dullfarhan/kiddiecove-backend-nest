@@ -22,7 +22,7 @@ import { PermissionModule } from './permission/permission.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/kiddiecove'),
+    MongooseModule.forRoot('mongodb://localhost:27019/kiddiecove'),
     DatabaseModule,
     TeacherModule,
     AuthModule,

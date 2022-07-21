@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { Document } from 'mongoose';
 import { CustomAddress, CustomAddressSchema } from './customAddress.schema';
 
-@Schema()
-export class CustomUser {
+export class CustomUser extends Document {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
@@ -64,5 +64,3 @@ export class CustomUser {
   })
   address: CustomAddress;
 }
-
-export const CustomUserSchema = SchemaFactory.createForClass(CustomUser);
