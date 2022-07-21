@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { CustomSchool, CustomSchoolSchema } from './customSchool.schema';
+import { CustomSchool } from './customSchool.schema';
 import { CustomUser } from './customUser.schema';
 
 @Schema()
@@ -68,7 +68,7 @@ export class SchoolAdmin {
   })
   deleted: boolean;
 
-  @Prop({ type: CustomSchoolSchema })
+  @Prop({ type: CustomSchool })
   school: CustomSchool;
 
   @Prop({

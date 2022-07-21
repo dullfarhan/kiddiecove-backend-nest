@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { CustomAddress, CustomAddressSchema } from './customAddress.schema';
+import { CustomAddress } from './customAddress.schema';
 
 @Schema()
 export class Kid {
@@ -50,7 +50,7 @@ export class Kid {
   registration_status: string;
 
   @Prop({
-    type: CustomAddressSchema,
+    type: CustomAddress,
     required: true,
   })
   address: CustomAddress;

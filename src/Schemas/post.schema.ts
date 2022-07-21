@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { CustomComment, CustomCommentSchema } from './customComment.schema';
+import { CustomComment } from './customComment.schema';
 
 @Schema()
 export class Post {
@@ -85,7 +85,7 @@ export class Post {
   })
   liked: boolean;
 
-  @Prop({ type: CustomCommentSchema })
+  @Prop({ type: CustomComment })
   comments: CustomComment;
 
   @Prop({

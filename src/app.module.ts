@@ -19,6 +19,7 @@ import { AddressModule } from './address/address.module';
 import { RolesModule } from './roles/roles.module';
 import { EndpointModule } from './endpoint/endpoint.module';
 import { PermissionModule } from './permission/permission.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { PermissionModule } from './permission/permission.module';
     RolesModule,
     EndpointModule,
     PermissionModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],
