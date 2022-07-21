@@ -20,6 +20,9 @@ import { RolesModule } from './roles/roles.module';
 import { EndpointModule } from './endpoint/endpoint.module';
 import { PermissionModule } from './permission/permission.module';
 import { ChatModule } from './chat/chat.module';
+import { HomeModule } from './home/home.module';
+import { StatModule } from './stat/stat.module';
+import { SchoolAdminModule } from './school-admin/school-admin.module';
 
 @Module({
   imports: [
@@ -35,6 +38,9 @@ import { ChatModule } from './chat/chat.module';
     EndpointModule,
     PermissionModule,
     ChatModule,
+    HomeModule,
+    StatModule,
+    SchoolAdminModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],
