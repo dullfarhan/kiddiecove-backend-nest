@@ -16,7 +16,8 @@ import { ApiProperty } from '@nestjs/swagger';
 class permissionItem {
   @ApiProperty()
   _id: mongoose.Types.ObjectId;
-  @ApiProperty()
+
+  @ApiProperty({ type: String, required: false })
   @IsString()
   @IsOptional()
   name: string;
@@ -24,6 +25,7 @@ class permissionItem {
 export class CreateRoleDto {
   _id: mongoose.Types.ObjectId;
 
+  @ApiProperty({ enum: RoleType, required: true })
   @IsString()
   @IsEnum(RoleType)
   @Length(3, 12)
@@ -36,10 +38,12 @@ export class CreateRoleDto {
   @Type(() => permissionItem)
   permissions: [permissionItem] | null;
 
+  @ApiProperty({ type: Boolean, required: false })
   @IsOptional()
   @IsBoolean()
   enable: boolean;
 
+  @ApiProperty({ type: Boolean, required: false })
   @IsOptional()
   @IsBoolean()
   deleted: boolean;

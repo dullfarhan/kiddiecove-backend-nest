@@ -60,7 +60,7 @@ export class DriverController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Get('api/get/all/for/school/admin')
+  @Get('get/all/for/school/admin')
   getAllDriversForSchoolAdmin(@Req() req: Request, @Res() res: Response) {
     return this.driverService.getAllDriversForSchoolAdmin(req, res);
   }
@@ -111,7 +111,6 @@ export class DriverController {
     @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     @Param('id') id: mongoose.Types.ObjectId,
     @Res() res: Response,
-    @Req() req: Request,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
       Util.getBadRequest('invalid user id', res);
