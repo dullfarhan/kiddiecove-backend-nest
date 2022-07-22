@@ -11,6 +11,13 @@ import {
 } from 'class-validator';
 import mongoose from 'mongoose';
 
+class Location {
+  @ApiProperty({ type: String, required: false })
+  type: string;
+  @ApiProperty({ type: [Number], required: false })
+  coordinates: number[];
+}
+
 export class CreateAddressDto {
   @ApiProperty({ type: String, required: true })
   @IsString()
@@ -25,10 +32,10 @@ export class CreateAddressDto {
   @IsNotEmpty()
   area_name: string;
 
-  @ApiProperty({ type: Object, required: true })
+  @ApiProperty({ type: Location, required: false })
   @IsOptional()
   @IsObject()
-  location: Object;
+  location: Location;
 
   @ApiProperty({ type: mongoose.Types.ObjectId })
   @IsNotEmpty()

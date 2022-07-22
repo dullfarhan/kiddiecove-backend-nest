@@ -9,11 +9,9 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
-  Max,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { encode } from 'punycode';
 import { GenderType } from 'src/utils/enums/GenderType.enum';
 
 export class CreateUserDto {
@@ -57,6 +55,7 @@ export class CreateUserDto {
 
   @ApiProperty({ type: Date, required: true })
   @Type(() => Date)
+  @IsOptional()
   @IsDate()
   birthday_date: Date;
 

@@ -23,6 +23,7 @@ import { ChatModule } from './chat/chat.module';
 import { HomeModule } from './home/home.module';
 import { StatModule } from './stat/stat.module';
 import { SchoolAdminModule } from './school-admin/school-admin.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { SchoolAdminModule } from './school-admin/school-admin.module';
     HomeModule,
     StatModule,
     SchoolAdminModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],
