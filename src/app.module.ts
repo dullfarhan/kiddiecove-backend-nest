@@ -19,10 +19,10 @@ import { AddressModule } from './address/address.module';
 import { RolesModule } from './roles/roles.module';
 import { EndpointModule } from './endpoint/endpoint.module';
 import { PermissionModule } from './permission/permission.module';
+import { SchoolAdminModule } from './school-admin/school-admin.module';
 import { ChatModule } from './chat/chat.module';
 import { HomeModule } from './home/home.module';
 import { StatModule } from './stat/stat.module';
-import { SchoolAdminModule } from './school-admin/school-admin.module';
 import { AdminModule } from './admin/admin.module';
 
 @Module({
