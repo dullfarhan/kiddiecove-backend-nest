@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { ClientSession, Model } from 'mongoose';
 import Util from 'src/utils/util';
 import { CreateSchoolAdminDto } from './dto/create-school-admin.dto';
 import { UpdateSchoolAdminDto } from './dto/update-school-admin.dto';
@@ -18,7 +18,8 @@ import {
   SchoolAdminDocument,
   SchoolAdmin,
 } from 'src/Schemas';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class SchoolAdminService {
@@ -27,6 +28,7 @@ export class SchoolAdminService {
   readonly logger = new Logger(SchoolAdminService.name);
 
   constructor(
+    @InjectConnection() private readonly connection: mongoose.Connection,
     @InjectModel(Address.name)
     private AddressModel: Model<AddressDocument>,
     @InjectModel(User.name)
@@ -110,6 +112,7 @@ export class SchoolAdminService {
     this.logger.log('req body is valid');
     try {
       session.startTransaction();
+      console.log('try');
       const city = await this.cityService.checkCityExistOrNot(req.body.city_id);
       if (!city) return Util.getBadRequest('City Not Found with given id', res);
       this.logger.log('city found');
@@ -145,7 +148,7 @@ export class SchoolAdminService {
   }
 
   async updateDirectlyByAdmin(req, res) {
-    const session = await mongoose.startSession();
+    const session = await this.connection.startSession();
 
     this.logger.log('validating req body');
     // const { error } = validateSchoolAdmin(req.body);
@@ -227,15 +230,18 @@ export class SchoolAdminService {
     }
   }
 
-  async createByAdmin(req, res) {
+  async createByAdmin(req: Request, res: Response) {
     //Joi validation checking
-    const session = await mongoose.startSession();
+
+    const session: ClientSession = await this.connection.startSession();
     this.logger.log('validating req body');
+
     // const { error } = validateSchoolAdmin(req.body);
     // if (error) return Util.getBadRequest(error.details[0].message, res);
-    this.logger.log('req body is valid');
+
     try {
       session.startTransaction();
+
       if (
         await this.userService.checkUserAlreadyRegisteredOrNot(
           req.body.user_name,

@@ -16,6 +16,4 @@ const generateQR = async (text) => {
   }
 };
 
-module.exports = {
-  generateQR,
-};
+export default generateQR;

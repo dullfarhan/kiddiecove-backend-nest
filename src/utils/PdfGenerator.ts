@@ -44,6 +44,4 @@ async function makePdf(bufferString, school) {
   return await generatePdf(options);
 }
 
-module.exports = {
-  makePdf,
-};
+export default makePdf;

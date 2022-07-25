@@ -5,7 +5,7 @@ import mongoose, { ClientSession, Model } from 'mongoose';
 import { User } from 'src/Schemas';
 import Util from '../utils/util';
 import { UserType } from '../utils/enums/UserType.enum';
-import Constant from 'src/utils/Constant';
+import Constant from 'src/utils/enums/Constant.enum';
 import { ParentType } from 'src/utils/enums/ParentType.enum';
 import { GenderType } from 'src/utils/enums/GenderType.enum';
 

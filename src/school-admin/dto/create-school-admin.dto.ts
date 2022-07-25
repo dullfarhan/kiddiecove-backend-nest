@@ -1,1 +1,3 @@
-export class CreateSchoolAdminDto {}
+export class CreateSchoolAdminDto {
+  a: string;
+}
