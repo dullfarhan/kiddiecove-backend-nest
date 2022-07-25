@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  private readonly logger: Logger = new Logger('Authentication Service');
+  private readonly logger: Logger = new Logger(AuthService.name);
 
   async signIn(userSignInDto: UserSignInDto): Promise<string> {
     this.logger.log('Signing In');

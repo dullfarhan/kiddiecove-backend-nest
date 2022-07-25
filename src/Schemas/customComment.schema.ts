@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
-@Schema()
 export class CustomComment {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   _id: mongoose.Schema.Types.ObjectId;
@@ -53,7 +52,5 @@ export class CustomComment {
   })
   updated_at: Date;
 }
-
-export const CustomCommentSchema = SchemaFactory.createForClass(CustomComment);
 
 export type CustomCommentDocument = CustomComment & Document;

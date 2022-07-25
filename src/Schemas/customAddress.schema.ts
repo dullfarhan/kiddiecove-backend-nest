@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
-@Schema()
 export class CustomAddress {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   _id: mongoose.Schema.Types.ObjectId;
@@ -32,5 +31,3 @@ export class CustomAddress {
   })
   city: string;
 }
-
-export const CustomAddressSchema = SchemaFactory.createForClass(CustomAddress);

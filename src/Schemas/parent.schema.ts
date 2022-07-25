@@ -1,9 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import {
-  CustomParentSchool,
-  CustomParentSchoolSchema,
-} from './customParentSchool.schema';
+import { Schema as MongooseSchema } from 'mongoose';
+import { CustomParentSchool } from './customParentSchool.schema';
 import { CustomUser } from './customUser.schema';
 
 @Schema()
@@ -74,8 +72,8 @@ export class Parent {
   })
   deleted: boolean;
 
-  @Prop({ type: [CustomParentSchoolSchema] })
-  schools: [CustomParentSchool];
+  @Prop({ type: MongooseSchema.Types.Array })
+  schools: CustomParentSchool[];
 }
 
 export const ParentSchema = SchemaFactory.createForClass(Parent);

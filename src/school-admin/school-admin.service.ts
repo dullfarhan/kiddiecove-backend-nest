@@ -1,55 +1,40 @@
 import { Injectable, Logger } from '@nestjs/common';
-import mongoose, { ClientSession, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Response } from 'express';
+import { Model } from 'mongoose';
+import { SchoolAdmin, SchoolAdminDocument } from 'src/Schemas';
 import Util from 'src/utils/util';
 import { CreateSchoolAdminDto } from './dto/create-school-admin.dto';
 import { UpdateSchoolAdminDto } from './dto/update-school-admin.dto';
-import { CityService } from 'src/city/city.service';
-import { AddressService } from 'src/address/address.service';
-import { RolesService } from 'src/roles/roles.service';
-import { UserService } from 'src/user/user.service';
-import { UserType } from 'src/enums/UserType';
-import { RoleType } from 'src/enums/RoleType';
-
-import {
-  AddressDocument,
-  Address,
-  UserDocument,
-  User,
-  SchoolAdminDocument,
-  SchoolAdmin,
-} from 'src/Schemas';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Request, Response } from 'express';
 
 @Injectable()
 export class SchoolAdminService {
-  pageNumber = 1;
-  pageSize = 10;
-  readonly logger = new Logger(SchoolAdminService.name);
-
+  private pageNumber = 1;
+  private pageSize = 10;
+  private readonly logger: Logger = new Logger('School Admin Service');
   constructor(
-    @InjectConnection() private readonly connection: mongoose.Connection,
-    @InjectModel(Address.name)
-    private AddressModel: Model<AddressDocument>,
-    @InjectModel(User.name)
-    private UserModel: Model<UserDocument>,
     @InjectModel(SchoolAdmin.name)
-    private SchoolAdminModel: Model<SchoolAdminDocument>,
-    private readonly cityService: CityService,
-    private readonly rolesService: RolesService,
-    private readonly userService: UserService,
-    private readonly addressService: AddressService,
+    private readonly schoolAdminModel: Model<SchoolAdminDocument>,
   ) {}
 
-  getAllForAdmin(req, res) {
+  async getCurrentSchoolAdmin(userId) {
+    this.logger.log('getting current school admin');
+    return await this.schoolAdminModel.findOne({ user_id: userId });
+  }
+
+  async getAllForAdmin(res: Response) {
     this.logger.log('getting School Admin list for admin');
-    this.SchoolAdminModel.find({ enable: true })
+    this.schoolAdminModel
+      .find({ enable: true })
       .skip((this.pageNumber - 1) * this.pageSize)
       .limit(this.pageSize)
       .sort({ name: 1 })
       .select({ name: 1, registered: 1, user: 1, enable: 1, deleted: 1 })
       .then((result) => {
+<<<<<<< HEAD
         this.logger.log(result);
+=======
+>>>>>>> 8d3e5aa33368e0c89feb40f5ee584ef3399ae9e1
         return Util.getOkRequest(
           result,
           'School Admins Listing Fetched Successfully for admin',
@@ -61,6 +46,7 @@ export class SchoolAdminService {
         return Util.getBadRequest(ex.message, res);
       });
   }
+<<<<<<< HEAD
 
   getAllAsListingForRegistration(req, res) {
     this.logger.log('getting School Admin list for registration');
@@ -432,4 +418,6 @@ export class SchoolAdminService {
   remove(id: number) {
     return `This action removes a #${id} schoolAdmin`;
   }
+=======
+>>>>>>> 8d3e5aa33368e0c89feb40f5ee584ef3399ae9e1
 }

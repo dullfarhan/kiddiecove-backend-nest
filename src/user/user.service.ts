@@ -197,9 +197,7 @@ export class UserService {
   }
 
   async save(userObj, session: ClientSession) {
-    console.log(userObj, 'USEROBJ');
     const user = new this.userModel(userObj);
-    console.log(userObj, 'USERMODEL');
     this.logger.log('saving user...');
     return await user.save({ session });
   }

@@ -1,7 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
-@Schema()
 export class CustomSchool {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   _id: mongoose.Schema.Types.ObjectId;
@@ -94,7 +93,5 @@ export class CustomSchool {
   })
   phone_number: string;
 }
-
-export const CustomSchoolSchema = SchemaFactory.createForClass(CustomSchool);
 
 export type CustomSchoolDocument = CustomSchool & Document;

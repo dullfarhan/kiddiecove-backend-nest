@@ -1,8 +1,7 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import { Prop } from '@nestjs/mongoose';
+import mongoose, { Document } from 'mongoose';
 
-@Schema()
-export class CustomParentSchool {
+export class CustomParentSchool extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   _id: mongoose.Schema.Types.ObjectId;
 
@@ -36,6 +35,3 @@ export class CustomParentSchool {
   })
   registration_status: string;
 }
-
-export const CustomParentSchoolSchema =
-  SchemaFactory.createForClass(CustomParentSchool);
