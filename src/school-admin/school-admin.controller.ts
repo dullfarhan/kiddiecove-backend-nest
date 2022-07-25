@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { SchoolAdminService } from './school-admin.service';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PermissionGuard } from 'src/Guard/permission.guard';
