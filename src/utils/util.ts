@@ -1,5 +1,5 @@
 import Response from './Response';
-import Constant from './Constant';
+import Constant from './enums/Constant.enum';
 import {
   ReasonPhrases,
   StatusCodes,

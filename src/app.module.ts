@@ -19,15 +19,19 @@ import { AddressModule } from './address/address.module';
 import { RolesModule } from './roles/roles.module';
 import { EndpointModule } from './endpoint/endpoint.module';
 import { PermissionModule } from './permission/permission.module';
+<<<<<<< HEAD
+import { SchoolAdminModule } from './school-admin/school-admin.module';
+=======
 import { ChatModule } from './chat/chat.module';
 import { HomeModule } from './home/home.module';
 import { StatModule } from './stat/stat.module';
 import { SchoolAdminModule } from './school-admin/school-admin.module';
 import { AdminModule } from './admin/admin.module';
+>>>>>>> 8d3e5aa33368e0c89feb40f5ee584ef3399ae9e1
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27019/kiddiecove'),
+    MongooseModule.forRoot('mongodb://localhost:27017/kiddiecove'),
     DatabaseModule,
     TeacherModule,
     AuthModule,
@@ -38,11 +42,15 @@ import { AdminModule } from './admin/admin.module';
     RolesModule,
     EndpointModule,
     PermissionModule,
+<<<<<<< HEAD
+    SchoolAdminModule,
+=======
     ChatModule,
     HomeModule,
     StatModule,
     SchoolAdminModule,
     AdminModule,
+>>>>>>> 8d3e5aa33368e0c89feb40f5ee584ef3399ae9e1
   ],
   controllers: [AppController],
   providers: [AppService, Database],

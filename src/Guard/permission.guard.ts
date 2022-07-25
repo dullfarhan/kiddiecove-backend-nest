@@ -7,7 +7,7 @@ import {
 import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import Util from '../utils/util';
-import Constant from 'src/utils/Constant';
+import Constant from 'src/utils/enums/Constant.enum';
 @Injectable()
 export class PermissionGuard implements CanActivate {
   private readonly logger = new Logger('Permission Guard');

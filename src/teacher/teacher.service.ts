@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { FilterQuery, Model } from 'mongoose';
 import { Request, Response } from 'express';
 import { AppService } from 'src/app.service';
-import Constant from 'src/utils/Constant';
+import Constant from 'src/utils/enums/Constant.enum';
 import { UserType } from 'src/utils/enums/UserType.enum';
 const pageNumber = 1;
 const pageSize = 10;

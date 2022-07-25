@@ -17,7 +17,7 @@ import {
   UserDocument,
 } from 'src/Schemas';
 import Util from 'src/utils/util';
-import Constant from 'src/utils/Constant';
+import Constant from 'src/utils/enums/Constant.enum';
 import Debug from 'debug';
 import { CityService } from 'src/city/city.service';
 import { SchoolService } from 'src/school/school.service';
