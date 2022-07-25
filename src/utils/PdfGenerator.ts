@@ -1,10 +1,10 @@
 import { generatePdf } from 'tea-school';
-import path from 'path';
+import * as path from 'path';
 import Debug from 'debug';
 import dateTimeHelper from './dateTimeHelper';
 
 const options = {
-  htmlTemplatePath: path.resolve(__dirname, '../views/pdf-template.pug'),
+  htmlTemplatePath: path.resolve(__dirname, 'src/views/pdf-template.pug'),
 
   // Here you put an object according to https://github.com/sass/node-sass#options
   styleOptions: {
