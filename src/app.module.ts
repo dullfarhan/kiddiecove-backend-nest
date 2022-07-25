@@ -24,10 +24,11 @@ import { ChatModule } from './chat/chat.module';
 import { HomeModule } from './home/home.module';
 import { StatModule } from './stat/stat.module';
 import { AdminModule } from './admin/admin.module';
+import { ClassModule } from './class/class.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/kiddiecove'),
+    MongooseModule.forRoot('mongodb://localhost:27019/kiddiecove'),
     DatabaseModule,
     TeacherModule,
     AuthModule,
@@ -43,6 +44,7 @@ import { AdminModule } from './admin/admin.module';
     StatModule,
     SchoolAdminModule,
     AdminModule,
+    ClassModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],
