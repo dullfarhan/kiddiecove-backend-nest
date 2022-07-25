@@ -15,7 +15,7 @@ import {
   UserDocument,
 } from 'src/Schemas';
 import { SchoolAdminService } from 'src/school-admin/school-admin.service';
-import Constant from 'src/utils/Constant';
+import Constant from 'src/utils/enums/Constant.enum';
 import Util from 'src/utils/util';
 
 @Injectable()
