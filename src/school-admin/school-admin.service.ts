@@ -372,4 +372,47 @@ export class SchoolAdminService {
     this.logger.log('saving SchoolAdmin...');
     return await schoolAdmin.save({ session });
   }
+
+  async checkSchoolAdminExistOrNot(schoolAdminId) {
+    this.logger.log('checking if school admin exists or not?');
+    return await this.schoolAdminModel.findOne({ _id: schoolAdminId });
+  }
+
+  async removeSchool(id, session) {
+    return await this.schoolAdminModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          registered: false,
+          updated_at: Date.now(),
+        },
+        $unset: {
+          school: 1,
+          school_id: 1,
+        },
+      },
+      { session, new: true },
+    );
+  }
+
+  async addSchool(id, reqBody, session, school) {
+    return await this.schoolAdminModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          'school.name': reqBody.name,
+          'school.description': reqBody.description,
+          'school.type': reqBody.type,
+          'school.campus_code': reqBody.campus_code,
+          'school.branch_name': reqBody.branch_name,
+          'school.email': reqBody.email,
+          'school.phone_number': reqBody.phone_number,
+          registered: true,
+          updated_at: Date.now(),
+          school_id: school._id,
+        },
+      },
+      { session, new: true, runValidators: true },
+    );
+  }
 }

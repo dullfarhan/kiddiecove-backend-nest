@@ -201,4 +201,16 @@ export class UserService {
     this.logger.log('saving user...');
     return await user.save({ session });
   }
+  async updateParentUserConnection(userId, session) {
+    return await this.userModel.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          connected: true,
+          updated_at: Date.now(),
+        },
+      },
+      { session, new: true, runValidators: true },
+    );
+  }
 }

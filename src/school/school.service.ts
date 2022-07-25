@@ -1,7 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { School, SchoolDocument } from 'src/Schemas';
+import {
+  School,
+  SchoolDocument,
+  ParentDocument,
+  Parent,
+  AddressDocument,
+  Address,
+} from 'src/Schemas';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
 import { CityService } from 'src/city/city.service';
@@ -9,7 +16,6 @@ import { AddressService } from 'src/address/address.service';
 import { RolesService } from 'src/roles/roles.service';
 import { UserService } from 'src/user/user.service';
 import { SchoolAdminService } from 'src/school-admin/school-admin.service';
-import Debug from 'debug';
 import Util from 'src/utils/util';
 import { UserType } from 'src/enums/UserType';
 import generateQR from 'src/utils/QrCodeGenerator';
@@ -22,6 +28,10 @@ export class SchoolService {
     @InjectConnection() private readonly connection: mongoose.Connection,
     @InjectModel(School.name)
     private SchoolModel: Model<SchoolDocument>,
+    @InjectModel(Parent.name)
+    private ParentModel: Model<ParentDocument>,
+    @InjectModel(Address.name)
+    private AddressModel: Model<AddressDocument>,
     private readonly schoolAdminService: SchoolAdminService,
     private readonly cityService: CityService,
     private readonly rolesService: RolesService,
@@ -112,7 +122,9 @@ export class SchoolService {
       if (!school)
         return Util.getBadRequest('School Not Found with given id', res);
       this.logger.log('School found');
-      const address = await Address.findOne({ _id: school.address_id });
+      const address = await this.AddressModel.findOne({
+        _id: school.address_id,
+      });
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);
       this.logger.log('address found');
@@ -181,9 +193,12 @@ export class SchoolService {
       if (!school)
         return Util.getBadRequest('School Not Found with given id', res);
       this.logger.log('School Successfully Deleted');
-      const address = await Address.findByIdAndRemove(school.address_id, {
-        session,
-      });
+      const address = await this.AddressModel.findByIdAndRemove(
+        school.address_id,
+        {
+          session,
+        },
+      );
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);
       this.logger.log('Address Successfully Deleted');
@@ -244,128 +259,128 @@ export class SchoolService {
     }
   }
 
-  async getQrCodeForSchoolAdmin(req, res) {
-    try {
-      const response = await CurrentUser.getCurrentUser(
-        req,
-        UserType.SCHOOL_ADMIN,
-      );
-      if (response.status === Constant.FAIL)
-        return Util.getBadRequest(response.message, res);
-      this.logger.log('Current School Admin User Found');
-      const schoolAdmin = response.data;
-      if (schoolAdmin.registered !== true)
-        return Util.getBadRequest('School Admin Not Registered', res);
-      this.logger.log('School Admin is registered');
-      this.logger.log('checking if School with given id exist or not');
-      const school = await this.SchoolModel.findOne({
-        _id: schoolAdmin.school_id,
-      });
-      if (!school)
-        return Util.getBadRequest(
-          'School Not Found with given id For School Admin',
-          res,
-        );
-      this.logger.log('School exist');
-      this.logger.log('School Details Fetched Succesfully');
-      const pdf = await this.generateQrCode(req, res, school);
-      this.logger.log(school.name.replace(/\s/g, ''));
-      res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition':
-          'attachment; filename=' + school.name.replace(/\s/g, '') + '.pdf',
-        'Content-Length': pdf.length,
-      });
-      res.end(pdf);
-    } catch (ex) {
-      this.logger.log(ex);
-      return Util.getBadRequest(ex.message, res);
-    }
-  }
+  // async getQrCodeForSchoolAdmin(req, res) {
+  //   try {
+  //     const response = await CurrentUser.getCurrentUser(
+  //       req,
+  //       UserType.SCHOOL_ADMIN,
+  //     );
+  //     if (response.status === Constant.FAIL)
+  //       return Util.getBadRequest(response.message, res);
+  //     this.logger.log('Current School Admin User Found');
+  //     const schoolAdmin = response.data;
+  //     if (schoolAdmin.registered !== true)
+  //       return Util.getBadRequest('School Admin Not Registered', res);
+  //     this.logger.log('School Admin is registered');
+  //     this.logger.log('checking if School with given id exist or not');
+  //     const school = await this.SchoolModel.findOne({
+  //       _id: schoolAdmin.school_id,
+  //     });
+  //     if (!school)
+  //       return Util.getBadRequest(
+  //         'School Not Found with given id For School Admin',
+  //         res,
+  //       );
+  //     this.logger.log('School exist');
+  //     this.logger.log('School Details Fetched Succesfully');
+  //     const pdf = await this.generateQrCode(req, res, school);
+  //     this.logger.log(school.name.replace(/\s/g, ''));
+  //     res.writeHead(200, {
+  //       'Content-Type': 'application/pdf',
+  //       'Content-Disposition':
+  //         'attachment; filename=' + school.name.replace(/\s/g, '') + '.pdf',
+  //       'Content-Length': pdf.length,
+  //     });
+  //     res.end(pdf);
+  //   } catch (ex) {
+  //     this.logger.log(ex);
+  //     return Util.getBadRequest(ex.message, res);
+  //   }
+  // }
 
-  async approveRequest(req, res) {
-    const session = await this.connection.startSession();
-    try {
-      session.startTransaction();
-      let parent = await parentService.checkParentExistOrNot(req.params.id);
-      if (!parent) return Util.getBadRequest('parent not found', res);
-      if (!parent.schools)
-        return Util.getBadRequest('parent not requested yet', res);
-      //make reuse of this code also using in post get by parent
-      let schoolIds = [];
-      for (let school of parent.schools) {
-        this.logger.log('hello' + school);
-        schoolIds.push(school.school_id);
-      }
-      console.log('this is' + schoolIds);
-      await parentService.updateStatusToRegister(parent, schoolIds, session);
-      await kidService.updateStatusToRegister(parent._id, session);
-      await userService.updateParentUserConnection(parent.user_id, session);
-      await session.commitTransaction();
-      return Util.getSimpleOkRequest('Parent Successfully Registered', res);
-    } catch (ex) {
-      this.logger.log('Error While Submitting Parent Request ' + ex);
-      await session.abortTransaction();
-      return Util.getBadRequest(ex.message, res);
-    } finally {
-      session.endSession();
-    }
-  }
+  // async approveRequest(req, res) {
+  //   const session = await this.connection.startSession();
+  //   try {
+  //     session.startTransaction();
+  //     // const parent = await parentService.checkParentExistOrNot(req.params.id);
+  //     // if (!parent) return Util.getBadRequest('parent not found', res);
+  //     // if (!parent.schools)
+  //       return Util.getBadRequest('parent not requested yet', res);
+  //     //make reuse of this code also using in post get by parent
+  //     const schoolIds = [];
+  //     for (const school of parent.schools) {
+  //       this.logger.log('hello' + school);
+  //       schoolIds.push(school.school_id);
+  //     }
+  //     console.log('this is' + schoolIds);
+  //     // await parentService.updateStatusToRegister(parent, schoolIds, session);
+  //     // await kidService.updateStatusToRegister(parent._id, session);
+  //     // await this.userService.updateParentUserConnection(parent.user_id, session);
+  //     await session.commitTransaction();
+  //     return Util.getSimpleOkRequest('Parent Successfully Registered', res);
+  //   } catch (ex) {
+  //     this.logger.log('Error While Submitting Parent Request ' + ex);
+  //     await session.abortTransaction();
+  //     return Util.getBadRequest(ex.message, res);
+  //   } finally {
+  //     session.endSession();
+  //   }
+  // }
 
-  async approveRequestBySchoolAdmin(req, res) {
-    const session = await this.connection.startSession();
-    try {
-      session.startTransaction();
-      let parent = await parentService.checkParentExistOrNot(req.params.id);
-      if (!parent) return Util.getBadRequest('parent not found', res);
-      if (!parent.schools)
-        return Util.getBadRequest('parent not requested yet', res);
-      //get school admin school
-      const response = await CurrentUser.getCurrentUser(
-        req,
-        UserType.SCHOOL_ADMIN,
-      );
-      if (response.status === Constant.FAIL)
-        return Util.getBadRequest(response.message, res);
-      this.logger.log('Current School Admin User Found');
-      const schoolAdmin = response.data;
-      if (schoolAdmin.registered !== true)
-        return Util.getBadRequest('School Admin Not Registered', res);
-      this.logger.log('School Admin is registered');
-      this.logger.log('checking if School with given id exist or not');
-      const school = await this.SchoolModel.findOne({
-        _id: schoolAdmin.school_id,
-      });
-      if (!school)
-        return Util.getBadRequest(
-          'School Not Found with given id For School Admin',
-          res,
-        );
-      this.logger.log('School Admin School exist');
-      await parentService.updateStatusToRegister(
-        parent._id,
-        school._id,
-        session,
-      );
-      await kidService.updateStatusToRegisterBySchoolAdmin(
-        parent._id,
-        school._id,
-        session,
-      );
-      await this.userService.updateParentUserConnection(
-        parent.user_id,
-        session,
-      );
-      await session.commitTransaction();
-      return Util.getSimpleOkRequest('Parent Successfully Registered', res);
-    } catch (ex) {
-      this.logger.log('Error While Submitting Parent Request ' + ex);
-      await session.abortTransaction();
-      return Util.getBadRequest(ex.message, res);
-    } finally {
-      session.endSession();
-    }
-  }
+  // async approveRequestBySchoolAdmin(req, res) {
+  //   const session = await this.connection.startSession();
+  //   try {
+  //     session.startTransaction();
+  //     const parent = await parentService.checkParentExistOrNot(req.params.id);
+  //     if (!parent) return Util.getBadRequest('parent not found', res);
+  //     if (!parent.schools)
+  //       return Util.getBadRequest('parent not requested yet', res);
+  //     //get school admin school
+  //     const response = await CurrentUser.getCurrentUser(
+  //       req,
+  //       UserType.SCHOOL_ADMIN,
+  //     );
+  //     if (response.status === Constant.FAIL)
+  //       return Util.getBadRequest(response.message, res);
+  //     this.logger.log('Current School Admin User Found');
+  //     const schoolAdmin = response.data;
+  //     if (schoolAdmin.registered !== true)
+  //       return Util.getBadRequest('School Admin Not Registered', res);
+  //     this.logger.log('School Admin is registered');
+  //     this.logger.log('checking if School with given id exist or not');
+  //     const school = await this.SchoolModel.findOne({
+  //       _id: schoolAdmin.school_id,
+  //     });
+  //     if (!school)
+  //       return Util.getBadRequest(
+  //         'School Not Found with given id For School Admin',
+  //         res,
+  //       );
+  //     this.logger.log('School Admin School exist');
+  //     await parentService.updateStatusToRegister(
+  //       parent._id,
+  //       school._id,
+  //       session,
+  //     );
+  //     await kidService.updateStatusToRegisterBySchoolAdmin(
+  //       parent._id,
+  //       school._id,
+  //       session,
+  //     );
+  //     await this.userService.updateParentUserConnection(
+  //       parent.user_id,
+  //       session,
+  //     );
+  //     await session.commitTransaction();
+  //     return Util.getSimpleOkRequest('Parent Successfully Registered', res);
+  //   } catch (ex) {
+  //     this.logger.log('Error While Submitting Parent Request ' + ex);
+  //     await session.abortTransaction();
+  //     return Util.getBadRequest(ex.message, res);
+  //   } finally {
+  //     session.endSession();
+  //   }
+  // }
 
   async createByAdmin(req, res) {
     //Joi validation checking
