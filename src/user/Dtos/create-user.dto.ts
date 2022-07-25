@@ -60,7 +60,7 @@ export class CreateUserDto {
   birthday_date: Date;
 
   @ApiProperty({ type: String, required: false })
-  @IsDataURI({ message: 'valid avatar url is required.' })
   @IsOptional()
+  @IsDataURI({ message: 'valid avatar url is required.' })
   avatar: string;
 }
