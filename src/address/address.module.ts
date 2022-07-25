@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AddressService } from './address.service';
-import { AddressController } from './address.controller';
 import { Address, AddressSchema } from 'src/Schemas';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -11,7 +10,6 @@ import { MongooseModule } from '@nestjs/mongoose';
       // { name: Country.name, schema: CountrySchema },
     ]),
   ],
-  controllers: [AddressController],
   providers: [AddressService],
   exports: [AddressService],
 })

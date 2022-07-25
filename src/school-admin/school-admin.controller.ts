@@ -98,7 +98,7 @@ export class SchoolAdminController {
   ) {
     if (!mongoose.Types.ObjectId.isValid(id))
       Util.getBadRequest('invalid user id', res);
-    else return this.schoolAdminService.deleteByAdmin(req, res);
+    else return this.schoolAdminService.deleteByAdmin(id, res);
   }
 
   @ApiBearerAuth()

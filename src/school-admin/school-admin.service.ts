@@ -248,17 +248,14 @@ export class SchoolAdminService {
     );
   }
 
-  async deleteByAdmin(req, res) {
-    const session = await mongoose.startSession();
+  async deleteByAdmin(id, res) {
+    const session = await this.connection.startSession();
 
     try {
       session.startTransaction();
-      const schoolAdmin = await this.schoolAdminModel.findByIdAndRemove(
-        req.params.id,
-        {
-          session,
-        },
-      );
+      const schoolAdmin = await this.schoolAdminModel.findByIdAndRemove(id, {
+        session,
+      });
       if (!schoolAdmin)
         return Util.getBadRequest('SchoolAdmin Not Found with given id', res);
       this.logger.log('SchoolAdmin Successfully Deleted');

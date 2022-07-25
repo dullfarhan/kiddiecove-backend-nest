@@ -13,7 +13,7 @@ import mongoose from 'mongoose';
 class Location {
   @ApiProperty({ type: String, required: false })
   type: string;
-  @ApiProperty({ type: [Number], required: false })
+  @ApiProperty({ type: [Number], required: false, default: [-122.5, 37.7] })
   coordinates: number[];
 }
 
@@ -40,12 +40,12 @@ export class CreateAddressDto {
   @IsNotEmpty()
   city_id: mongoose.Types.ObjectId;
 
-  @ApiProperty({ type: Boolean, required: false })
+  @ApiProperty({ type: Boolean, required: false, default: true })
   @IsBoolean()
   @IsOptional()
   enable: boolean;
 
-  @ApiProperty({ type: Boolean, required: false })
+  @ApiProperty({ type: Boolean, required: false, default: false })
   @IsBoolean()
   @IsOptional()
   deleted: boolean;
