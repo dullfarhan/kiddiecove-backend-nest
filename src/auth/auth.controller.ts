@@ -1,31 +1,19 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Logger,
   Post,
-  Req,
-  Res,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiBasicAuth,
-  ApiBearerAuth,
-  ApiSecurity,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { UserSignInDto } from './dtos';
-import { JwtAuthGuard } from '../Strategy/jwt.authguard';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  private readonly logger = new Logger('Authentication');
+  private readonly logger = new Logger(AuthController.name);
   constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.ACCEPTED)
@@ -36,11 +24,11 @@ export class AuthController {
     return this.authService.signIn(userSignInDto);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
-  @Get('verify')
-  verify(@Req() req: Request, @Res() res: Response) {
-    this.logger.log('Verifying...');
-    res.send(req.user);
-  }
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get('verify')
+  // verify(@Req() req: Request, @Res() res: Response) {
+  //   this.logger.log('Verifying...');
+  //   res.send(req.user);
+  // }
 }

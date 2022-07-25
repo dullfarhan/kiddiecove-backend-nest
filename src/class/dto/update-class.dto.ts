@@ -4,8 +4,8 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsOptional,
-  Max,
-  Min,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 import mongoose from 'mongoose';
 import { CreateClassDto } from './create-class.dto';
@@ -25,8 +25,8 @@ enum STANDARD {
 
 export class UpdateClassDto extends PartialType(CreateClassDto) {
   @ApiProperty({ enum: STANDARD, required: true })
-  //   @Min(3)
-  //   @Max(5)
+  @MinLength(3)
+  @MaxLength(5)
   @IsNotEmpty()
   @IsEnum(STANDARD)
   standard: string;

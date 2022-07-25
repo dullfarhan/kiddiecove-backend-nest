@@ -25,6 +25,7 @@ import { HomeModule } from './home/home.module';
 import { StatModule } from './stat/stat.module';
 import { AdminModule } from './admin/admin.module';
 import { ClassModule } from './class/class.module';
+import { CountryModule } from './country/country.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { ClassModule } from './class/class.module';
     SchoolAdminModule,
     AdminModule,
     ClassModule,
+    CountryModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],
