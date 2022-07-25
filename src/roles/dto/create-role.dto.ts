@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import mongoose, { isValidObjectId } from 'mongoose';
 import { Type } from 'class-transformer';
-import { RoleType } from 'src/enums/RoleType';
+import { RoleType } from 'src/utils/enums/RoleType';
 import { ApiProperty } from '@nestjs/swagger';
 
 class permissionItem {

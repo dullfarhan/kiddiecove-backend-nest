@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import mongoose, { Model, Mongoose } from 'mongoose';
-import { UserType } from 'src/enums/UserType';
+import { UserType } from 'src/utils/enums/UserType';
 import { Class, ClassDocument, User, UserDocument } from 'src/Schemas';
 import { SchoolAdminService } from 'src/school-admin/school-admin.service';
 import { SchoolService } from 'src/school/school.service';

@@ -17,7 +17,7 @@ import { RolesService } from 'src/roles/roles.service';
 import { UserService } from 'src/user/user.service';
 import { SchoolAdminService } from 'src/school-admin/school-admin.service';
 import Util from 'src/utils/util';
-import { UserType } from 'src/enums/UserType';
+import { UserType } from 'src/utils/enums/UserType.enum';
 import generateQR from 'src/utils/QrCodeGenerator';
 import makePdf from 'src/utils/PdfGenerator';
 import Constant from 'src/utils/enums/Constant.enum';
