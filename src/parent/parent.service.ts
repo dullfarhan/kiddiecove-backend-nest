@@ -24,7 +24,7 @@ import { RoleType } from 'src/utils/enums/RoleType';
 import { GenderType } from 'src/utils/enums/GenderType';
 import { ParentType } from 'src/utils/enums/ParentType';
 import { RegistartionStatus } from 'src/utils/enums/RegistartionStatus';
-import CurrentUser from 'src/utils/CurrentUser';
+import CurrentUser from 'src/currentuser/currentuser.service';
 // import UserType from 'src/utils/enums/UserType.enum';
 
 @Injectable()
@@ -39,13 +39,12 @@ export class ParentService {
     @InjectModel(Parent.name)
     private readonly ParentModel: Model<ParentDocument>,
     @InjectConnection()
-    private readonly connection: mongoose.Connection,
     private readonly cityService: CityService,
-    private readonly schoolService: SchoolService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly addressService: AddressService,
     private readonly rolesService: RolesService,
-    // @Inject(forwardRef(() => CurrentUser))
+    @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
   ) {}
   private readonly logger = new Logger(ParentService.name);

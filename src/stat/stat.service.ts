@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Response, Request } from 'express';
 import { Model } from 'mongoose';
+import CurrentUser from 'src/currentuser/currentuser.service';
 import {
   Parent,
   ParentDocument,
@@ -16,6 +17,7 @@ import {
 } from 'src/Schemas';
 import { SchoolAdminService } from 'src/school-admin/school-admin.service';
 import Constant from 'src/utils/enums/Constant.enum';
+import { UserType } from 'src/utils/enums/UserType.enum';
 import Util from 'src/utils/util';
 
 @Injectable()
@@ -33,7 +35,7 @@ export class StatService {
     private readonly teacherModel: Model<TeacherDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
-    private readonly schoolAdminService: SchoolAdminService,
+    private readonly currentUser: CurrentUser,
   ) {}
 
   async getStatsForAdmin(res: Response) {
@@ -60,7 +62,11 @@ export class StatService {
 
   async getStatsForSchoolAdmin(req: Request, res: Response) {
     try {
-      const response = await this.getCurrentUser(req);
+      const response = await this.currentUser.getCurrentUser(
+        req,
+        UserType.SCHOOL_ADMIN,
+        this.userModel,
+      );
       if (response.status === Constant.FAIL)
         return Util.getBadRequest(response.message, res);
       this.logger.log('Current School Admin User Found');
@@ -98,30 +104,6 @@ export class StatService {
     } catch (ex) {
       this.logger.log(ex);
       return Util.getBadRequest(ex.message, res);
-    }
-  }
-
-  async getCurrentUser(req: any): Promise<any> {
-    try {
-      let currentUser;
-      this.logger.log('user id is ' + req.user._id);
-      const user = await this.userModel
-        .findById(req.user._id)
-        .select('-password');
-      if (!user) Util.getBadResponse('Current User Not Found with given id');
-      this.logger.log('Current User Details Fetched Succesfully');
-      currentUser = await this.schoolAdminService.getCurrentSchoolAdmin(
-        user._id,
-      );
-      return !currentUser
-        ? Util.getBadResponse('Current User Not Found')
-        : Util.getOkResponse(
-            currentUser,
-            'Current User Details Fetched Succesfully',
-          );
-    } catch (ex) {
-      this.logger.log(ex);
-      return Util.getBadResponse(ex.message);
     }
   }
 }

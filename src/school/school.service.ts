@@ -28,14 +28,10 @@ export class SchoolService {
     @InjectConnection() private readonly connection: mongoose.Connection,
     @InjectModel(School.name)
     private SchoolModel: Model<SchoolDocument>,
-    @InjectModel(Parent.name)
-    private ParentModel: Model<ParentDocument>,
     @InjectModel(Address.name)
     private AddressModel: Model<AddressDocument>,
     private readonly schoolAdminService: SchoolAdminService,
     private readonly cityService: CityService,
-    private readonly rolesService: RolesService,
-    private readonly userService: UserService,
     private readonly addressService: AddressService,
   ) {}
   private readonly logger = new Logger(SchoolService.name);

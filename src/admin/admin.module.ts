@@ -16,8 +16,6 @@ import { UserModule } from 'src/user/user.module';
 import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
-  controllers: [AdminController],
-  providers: [AdminService],
   imports: [
     MongooseModule.forFeature([
       { name: Admin.name, schema: AdminSchema },
@@ -29,6 +27,8 @@ import { RolesModule } from 'src/roles/roles.module';
     UserModule,
     RolesModule,
   ],
+  controllers: [AdminController],
+  providers: [AdminService],
   exports: [AdminService],
 })
 export class AdminModule {}

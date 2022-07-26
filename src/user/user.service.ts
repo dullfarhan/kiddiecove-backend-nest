@@ -2,12 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import mongoose, { ClientSession, Model } from 'mongoose';
-import { User } from 'src/Schemas';
+import { User, UserDocument } from 'src/Schemas';
 import Util from '../utils/util';
 import { UserType } from '../utils/enums/UserType.enum';
 import Constant from 'src/utils/enums/Constant.enum';
 import { ParentType } from 'src/utils/enums/ParentType.enum';
 import { GenderType } from 'src/utils/enums/GenderType.enum';
+import CurrentUser from 'src/currentuser/currentuser.service';
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,8 @@ export class UserService {
   pageNumber = 1;
   pageSize = 20;
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly currentUser: CurrentUser,
   ) {}
 
   getAllForAdmin(res: Response) {
@@ -56,7 +58,10 @@ export class UserService {
       });
   }
   async getCurrentUser(req: Request, res: Response) {
-    const response = await this.getCurrentUserDetails(req);
+    const response = await this.currentUser.getCurrentUserDetails(
+      req,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     return Util.getOkRequest(response.data, 'Current User Found', res);
@@ -90,25 +95,6 @@ export class UserService {
     } catch (ex) {
       this.logger.log(ex);
       return Util.getBadRequest(ex.message, res);
-    }
-  }
-
-  async getCurrentUserDetails(req) {
-    try {
-      console.log('User from request', req.user._id);
-      const user = await this.userModel
-        .findById(req.user._id)
-        .select('-password')
-        .populate('address_id')
-        .exec();
-      console.log(user);
-      if (!user) Util.getBadResponse('Current User Not Found with given id');
-      return Util.getOkResponse(
-        user,
-        'Current User Self Details Fetched Succesfully',
-      );
-    } catch (ex) {
-      return Util.getBadResponse(ex.message);
     }
   }
 

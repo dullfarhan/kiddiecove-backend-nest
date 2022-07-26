@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Response } from 'express';
 import mongoose, { Model } from 'mongoose';
@@ -15,9 +15,9 @@ import {
   User,
   UserDocument,
 } from 'src/Schemas';
-import { UserService } from 'src/user/user.service';
 import Util from 'src/utils/util';
 import { UpdateSchoolAdminDto } from './dto/update-school-admin.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class SchoolAdminService {
@@ -33,8 +33,9 @@ export class SchoolAdminService {
     @InjectConnection() private readonly connection: mongoose.Connection,
     private readonly addressService: AddressService,
     private readonly cityService: CityService,
-    private readonly userService: UserService,
     private readonly rolesService: RolesService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
   ) {}
 
   async getCurrentSchoolAdmin(userId) {

@@ -10,6 +10,7 @@ import { TeacherService } from 'src/teacher/teacher.service';
 import Constant from 'src/utils/enums/Constant.enum';
 import Util from 'src/utils/util';
 import { UpdateClassDto } from './dto/update-class.dto';
+import CurrentUser from 'src/currentuser/currentuser.service';
 
 @Injectable()
 export class ClassService {
@@ -21,10 +22,10 @@ export class ClassService {
     @InjectModel(Class.name)
     private readonly classModel: Model<ClassDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    private readonly schoolAdminService: SchoolAdminService,
     @InjectConnection() private readonly connection: mongoose.Connection,
     private readonly teacherService: TeacherService,
     private readonly schoolService: SchoolService,
+    private readonly currentUser: CurrentUser,
   ) {}
 
   getAllClassesForAdmin(res) {
@@ -59,7 +60,11 @@ export class ClassService {
 
   async getAllClassesForSchoolAdmin(req: Request, res: Response) {
     this.logger.log('getting Classes list for school admin');
-    const response = await this.getCurrentUser(req, UserType.SCHOOL_ADMIN);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.SCHOOL_ADMIN,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -72,35 +77,6 @@ export class ClassService {
       },
       { _id: 1, standard: 1, school_name: 1, teacher_name: 1, strenght: 1 },
     );
-  }
-
-  async getCurrentUser(req, userType: string) {
-    try {
-      let currentUser;
-      this.logger.log('user id is ' + req.user._id);
-      const user = await this.userModel
-        .findById(req.user._id)
-        .select('-password');
-      if (!user) Util.getBadResponse('Current User Not Found with given id');
-      this.logger.log('Current User Details Fetched Succesfully');
-      if (user.type !== userType)
-        return Util.getBadResponse('Current User Is Not ' + userType);
-      this.logger.log('Current User is ' + userType);
-
-      currentUser = await this.schoolAdminService.getCurrentSchoolAdmin(
-        user._id,
-      );
-
-      return !currentUser
-        ? Util.getBadResponse('Current User Not Found')
-        : Util.getOkResponse(
-            currentUser,
-            'Current User Details Fetched Succesfully',
-          );
-    } catch (ex) {
-      this.logger.log(ex);
-      return Util.getBadResponse(ex.message);
-    }
   }
 
   getAllClassesAsListingForParent(id, res: Response) {
@@ -141,7 +117,11 @@ export class ClassService {
 
   async getClassForSchoolAdmin(id: string, req: Request, res: Response) {
     this.logger.log('getting Class detail for school admin');
-    const response = await this.getCurrentUser(req, UserType.SCHOOL_ADMIN);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.SCHOOL_ADMIN,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -251,7 +231,11 @@ export class ClassService {
     isDirect = false,
   ) {
     this.logger.log('School Admin is updating Class directly');
-    const response = await this.getCurrentUser(req, UserType.SCHOOL_ADMIN);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.SCHOOL_ADMIN,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -293,7 +277,11 @@ export class ClassService {
 
   async deleteClassBySchoolAdmin(id, req, res) {
     this.logger.log('School Admin is deleting Class');
-    const response = await this.getCurrentUser(req, UserType.SCHOOL_ADMIN);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.SCHOOL_ADMIN,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -388,7 +376,11 @@ export class ClassService {
     res: Response,
   ) {
     this.logger.log('req body is valid');
-    const response = await this.getCurrentUser(req, UserType.SCHOOL_ADMIN);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.SCHOOL_ADMIN,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
