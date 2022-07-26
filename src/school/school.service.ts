@@ -302,9 +302,9 @@ export class SchoolService {
   //   const session = await this.connection.startSession();
   //   try {
   //     session.startTransaction();
-  //     // const parent = await parentService.checkParentExistOrNot(req.params.id);
-  //     // if (!parent) return Util.getBadRequest('parent not found', res);
-  //     // if (!parent.schools)
+  //     const parent = await parentService.checkParentExistOrNot(req.params.id);
+  //     if (!parent) return Util.getBadRequest('parent not found', res);
+  //     if (!parent.schools)
   //       return Util.getBadRequest('parent not requested yet', res);
   //     //make reuse of this code also using in post get by parent
   //     const schoolIds = [];
@@ -313,9 +313,12 @@ export class SchoolService {
   //       schoolIds.push(school.school_id);
   //     }
   //     console.log('this is' + schoolIds);
-  //     // await parentService.updateStatusToRegister(parent, schoolIds, session);
-  //     // await kidService.updateStatusToRegister(parent._id, session);
-  //     // await this.userService.updateParentUserConnection(parent.user_id, session);
+  //     await parentService.updateStatusToRegister(parent, schoolIds, session);
+  //     await kidService.updateStatusToRegister(parent._id, session);
+  //     await this.userService.updateParentUserConnection(
+  //       parent.user_id,
+  //       session,
+  //     );
   //     await session.commitTransaction();
   //     return Util.getSimpleOkRequest('Parent Successfully Registered', res);
   //   } catch (ex) {

@@ -24,6 +24,8 @@ import { ChatModule } from './chat/chat.module';
 import { HomeModule } from './home/home.module';
 import { StatModule } from './stat/stat.module';
 import { AdminModule } from './admin/admin.module';
+import { ParentModule } from './parent/parent.module';
+import CurrentUser from './utils/CurrentUser';
 
 @Module({
   imports: [
@@ -42,10 +44,10 @@ import { AdminModule } from './admin/admin.module';
     ChatModule,
     HomeModule,
     StatModule,
-    SchoolAdminModule,
     AdminModule,
+    ParentModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Database],
+  providers: [AppService, Database, CurrentUser],
 })
 export class AppModule {}

@@ -304,4 +304,9 @@ export class AdminService {
     this.logger.log('saving admin...');
     return await admin.save({ session });
   }
+
+  async getCurrentAdmin(userId) {
+    this.logger.log('getting current admin');
+    return await this.adminModel.findOne({ user_id: userId });
+  }
 }

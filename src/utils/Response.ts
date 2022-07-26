@@ -2,7 +2,7 @@ class Response {
   status: string;
   statusCode: string | number;
   message: string;
-  data: string;
+  data: string | any;
   constructor() {
     this.status = '';
     this.statusCode = '';

@@ -1,8 +1,8 @@
-import { Prop } from '@nestjs/mongoose';
+import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
 export class CustomParentSchool extends Document {
-  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: false })
   _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School' })
@@ -26,7 +26,7 @@ export class CustomParentSchool extends Document {
 
   @Prop({
     type: String,
-    required: true,
+    required: false,
     enum: ['NOT_REGISTERED', 'PENDING', 'REGISTERED'],
     minlength: 7,
     maxlength: 14,
@@ -35,3 +35,8 @@ export class CustomParentSchool extends Document {
   })
   registration_status: string;
 }
+
+export const CustomParentSchoolSchema =
+  SchemaFactory.createForClass(CustomParentSchool);
+
+export type CustomParentSchoolDocument = CustomParentSchool & Document;
