@@ -12,8 +12,8 @@ import {
 } from 'src/Schemas';
 import { AddressModule } from 'src/address/address.module';
 import { CityModule } from 'src/city/city.module';
-import { UserModule } from 'src/user/user.module';
 import { RolesModule } from 'src/roles/roles.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -24,8 +24,8 @@ import { RolesModule } from 'src/roles/roles.module';
     ]),
     AddressModule,
     CityModule,
-    UserModule,
     RolesModule,
+    UserModule,
   ],
   controllers: [SchoolAdminController],
   providers: [SchoolAdminService],

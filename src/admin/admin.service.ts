@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import mongoose, { Model } from 'mongoose';
@@ -32,6 +32,7 @@ export class AdminService {
     private readonly addressModel: Model<AddressDocument>,
     private readonly addressService: AddressService,
     private readonly cityService: CityService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly rolesService: RolesService,
   ) {}

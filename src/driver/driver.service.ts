@@ -27,6 +27,7 @@ import { UpdateDriverDtoWithUserAndAddress } from './dtos/update-driver.dto';
 import { RolesService } from 'src/roles/roles.service';
 import { RoleType } from 'src/utils/enums/RoleType';
 import { UserType } from 'src/utils/enums/UserType';
+import CurrentUser from 'src/currentuser/currentuser.service';
 
 @Injectable()
 export class DriverService {
@@ -46,6 +47,7 @@ export class DriverService {
     private readonly addressService: AddressService,
     private readonly userService: UserService,
     private readonly rolesService: RolesService,
+    private readonly currentUser: CurrentUser,
     @InjectConnection() private readonly connection: mongoose.Connection,
   ) {}
 
@@ -90,29 +92,6 @@ export class DriverService {
     }
   }
 
-  async getCurrentUser(req: any): Promise<any> {
-    try {
-      let currentUser: any;
-      this.logger.log('user id is ' + req.user._id);
-      const user = await this.userModel
-        .findById(req.user._id)
-        .select('-password');
-      if (!user) Util.getBadResponse('Current User Not Found with given id');
-      this.logger.log('Current User Details Fetched Succesfully');
-      currentUser = await this.getCurrentSchoolAdmin(user._id);
-      console.log(currentUser);
-      return !currentUser
-        ? Util.getBadResponse('Current User Not Found')
-        : Util.getOkResponse(
-            currentUser,
-            'Current User Details Fetched Succesfully',
-          );
-    } catch (ex) {
-      this.logger.error(ex);
-      return Util.getBadResponse(ex.message);
-    }
-  }
-
   getAllDriversForAdmin(res: Response) {
     this.logger.log('getting Driver listing for admin');
     this.getAllDrivers(res, { enable: true }, {});
@@ -125,7 +104,11 @@ export class DriverService {
 
   async getAllDriversForSchoolAdmin(req: Request, res: Response) {
     this.logger.log('getting Drivers list for school admin');
-    const response = await this.getCurrentUser(req);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.DRIVER,
+      this.userModel,
+    );
     this.logger.log('Response: ', response.status);
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
@@ -152,7 +135,11 @@ export class DriverService {
     res: Response,
   ) {
     this.logger.log('getting Driver detail for school admin');
-    const response = await this.getCurrentUser(req);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.DRIVER,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -166,7 +153,11 @@ export class DriverService {
 
   async getAllDriversAsListingForSchoolAdmin(req: Request, res: Response) {
     this.logger.log('getting Drivers listing for school admin');
-    const response = await this.getCurrentUser(req);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.DRIVER,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -210,7 +201,11 @@ export class DriverService {
     req,
   ) {
     this.logger.log('School Admin is updating Driver Details');
-    const response = await this.getCurrentUser(req);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.DRIVER,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -261,7 +256,11 @@ export class DriverService {
     res: Response,
   ) {
     this.logger.log('School Admin is deleting Driver');
-    const response = await this.getCurrentUser(req);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.DRIVER,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
@@ -373,7 +372,11 @@ export class DriverService {
 
   async createDriverBySchoolAdmin(req: Request, res: Response) {
     this.logger.log('school admin is creating Driver');
-    const response = await this.getCurrentUser(req);
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.DRIVER,
+      this.userModel,
+    );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');

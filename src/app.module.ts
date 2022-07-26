@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseModule } from './database/database.module';
-import { Database } from './database';
 import { TeacherModule } from './teacher/teacher.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
@@ -19,10 +18,10 @@ import { HomeModule } from './home/home.module';
 import { StatModule } from './stat/stat.module';
 import { AdminModule } from './admin/admin.module';
 import { ParentModule } from './parent/parent.module';
-import CurrentUser from './utils/CurrentUser';
 import { ClassModule } from './class/class.module';
 import { CountryModule } from './country/country.module';
 import { PostModule } from './post/post.module';
+import { CurrentuserModule } from './currentuser/currentuser.module';
 
 @Module({
   imports: [
@@ -46,8 +45,9 @@ import { PostModule } from './post/post.module';
     CountryModule,
     PostModule,
     SchoolAdminModule,
+    CurrentuserModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Database, CurrentUser],
+  providers: [AppService],
 })
 export class AppModule {}

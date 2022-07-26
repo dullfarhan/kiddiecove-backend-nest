@@ -6,7 +6,6 @@ import { AddressModule } from 'src/address/address.module';
 import { SchoolModule } from 'src/school/school.module';
 import { UserModule } from 'src/user/user.module';
 import { CityModule } from 'src/city/city.module';
-import CurrentUser from 'src/utils/CurrentUser';
 
 import {
   User,
@@ -17,14 +16,7 @@ import {
   ParentSchema,
 } from 'src/Schemas';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  CustomParentSchool,
-  CustomParentSchoolSchema,
-} from 'src/Schemas/customParentSchool.schema';
-
 @Module({
-  controllers: [ParentController],
-  providers: [ParentService, CurrentUser],
   imports: [
     MongooseModule.forFeature([{ name: Parent.name, schema: ParentSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
@@ -35,7 +27,9 @@ import {
     UserModule,
     CityModule,
     SchoolModule,
-    CurrentUser,
   ],
+  controllers: [ParentController],
+  providers: [ParentService],
+  exports: [ParentService],
 })
 export class ParentModule {}

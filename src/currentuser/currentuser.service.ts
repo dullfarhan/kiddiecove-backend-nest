@@ -1,23 +1,29 @@
-import Util from './util';
 import { User, UserDocument } from 'src/Schemas';
 import { Model } from 'mongoose';
-import { Logger } from '@nestjs/common';
-import { UserType } from './enums/UserType.enum';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { UserType } from 'src/utils/enums/UserType.enum';
 import { SchoolAdminService } from 'src/school-admin/school-admin.service';
 import { ParentService } from 'src/parent/parent.service';
 import { TeacherService } from 'src/teacher/teacher.service';
 import { AdminService } from 'src/admin/admin.service';
+import Util from 'src/utils/util';
 
-// @Injectable()
+@Injectable()
 class CurrentUser {
-  logger: Logger = new Logger('Current User Utils');
   constructor(
     private readonly schoolAdminService: SchoolAdminService,
     private readonly teacherService: TeacherService,
     private readonly adminService: AdminService,
     private readonly parentService: ParentService,
   ) {}
-  async getCurrentUser(req: any, userType: UserType, userModel: Model<User>) {
+
+  logger: Logger = new Logger('Current User Utils');
+
+  async getCurrentUser(
+    req: any,
+    userType: UserType,
+    userModel: Model<UserDocument>,
+  ) {
     try {
       let currentUser;
       this.logger.log('user id is ' + req.user._id);
