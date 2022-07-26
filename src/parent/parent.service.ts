@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { UserType } from 'src/enums/UserType';
+import { UserType } from 'src/utils/enums/UserType';
 import Constant from 'src/utils/enums/Constant.enum';
 import Util from 'src/utils/util';
 import { CreateParentDto } from './dto/create-parent.dto';
@@ -20,10 +20,10 @@ import {
   ParentDocument,
 } from 'src/Schemas';
 // import CustomParentSchool from 'src/Schemas/customParentSchool.schema';
-import { RoleType } from 'src/enums/RoleType';
-import { GenderType } from 'src/enums/GenderType';
-import { ParentType } from 'src/enums/ParentType';
-import { RegistartionStatus } from 'src/enums/RegistartionStatus';
+import { RoleType } from 'src/utils/enums/RoleType';
+import { GenderType } from 'src/utils/enums/GenderType';
+import { ParentType } from 'src/utils/enums/ParentType';
+import { RegistartionStatus } from 'src/utils/enums/RegistartionStatus';
 import CurrentUser from 'src/utils/CurrentUser';
 // import UserType from 'src/utils/enums/UserType.enum';
 

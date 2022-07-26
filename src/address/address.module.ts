@@ -10,7 +10,6 @@ import { MongooseModule } from '@nestjs/mongoose';
       // { name: Country.name, schema: CountrySchema },
     ]),
   ],
-  controllers: [],
   providers: [AddressService],
   exports: [AddressService],
 })

@@ -25,8 +25,8 @@ import { AddressService } from 'src/address/address.service';
 import { UserService } from 'src/user/user.service';
 import { UpdateDriverDtoWithUserAndAddress } from './dtos/update-driver.dto';
 import { RolesService } from 'src/roles/roles.service';
-import { RoleType } from 'src/enums/RoleType';
-import { UserType } from 'src/enums/UserType';
+import { RoleType } from 'src/utils/enums/RoleType';
+import { UserType } from 'src/utils/enums/UserType';
 
 @Injectable()
 export class DriverService {

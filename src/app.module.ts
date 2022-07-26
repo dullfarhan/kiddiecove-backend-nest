@@ -26,10 +26,13 @@ import { StatModule } from './stat/stat.module';
 import { AdminModule } from './admin/admin.module';
 import { ParentModule } from './parent/parent.module';
 import CurrentUser from './utils/CurrentUser';
+import { ClassModule } from './class/class.module';
+import { CountryModule } from './country/country.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/kiddiecove'),
+    MongooseModule.forRoot('mongodb://localhost:27019/kiddiecove'),
     DatabaseModule,
     TeacherModule,
     AuthModule,
@@ -40,12 +43,14 @@ import CurrentUser from './utils/CurrentUser';
     RolesModule,
     EndpointModule,
     PermissionModule,
-    SchoolAdminModule,
     ChatModule,
     HomeModule,
     StatModule,
     AdminModule,
     ParentModule,
+    ClassModule,
+    CountryModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database, CurrentUser],
