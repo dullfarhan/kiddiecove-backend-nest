@@ -1,21 +1,12 @@
 import Util from './util';
-// const adminService = require('../services/admins');
-// const schoolAdminService = require('../services/schoolAdmin');
-// const parentService = require('../services/parent');
-// const teacherService = require('../services/teachers');
-// const contextDebugger = Debug('app:utility:currentUser');
 import { User, UserDocument } from 'src/Schemas';
-import { AppService } from '../app.service';
-import Debug from 'debug';
 import { Model } from 'mongoose';
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { Request } from 'express';
+import { Logger } from '@nestjs/common';
 import { UserType } from './enums/UserType.enum';
 import { SchoolAdminService } from 'src/school-admin/school-admin.service';
 import { ParentService } from 'src/parent/parent.service';
 import { TeacherService } from 'src/teacher/teacher.service';
 import { AdminService } from 'src/admin/admin.service';
-import { InjectModel } from '@nestjs/mongoose';
 
 // @Injectable()
 class CurrentUser {
