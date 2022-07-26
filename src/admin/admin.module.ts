@@ -29,5 +29,6 @@ import { RolesModule } from 'src/roles/roles.module';
     UserModule,
     RolesModule,
   ],
+  exports: [AdminService],
 })
 export class AdminModule {}

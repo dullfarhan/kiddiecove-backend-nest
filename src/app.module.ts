@@ -26,6 +26,7 @@ import { StatModule } from './stat/stat.module';
 import { AdminModule } from './admin/admin.module';
 import { ClassModule } from './class/class.module';
 import { CountryModule } from './country/country.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { CountryModule } from './country/country.module';
     AdminModule,
     ClassModule,
     CountryModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService, Database],
