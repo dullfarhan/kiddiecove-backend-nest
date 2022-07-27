@@ -392,4 +392,9 @@ export class ClassService {
       updateClassDto.teacher_id,
     );
   }
+
+  async checkClassExistOrNot(classId) {
+    this.logger.log('checking class exist or not?');
+    return await this.classModel.findOne({ _id: classId });
+  }
 }
