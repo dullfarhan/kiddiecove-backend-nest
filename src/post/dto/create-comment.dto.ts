@@ -1,7 +1,7 @@
 import {
-  IsDataURI,
   IsOptional,
   IsString,
+  IsUrl,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -11,7 +11,7 @@ export class CreateCommentDto {
   @IsOptional()
   @MinLength(2)
   @MaxLength(300)
-  @IsDataURI()
+  @IsUrl()
   avatar: string;
 
   @MinLength(3)

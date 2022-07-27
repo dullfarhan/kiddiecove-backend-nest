@@ -3,7 +3,7 @@ import { UserType } from 'src/utils/enums/UserType';
 import Constant from 'src/utils/enums/Constant.enum';
 import Util from 'src/utils/util';
 import { CreateParentDto } from './dto/create-parent.dto';
-import { UpdateParentDto } from './dto/update-parent.dto';
+import { RequestParentDto } from './dto/request-parent.dto';
 import { CityService } from 'src/city/city.service';
 import { UserService } from 'src/user/user.service';
 import { AddressService } from 'src/address/address.service';
@@ -27,6 +27,7 @@ import { RegistartionStatus } from 'src/utils/enums/RegistartionStatus';
 import CurrentUser from 'src/currentuser/currentuser.service';
 // import UserType from 'src/utils/enums/UserType.enum';
 
+// mongo req return no data
 @Injectable()
 export class ParentService {
   pageNumber = 1;
@@ -38,7 +39,7 @@ export class ParentService {
     private readonly AddressModel: Model<AddressDocument>,
     @InjectModel(Parent.name)
     private readonly ParentModel: Model<ParentDocument>,
-    @InjectConnection()
+    @InjectConnection() private readonly connection: mongoose.Connection,
     private readonly cityService: CityService,
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
@@ -132,11 +133,12 @@ export class ParentService {
   async getParent(req, res, filter) {
     try {
       this.logger.log('checking if Parent with given id exist or not');
-      const parent = await this.ParentModel.aggregate(filter);
+      const parent = await this.ParentModel.find(filter);
       if (!parent)
         return Util.getBadRequest('Parent Not Found with given id', res);
       this.logger.log('Parent exist');
       this.logger.log('Parent Details Fetched Succesfully');
+      console.log(parent);
       return Util.getOkRequest(
         parent,
         'Parent Details Fetched Successfully',
@@ -198,7 +200,7 @@ export class ParentService {
   // }
 
   async updateByParent(req, res) {
-    const session = await mongoose.startSession();
+    const session = await this.connection.startSession();
     this.logger.log('validating req body');
     // const { error } = validateParent(req.body);
     // if (error) return Util.getBadRequest(error.details[0].message, res);
@@ -244,7 +246,7 @@ export class ParentService {
   }
 
   async updateDirectlyByParent(req, res) {
-    const session = await mongoose.startSession();
+    const session = await this.connection.startSession();
     this.logger.log('validating req body');
     // const { error } = validateParent(req.body);
     // if (error) return Util.getBadRequest(error.details[0].message, res);
@@ -292,7 +294,7 @@ export class ParentService {
   }
 
   async deleteByParent(req, res) {
-    const session = await mongoose.startSession();
+    const session = await this.connection.startSession();
 
     try {
       session.startTransaction();
@@ -328,7 +330,7 @@ export class ParentService {
   }
 
   // async deleteByAdmin(req, res) {
-  //   const session = await mongoose.startSession();
+  //   const session = await this.connection.startSession();
 
   //   try {
   //     session.startTransaction();
@@ -360,7 +362,7 @@ export class ParentService {
   // }
 
   // async deleteBySchoolAdmin(req, res) {
-  //   const session = await mongoose.startSession();
+  //   const session = await this.connection.startSession();
   //   try {
   //     session.startTransaction();
   //     const response = await this.currentUser.getCurrentUser(
@@ -428,7 +430,7 @@ export class ParentService {
   async createByParent(req, res) {
     //Joi validation checking
     console.log(JSON.stringify(req.body, null, 4));
-    const session = await mongoose.startSession();
+    const session = await this.connection.startSession();
     this.logger.log('validating req body');
     // const { error } = validateParent(req.body);
     // if (error) return Util.getBadRequest(error.details[0].message, res);
@@ -477,7 +479,7 @@ export class ParentService {
   }
 
   // async requestToJoin(req, res) {
-  //   const session = await mongoose.startSession();
+  //   const session = await this.connection.startSession();
   //   this.logger.log('validating req body');
   //   this.logger.log(JSON.stringify(req.body, null, 4));
   //   // const { error } = validateParentRequest(req.body);

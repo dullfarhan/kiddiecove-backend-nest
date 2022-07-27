@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsDataURI,
   IsDate,
   IsEmail,
   IsEnum,
@@ -9,6 +8,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsUrl,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -61,6 +61,6 @@ export class CreateUserDto {
 
   @ApiProperty({ type: String, required: false })
   @IsOptional()
-  @IsDataURI({ message: 'valid avatar url is required.' })
+  @IsUrl({ message: 'valid avatar url is required.' })
   avatar: string;
 }
