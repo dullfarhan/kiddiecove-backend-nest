@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ParentService } from './parent.service';
 import { CreateParentDto } from './dto/create-parent.dto';
-import { UpdateParentDto } from './dto/update-parent.dto';
+import { RequestParentDto } from './dto/request-parent.dto';
 import { Request, Response } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PermissionGuard } from 'src/Guard/permission.guard';
@@ -44,7 +44,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/for/admin/:id')
-  getParentForAdmin(@Req() req: Request, @Res() res: Response) {
+  getParentForAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     this.parentService.getParentForAdmin(req, res);
   }
 
@@ -52,7 +56,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/for/school/admin/:id')
-  getParentForSchoolAdmin(@Req() req: Request, @Res() res: Response) {
+  getParentForSchoolAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     this.parentService.getParentForSchoolAdmin(req, res);
   }
 
@@ -68,7 +76,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Put('/update/by/parent')
-  updateByParent(@Req() req: Request, @Res() res: Response) {
+  updateByParent(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createParentDto: CreateParentDto,
+  ) {
     this.parentService.updateByParent(req, res);
   }
 
@@ -76,7 +88,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Put('/update/directly/by/parent')
-  updateDirectlyByParent(@Req() req: Request, @Res() res: Response) {
+  updateDirectlyByParent(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createParentDto: CreateParentDto,
+  ) {
     this.parentService.updateDirectlyByParent(req, res);
   }
 
@@ -84,7 +100,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/admin/:id')
-  deleteByAdmin(@Req() req: Request, @Res() res: Response) {
+  deleteByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     // this.parentService.deleteByAdmin(req, res);
   }
 
@@ -92,7 +112,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/school/admin/:id')
-  deleteBySchoolAdmin(@Req() req: Request, @Res() res: Response) {
+  deleteBySchoolAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     // this.parentService.deleteBySchoolAdmin(req, res);
   }
 
@@ -100,7 +124,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/parent/:id')
-  deleteByParent(@Req() req: Request, @Res() res: Response) {
+  deleteByParent(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     this.parentService.deleteByParent(req, res);
   }
 
@@ -108,7 +136,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Post('/create/by/parent')
-  createByParent(@Req() req: Request, @Res() res: Response) {
+  createByParent(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createParentDto: CreateParentDto,
+  ) {
     this.parentService.createByParent(req, res);
   }
 
@@ -116,7 +148,11 @@ export class ParentController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Post('/request/to/join')
-  requestToJoin(@Req() req: Request, @Res() res: Response) {
+  requestToJoin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() requestParentDto: RequestParentDto,
+  ) {
     // this.parentService.requestToJoin(req, res);
   }
 }

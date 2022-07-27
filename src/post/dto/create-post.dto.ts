@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDataURI,
   IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -42,7 +42,7 @@ export class CreatePostDto {
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsOptional()
-  @IsDataURI()
+  @IsUrl()
   @MinLength(2)
   @MaxLength(300)
   avatar: string;

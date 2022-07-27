@@ -36,7 +36,7 @@ export class CreateAddressDto {
   @IsObject()
   location: Location;
 
-  @ApiProperty({ type: mongoose.Types.ObjectId })
+  @ApiProperty({ type: String })
   @IsNotEmpty()
   city_id: mongoose.Types.ObjectId;
 
