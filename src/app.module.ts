@@ -22,6 +22,9 @@ import { ClassModule } from './class/class.module';
 import { CountryModule } from './country/country.module';
 import { PostModule } from './post/post.module';
 import { CurrentuserModule } from './currentuser/currentuser.module';
+import { KidModule } from './kid/kid.module';
+import { ExpoPushTokenServiceModule } from './expo-push-tken-service/expo-push-token-service.module';
+import { TrackingServiceModule } from './tracking-service/tracking-service.module';
 
 @Module({
   imports: [
@@ -46,6 +49,9 @@ import { CurrentuserModule } from './currentuser/currentuser.module';
     PostModule,
     SchoolAdminModule,
     CurrentuserModule,
+    KidModule,
+    ExpoPushTokenServiceModule,
+    TrackingServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
