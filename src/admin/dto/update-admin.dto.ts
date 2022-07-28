@@ -1,7 +1,9 @@
 import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
 import {
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUppercase,
   MaxLength,
@@ -13,7 +15,9 @@ import { CreateUserDto } from 'src/user/Dtos/create-user.dto';
 import { CreateAdminDto } from './create-admin.dto';
 
 class UpdateAdminDtoAlone extends PartialType(CreateAdminDto) {
-  @ApiProperty({ type: mongoose.Types.ObjectId, required: false })
+  @ApiProperty({ type: String, required: false })
+  @IsOptional()
+  @IsMongoId()
   _id: mongoose.Types.ObjectId;
 
   @ApiProperty({ type: String, required: true })

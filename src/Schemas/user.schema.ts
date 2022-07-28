@@ -120,7 +120,7 @@ export class User {
 }
 
 function extractPermissions(role) {
-  let simplePermissions = [];
+  const simplePermissions = [];
   if (role['permissions'] !== undefined) {
     role.permissions.forEach((permission) => {
       simplePermissions.push(permission.endpoint);

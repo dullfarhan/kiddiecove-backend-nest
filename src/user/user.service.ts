@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import mongoose, { ClientSession, Model } from 'mongoose';
@@ -17,6 +17,7 @@ export class UserService {
   pageSize = 20;
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
   ) {}
 

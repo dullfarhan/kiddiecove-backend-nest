@@ -31,12 +31,12 @@ export class UpdateClassDto extends PartialType(CreateClassDto) {
   @IsEnum(STANDARD)
   standard: string;
 
-  @ApiProperty({ type: mongoose.Types.ObjectId, required: false })
+  @ApiProperty({ type: String, required: false })
   @IsMongoId()
   @IsOptional()
   school_id: mongoose.Types.ObjectId;
 
-  @ApiProperty({ type: mongoose.Types.ObjectId, required: false })
+  @ApiProperty({ type: String, required: false })
   @IsMongoId()
   @IsOptional()
   teacher_id: mongoose.Types.ObjectId;

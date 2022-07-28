@@ -24,7 +24,7 @@ export class RequestParentDto {
   @IsNotEmpty()
   school_id: mongoose.Types.ObjectId;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: Submitting_info, required: true })
   @Type(() => Submitting_info)
   submitting_info: Submitting_info;
 }

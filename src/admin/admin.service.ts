@@ -133,7 +133,7 @@ export class AdminService {
   }
 
   async updateAdmin(req: Request, res: Response) {
-    const session = await mongoose.startSession();
+    const session = await this.connection.startSession();
     try {
       session.startTransaction();
       const city = await this.cityService.checkCityExistOrNot(req.body.city_id);
