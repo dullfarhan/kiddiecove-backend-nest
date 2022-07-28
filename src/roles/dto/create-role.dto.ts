@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -15,6 +16,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 class permissionItem {
   @ApiProperty()
+  @IsMongoId()
   _id: mongoose.Types.ObjectId;
 
   @ApiProperty({ type: String, required: false })
@@ -23,6 +25,8 @@ class permissionItem {
   name: string;
 }
 export class CreateRoleDto {
+  @IsOptional()
+  @IsMongoId()
   _id: mongoose.Types.ObjectId;
 
   @ApiProperty({ enum: RoleType, required: true })

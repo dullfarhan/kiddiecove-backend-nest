@@ -2,24 +2,22 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
-  Param,
   Delete,
   Req,
   Res,
   Logger,
   UseGuards,
+  Put,
+  Body,
+  Param,
 } from '@nestjs/common';
 import { TeacherService } from './teacher.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { FilterQuery, Model } from 'mongoose';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
-
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags } from '@nestjs/swagger';
-import { UserType } from 'src/utils/enums/UserType.enum';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PermissionGuard } from 'src/Guard/permission.guard';
 
 @ApiTags('Teacher')
 @Controller('teacher')
@@ -27,6 +25,8 @@ export class TeacherController {
   private readonly logger = new Logger('teacher');
   constructor(private readonly teacherService: TeacherService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('get/all/for/admin')
   getAllTeachersForAdmin(@Req() req: Request, @Res() res: Response) {
@@ -41,9 +41,15 @@ export class TeacherController {
     );
   }
 
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('get/all/for/admin/:id')
-  getTeacherForAdmin(@Req() req: Request, @Res() res: Response) {
+  getTeacherForAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     this.logger.log('getting Teacher detail for admin' + req.params.id);
     return this.teacherService.getAllTeachers(
       req,
@@ -52,30 +58,24 @@ export class TeacherController {
       {},
     );
   }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/all/for/school/admin')
   getAllTeachersForSchoolAdmin(@Req() req: Request, @Res() res: Response) {
-    // this.logger.log('getting Teachers list for school admin');
-    // const response = await CurrentUser.getCurrentUser(
-    //   req,
-    //   UserType.SCHOOL_ADMIN,
-    // );
-    // if (response.status === utils.Constant.FAIL)
-    //   return Util.getBadRequest(response.message, res);
-    // this.logger.log('Current School Admin User Found');
-    // const schoolAdmin = response.data;
-    // this.teacherService.getAllTeachers(
-    //   req,
-    //   res,
-    //   {
-    //     enable: true,
-    //     school_id: schoolAdmin.school_id,
-    //   },
-    //   {},
-    // );
+    this.teacherService.getAllTeachersForSchoolAdmin(req, res);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Get('/get/all/as/lisitng/for/admin/:id')
-  getAllTeachersAsListingForAdmin(req, res) {
+  getAllTeachersAsListingForAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     this.logger.log('getting Teacher listing for admin');
     this.teacherService.getAllTeachers(
       req,
@@ -88,26 +88,126 @@ export class TeacherController {
     );
   }
 
-  @Post()
-  create(@Body() createTeacherDto: CreateTeacherDto) {
-    return this.teacherService.create(createTeacherDto);
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/get/for/school/admin/:id')
+  getTeacherForSchoolAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    this.teacherService.getTeacherForSchoolAdmin(req, res);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.teacherService.findOne(+id);
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/get/all/as/lisitng/for/school/admin')
+  getAllTeachersAsListingForSchoolAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    this.teacherService.getAllTeachersAsListingForSchoolAdmin(req, res);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTeacherDto: UpdateTeacherDto) {
-    return this.teacherService.update(+id, updateTeacherDto);
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/update/by/admin/:id')
+  updateTeacherByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createTeacherDto: CreateTeacherDto,
+    @Param('id') id: string,
+  ) {
+    this.teacherService.updateTeacherByAdmin(req, res);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.teacherService.remove(+id);
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/update/directly/by/admin/:id')
+  updateTeacherByAdminDirectly(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createTeacherDto: CreateTeacherDto,
+    @Param('id') id: string,
+  ) {
+    this.teacherService.updateTeacherByAdmin(req, res);
   }
-}
-function FilterQuer() {
-  throw new Error('Function not implemented.');
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/update/by/school/admin/:id')
+  updateTeacherBySchoolAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createTeacherDto: CreateTeacherDto,
+    @Param('id') id: string,
+  ) {
+    this.teacherService.updateTeacherBySchoolAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/update/directly/by/school/admin/:id')
+  updateTeacherBySchoolAdmindirectly(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createTeacherDto: CreateTeacherDto,
+    @Param('id') id: string,
+  ) {
+    this.teacherService.updateTeacherBySchoolAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/delete/by/admin/:id')
+  deleteTeacherByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    this.teacherService.deleteTeacherByAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/delete/by/school/admin/:id')
+  deleteTeacherBySchoolAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    this.teacherService.deleteTeacherBySchoolAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/')
+  createTeacherByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createTeacherDto: CreateTeacherDto,
+  ) {
+    this.teacherService.createTeacherByAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/create/by/school/admin')
+  createTeacherBySchoolAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createTeacherDto: CreateTeacherDto,
+  ) {
+    this.teacherService.createTeacherBySchoolAdmin(req, res);
+  }
 }

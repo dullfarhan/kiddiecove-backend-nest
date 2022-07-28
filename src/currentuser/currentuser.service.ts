@@ -12,6 +12,7 @@ import Util from 'src/utils/util';
 class CurrentUser {
   constructor(
     private readonly schoolAdminService: SchoolAdminService,
+    @Inject(forwardRef(() => TeacherService))
     private readonly teacherService: TeacherService,
     private readonly adminService: AdminService,
     private readonly parentService: ParentService,

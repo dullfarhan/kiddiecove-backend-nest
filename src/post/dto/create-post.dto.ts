@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -63,5 +64,6 @@ export class CreatePostDto {
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   @IsString()
+  @IsMongoId()
   school_id: mongoose.Types.ObjectId;
 }

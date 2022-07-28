@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsMongoId,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -37,6 +38,7 @@ export class CreateAddressDto {
   location: Location;
 
   @ApiProperty({ type: String })
+  @IsMongoId()
   @IsNotEmpty()
   city_id: mongoose.Types.ObjectId;
 
