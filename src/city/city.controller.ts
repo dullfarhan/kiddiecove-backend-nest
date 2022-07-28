@@ -18,11 +18,11 @@ import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 // import { Body, Delete, Get, Post, Put } from '@nestjs/common';
 
-@ApiTags('city')
+@ApiTags('City')
 @Controller('city')
 export class CityController {
   constructor(private readonly cityService: CityService) {}
-  private readonly logger = new Logger('city');
+  private readonly logger = new Logger(CityController.name);
   @Get('/get/all')
   getAllForAdmin(@Req() req: Request, @Res() res: Response) {
     this.logger.log('city');

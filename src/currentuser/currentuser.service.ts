@@ -17,7 +17,7 @@ class CurrentUser {
     private readonly parentService: ParentService,
   ) {}
 
-  logger: Logger = new Logger('Current User Utils');
+  logger: Logger = new Logger(CurrentUser.name);
 
   async getCurrentUser(
     req: any,

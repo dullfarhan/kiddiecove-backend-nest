@@ -22,7 +22,7 @@ import Util from 'src/utils/util';
 
 @Injectable()
 export class StatService {
-  private readonly logger: Logger = new Logger('Stat Service');
+  private readonly logger: Logger = new Logger(StatService.name);
 
   constructor(
     @InjectModel(School.name)

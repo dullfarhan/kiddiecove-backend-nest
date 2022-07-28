@@ -12,7 +12,7 @@ import CurrentUser from 'src/currentuser/currentuser.service';
 
 @Injectable()
 export class UserService {
-  private readonly logger = new Logger('User Service');
+  private readonly logger = new Logger(UserService.name);
   pageNumber = 1;
   pageSize = 20;
   constructor(

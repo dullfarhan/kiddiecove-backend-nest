@@ -10,7 +10,7 @@ import { Chat } from './entities/chat.entity';
 
 @Injectable()
 export class ChatService {
-  private readonly logger: Logger = new Logger('Chat Service');
+  private readonly logger: Logger = new Logger(ChatService.name);
 
   constructor(
     @InjectModel(Chat.name) private readonly chatModel: Model<ChatDocument>,

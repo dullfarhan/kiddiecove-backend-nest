@@ -24,7 +24,7 @@ import { UserType } from 'src/utils/enums/UserType.enum';
 @ApiTags('Teacher')
 @Controller('teacher')
 export class TeacherController {
-  private readonly logger = new Logger('teacher');
+  private readonly logger = new Logger(TeacherController.name);
   constructor(private readonly teacherService: TeacherService) {}
 
   @UseGuards(AuthGuard('jwt'))

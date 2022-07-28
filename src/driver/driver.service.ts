@@ -31,7 +31,7 @@ import CurrentUser from 'src/currentuser/currentuser.service';
 
 @Injectable()
 export class DriverService {
-  private readonly logger = new Logger('Driver Service');
+  private readonly logger = new Logger(DriverService.name);
   private pageNumber = 1;
   private pageSize = 10;
   constructor(
