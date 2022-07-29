@@ -16,14 +16,14 @@ import { PermissionGuard } from '../Guard/permission.guard';
 import { UserService } from './user.service';
 
 @ApiTags('User')
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Post('/get/all/for/admin')
+  @Get('/get/all/for/admin')
   getAllForAdmin(@Req() req: Request, @Res() res: Response) {
     this.userService.getAllForAdmin(res);
   }

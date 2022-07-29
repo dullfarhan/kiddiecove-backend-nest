@@ -3,7 +3,7 @@ import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import Debug from 'debug';
 import Util from 'src/utils/util';
-const serviceDebugger = Debug('app:services:teacher');
+// const this.logger.log = Debug('app:services:teacher');
 import {
   TeacherDocument,
   Teacher,
@@ -50,14 +50,14 @@ export class TeacherService {
     filter: FilterQuery<TeacherDocument>,
     selects: any,
   ) {
-    serviceDebugger('getting teacher list');
+    this.logger.log('getting teacher list');
     await this.TeacherModel.find(filter)
       .skip((this.pageNumber - 1) * this.pageSize)
       .limit(this.pageSize)
       .sort({ name: 1 })
       .select(selects)
       .then((result) => {
-        serviceDebugger(result);
+        this.logger.log(result);
         return Util.getOkRequest(
           result,
           'Teachers Listing Fetched Successfully',
@@ -65,30 +65,30 @@ export class TeacherService {
         );
       })
       .catch((ex) => {
-        serviceDebugger(ex);
+        this.logger.log(ex);
         return Util.getBadRequest(ex.message, res);
       });
   }
   async getTeacher(req, res, filter) {
     try {
-      serviceDebugger('checking if teacher with given id exist or not');
+      this.logger.log('checking if teacher with given id exist or not');
       const teacher = await this.TeacherModel.findOne(filter);
       if (!teacher)
         return Util.getBadRequest('Teacher Not Found with given id', res);
-      serviceDebugger('Teacher exist');
-      serviceDebugger('Teacher Details Fetched Succesfully');
+      this.logger.log('Teacher exist');
+      this.logger.log('Teacher Details Fetched Succesfully');
       return Util.getOkRequest(
         teacher,
         'Teacher Details Fetched Successfully',
         res,
       );
     } catch (ex) {
-      serviceDebugger(ex);
+      this.logger.log(ex);
       return Util.getBadRequest(ex.message, res);
     }
   }
   async getAllTeachersForSchoolAdmin(req, res) {
-    serviceDebugger('getting Teachers list for school admin');
+    this.logger.log('getting Teachers list for school admin');
     const response = await this.currentUser.getCurrentUser(
       req,
       UserType.SCHOOL_ADMIN,
@@ -96,7 +96,7 @@ export class TeacherService {
     );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     this.getAllTeachers(
       req,
@@ -109,7 +109,7 @@ export class TeacherService {
     );
   }
   async getTeacherForSchoolAdmin(req, res) {
-    serviceDebugger('getting Teacher detail for school admin');
+    this.logger.log('getting Teacher detail for school admin');
     const response = await this.currentUser.getCurrentUser(
       req,
       UserType.SCHOOL_ADMIN,
@@ -117,7 +117,7 @@ export class TeacherService {
     );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     this.getTeacher(req, res, {
       enable: true,
@@ -129,35 +129,44 @@ export class TeacherService {
   async createTeacher(req, res, schoolId) {
     //Joi validation checking
     const session = await this.connection.startSession();
-    serviceDebugger('validating req body');
+    this.logger.log('validating req body');
     // const { error } = validateTeacher(req.body);
     // if (error) return Util.getBadRequest(error.details[0].message, res);
-    serviceDebugger('req body is valid');
+    this.logger.log('req body is valid');
     try {
       session.startTransaction();
-
+      let dd = await this.userService.checkUserAlreadyRegisteredOrNot(
+        req.body.user_name,
+      );
+      console.log(dd);
       if (
         await this.userService.checkUserAlreadyRegisteredOrNot(
           req.body.user_name,
         )
-      )
+      ) {
+        console.log('under if');
         return Util.getBadRequest('User already registered', res);
-      serviceDebugger('user not registered');
+      }
+      this.logger.log('user not registered');
       const city = await this.cityService.checkCityExistOrNot(req.body.city_id);
       if (!city) return Util.getBadRequest('City Not Found', res);
-      serviceDebugger('city found');
-      const school = await this.schoolService.checkSchoolExistOrNot(schoolId);
+      this.logger.log('city found');
+      const school = await (
+        await this.schoolService.checkSchoolExistOrNot(schoolId)
+      ).toObject();
+      // console.log(school);
       if (!school) return Util.getBadRequest('School Not Found', res);
-      serviceDebugger('School found');
+      // console.log(school);
+      this.logger.log('School found');
       const role = await this.rolesService.getRole(RoleType.TEACHER);
       if (!role) return Util.getBadRequest('Role Not Found', res);
-      serviceDebugger('role found');
+      this.logger.log('role found');
       const address = await this.addressService.createAndSave(
         req.body,
         city,
         session,
       );
-      serviceDebugger('User Address Created Successfully');
+      this.logger.log('User Address Created Successfully');
       const user = await this.userService.createAndSave(
         req.body,
         role,
@@ -165,7 +174,7 @@ export class TeacherService {
         UserType.TEACHER,
         session,
       );
-      serviceDebugger('Teacher User Created Successfully');
+      this.logger.log('Teacher User Created Successfully');
       const teacher = await this.createAndSave(
         req.body,
         user,
@@ -174,11 +183,11 @@ export class TeacherService {
         session,
       );
       await session.commitTransaction();
-      serviceDebugger('Teacher Created Successfully');
+      this.logger.log('Teacher Created Successfully');
       // const token = user.generateAuthToken()
       return Util.getSimpleOkRequest('Teacher Created Successfully', res);
     } catch (ex) {
-      serviceDebugger('Error While Creating Admin ' + ex);
+      this.logger.log('Error While Creating Admin ' + ex);
       await session.abortTransaction();
       return Util.getBadRequest(ex.message, res);
     } finally {
@@ -187,12 +196,12 @@ export class TeacherService {
   }
 
   async createTeacherByAdmin(req, res) {
-    serviceDebugger('admin is creating teacher');
+    this.logger.log('admin is creating teacher');
     return await this.createTeacher(req, res, req.body.school_id);
   }
 
   async createTeacherBySchoolAdmin(req, res) {
-    serviceDebugger('school admin is creating teacher');
+    this.logger.log('school admin is creating teacher');
     //Checking Current User
     const response = await this.currentUser.getCurrentUser(
       req,
@@ -201,48 +210,48 @@ export class TeacherService {
     );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     return await this.createTeacher(req, res, schoolAdmin.school_id);
   }
 
   async updateTeacher(req, res, schoolId) {
     const session = await this.connection.startSession();
-    serviceDebugger('validating req body');
+    this.logger.log('validating req body');
     // const { error } = validateTeacher(req.body);
     // if (error) return Util.getBadRequest(error.details[0].message, res);
-    serviceDebugger('req body is valid');
+    this.logger.log('req body is valid');
     try {
       session.startTransaction();
       const teacher = await this.TeacherModel.findOne({ _id: req.params.id });
       if (!teacher)
         return Util.getBadRequest('Teacher Not Found with given id', res);
-      serviceDebugger('Teacher found');
+      this.logger.log('Teacher found');
       const city = await this.cityService.checkCityExistOrNot(req.body.city_id);
       if (!city) return Util.getBadRequest('City Not Found with given id', res);
-      serviceDebugger('city found');
+      this.logger.log('city found');
       const school = await this.schoolService.checkSchoolExistOrNot(schoolId);
       if (!school) return Util.getBadRequest('School Not Found', res);
-      serviceDebugger('School found');
+      this.logger.log('School found');
       const user = await this.UserModel.findOne({ _id: teacher.user_id });
       if (!user) return Util.getBadRequest('User Not Found with given id', res);
-      serviceDebugger('user found');
+      this.logger.log('user found');
       const address = await this.AddressModel.findOne({ _id: user.address_id });
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);
-      serviceDebugger('address found');
+      this.logger.log('address found');
       if (req.url.includes('directly')) {
         await this.updateDirectlyWrapper(req, city, school, session);
-        serviceDebugger(`teacher directly updated successfully`);
+        this.logger.log(`teacher directly updated successfully`);
       } else {
         await this.update(req, address, city, school, user, teacher, session);
-        serviceDebugger(`teacher updated successfully`);
+        this.logger.log(`teacher updated successfully`);
       }
       await session.commitTransaction();
-      serviceDebugger('Teacher and Teacher User Updated Successfully');
+      this.logger.log('Teacher and Teacher User Updated Successfully');
       return Util.getSimpleOkRequest('Teacher Successfully Updated', res);
     } catch (ex) {
-      serviceDebugger(ex);
+      this.logger.log(ex);
       await session.abortTransaction();
       return Util.getBadRequest(ex.message, res);
     } finally {
@@ -252,9 +261,9 @@ export class TeacherService {
 
   async update(req, address, city, school, user, teacher, session) {
     await this.addressService.updateAddress(address, req.body, city, session);
-    serviceDebugger(`updated address ${address}`);
+    this.logger.log(`updated address ${address}`);
     await this.userService.updateUser(user, req.body, session);
-    serviceDebugger(`updated user ${user}`);
+    this.logger.log(`updated user ${user}`);
     return await this.updateAndSaveTeacher(
       teacher,
       req.body,
@@ -265,13 +274,16 @@ export class TeacherService {
   }
 
   async save(teacherObj, session) {
-    serviceDebugger('creating new teacher');
+    console.log(teacherObj);
+    this.logger.log('creating new teacher');
     const teacher = new this.TeacherModel(teacherObj);
-    serviceDebugger('saving teacher...');
+    this.logger.log('saving teacher...');
     return await teacher.save({ session });
   }
 
   async createAndSave(reqBody, user, city, school, session) {
+    console.log(`school is this ${school}`);
+
     return await this.save(
       {
         _id: new mongoose.Types.ObjectId(),
@@ -301,15 +313,15 @@ export class TeacherService {
 
   async setTeacherAndSave(teacher, teacherObj, session) {
     await teacher.set(teacherObj);
-    serviceDebugger('updating teacher');
+    this.logger.log('updating teacher');
     await teacher.save({ session });
   }
   async updateTeacherByAdmin(req, res) {
-    serviceDebugger('Admin is updating Teacher Details');
+    this.logger.log('Admin is updating Teacher Details');
     return await this.updateTeacher(req, res, req.body.school_id);
   }
   async getAllTeachersAsListingForSchoolAdmin(req, res) {
-    serviceDebugger('getting Teachers listing for school admin');
+    this.logger.log('getting Teachers listing for school admin');
     const response = await this.currentUser.getCurrentUser(
       req,
       UserType.SCHOOL_ADMIN,
@@ -317,7 +329,7 @@ export class TeacherService {
     );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     this.getAllTeachers(
       req,
@@ -330,7 +342,7 @@ export class TeacherService {
     );
   }
   async updateTeacherBySchoolAdmin(req, res) {
-    serviceDebugger('School Admin is updating Teacher Details');
+    this.logger.log('School Admin is updating Teacher Details');
     const response = await this.currentUser.getCurrentUser(
       req,
       UserType.SCHOOL_ADMIN,
@@ -338,7 +350,7 @@ export class TeacherService {
     );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     return await this.updateTeacher(req, res, schoolAdmin.school_id);
   }
@@ -351,13 +363,13 @@ export class TeacherService {
       school,
       session,
     );
-    serviceDebugger(`updated teacher ${teacher}`);
+    this.logger.log(`updated teacher ${teacher}`);
     const user = await this.userService.updateDirectly(
       teacher.user_id,
       req.body,
       session,
     );
-    serviceDebugger(`updated user ${user}`);
+    this.logger.log(`updated user ${user}`);
     return await this.addressService.updateDirectly(
       user.address_id,
       req.body,
@@ -411,12 +423,12 @@ export class TeacherService {
     );
   }
   async deleteTeacherByAdmin(req, res) {
-    serviceDebugger('Admin is deleting Teacher');
+    this.logger.log('Admin is deleting Teacher');
     return await this.deleteTeacher(req, res);
   }
 
   async deleteTeacherBySchoolAdmin(req, res) {
-    serviceDebugger('School Admin is deleting Teacher');
+    this.logger.log('School Admin is deleting Teacher');
     const response = await this.currentUser.getCurrentUser(
       req,
       UserType.SCHOOL_ADMIN,
@@ -424,7 +436,7 @@ export class TeacherService {
     );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
-    serviceDebugger('Current School Admin User Found');
+    this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
     const teacher = await this.checkTeacherExistenceWithSchool(
       req.params.id,
@@ -444,12 +456,12 @@ export class TeacherService {
       });
       if (!teacher)
         return Util.getBadRequest('Teacher Not Found with given id', res);
-      serviceDebugger('Teacher Successfully Deleted');
+      this.logger.log('Teacher Successfully Deleted');
       const user = await this.UserModel.findByIdAndRemove(teacher.user_id, {
         session,
       });
       if (!user) return Util.getBadRequest('User Not Found with given id', res);
-      serviceDebugger('User Successfully Deleted');
+      this.logger.log('User Successfully Deleted');
       const address = await this.AddressModel.findByIdAndRemove(
         user.address_id,
         {
@@ -458,11 +470,11 @@ export class TeacherService {
       );
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);
-      serviceDebugger('Address Successfully Deleted');
+      this.logger.log('Address Successfully Deleted');
       await session.commitTransaction();
       return Util.getSimpleOkRequest('Teacher Successfully deleted', res);
     } catch (ex) {
-      serviceDebugger(ex);
+      this.logger.log(ex);
       await session.abortTransaction();
       return Util.getBadRequest(ex.message, res);
     } finally {
@@ -471,17 +483,17 @@ export class TeacherService {
   }
 
   async checkTeacherExistOrNot(teacherId) {
-    serviceDebugger('checking teacher exist or not');
+    this.logger.log('checking teacher exist or not');
     return await this.TeacherModel.findOne({ _id: teacherId });
   }
 
   async getCurrentTeacher(userId) {
-    serviceDebugger('getting current teacher');
+    this.logger.log('getting current teacher');
     return await this.TeacherModel.findOne({ user_id: userId });
   }
 
   async checkTeacherExistenceWithSchool(teacherId, schoolId) {
-    serviceDebugger('checking school existence with teacher');
+    this.logger.log('checking school existence with teacher');
     return await this.TeacherModel.findOne({
       _id: teacherId,
       school_id: schoolId,

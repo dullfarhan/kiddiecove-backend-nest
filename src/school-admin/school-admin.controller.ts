@@ -20,7 +20,7 @@ import Util from 'src/utils/util';
 import { UpdateSchoolAdminDto } from './dto/update-school-admin.dto';
 
 @ApiTags('School Admin')
-@Controller('school-admin')
+@Controller('schoolAdmin')
 export class SchoolAdminController {
   constructor(private readonly schoolAdminService: SchoolAdminService) {}
 

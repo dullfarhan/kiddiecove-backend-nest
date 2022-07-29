@@ -87,7 +87,9 @@ export class SchoolService {
   async getForAdmin(req, res) {
     try {
       this.logger.log('checking if School with given id exist or not');
-      const school = await this.SchoolModel.findOne({ _id: req.params.id });
+      const school = await this.SchoolModel.findOne({
+        _id: req.params.id,
+      });
       if (!school)
         return Util.getBadRequest('School Not Found with given id', res);
       this.logger.log('School exist');
@@ -247,6 +249,7 @@ export class SchoolService {
   async generateQrCode(req, res, school) {
     try {
       this.logger.log('Generating Pdf For School');
+      console.log(school);
       const qrCode = await generateQR(school._id.toString());
       return await makePdf(qrCode, school);
     } catch (ex) {

@@ -20,7 +20,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PermissionGuard } from 'src/Guard/permission.guard';
 
 @ApiTags('Teacher')
-@Controller('teacher')
+@Controller('teachers')
 export class TeacherController {
   private readonly logger = new Logger(TeacherController.name);
   constructor(private readonly teacherService: TeacherService) {}

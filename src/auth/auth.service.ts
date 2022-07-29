@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/Schemas';
 import { UserSignInDto } from './dtos';
 import * as bcrypt from 'bcrypt';
+import Util from 'src/utils/util';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +13,7 @@ export class AuthService {
 
   private readonly logger: Logger = new Logger(AuthService.name);
 
-  async signIn(userSignInDto: UserSignInDto): Promise<string> {
+  async signIn(userSignInDto: UserSignInDto, res: Response): Promise<string> {
     this.logger.log('Signing In');
     try {
       const user: User = await this.userModel
@@ -32,13 +34,14 @@ export class AuthService {
           userSignInDto.password,
           user.password,
         );
-        if (!validPassword) return 'Invalid user name or password';
+        if (!validPassword)
+          return Util.getBadRequest('Invalid user name or password', res);
         else {
           const token = user.generateAuthtoken();
-          return token;
+          return Util.getOkRequest(token, 'Login Successfully', res);
         }
       } else {
-        return 'Could not find the user';
+        return Util.getBadRequest('Could not find user', res);
       }
     } catch (ex) {
       return ex.message;

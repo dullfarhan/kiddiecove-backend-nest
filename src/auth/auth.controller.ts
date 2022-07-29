@@ -5,8 +5,10 @@ import {
   HttpStatus,
   Logger,
   Post,
+  Res,
 } from '@nestjs/common';
 import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { UserSignInDto } from './dtos';
 
@@ -16,12 +18,12 @@ export class AuthController {
   private readonly logger = new Logger(AuthController.name);
   constructor(private authService: AuthService) {}
 
-  @HttpCode(HttpStatus.ACCEPTED)
+  @HttpCode(HttpStatus.OK)
   @ApiBasicAuth()
-  @Post('signin')
-  signIn(@Body() userSignInDto: UserSignInDto) {
+  @Post('token')
+  signIn(@Body() userSignInDto: UserSignInDto, @Res() res: Response) {
     this.logger.log('signing in ...');
-    return this.authService.signIn(userSignInDto);
+    return this.authService.signIn(userSignInDto, res);
   }
 
   // @ApiBearerAuth()
