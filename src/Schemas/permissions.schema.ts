@@ -2,7 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
 @Schema()
-export class Permission {
+export class Permissions {
+  @Prop()
   _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
@@ -48,6 +49,6 @@ export class Permission {
   deleted: boolean;
 }
 
-export const PermissionSchema = SchemaFactory.createForClass(Permission);
+export const PermissionSchema = SchemaFactory.createForClass(Permissions);
 
-export type PermissionDocument = Permission & Document;
+export type PermissionDocument = Permissions & Document;

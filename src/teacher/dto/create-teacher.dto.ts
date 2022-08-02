@@ -14,8 +14,8 @@ import { CreateAddressDto } from 'src/address/dto/create-address.dto';
 import { CreateUserDto } from 'src/user/Dtos/create-user.dto';
 
 enum TeacherType {
-  SENIOR = 'senior',
-  JUNIOR = 'junior',
+  SENIOR = 'SENIOR',
+  JUNIOR = 'JUNIOR',
 }
 export class TeacherDto {
   @IsOptional()

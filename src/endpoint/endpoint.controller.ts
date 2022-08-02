@@ -33,7 +33,11 @@ export class EndpointController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/admin/:id')
-  deleteByAdmin(@Req() req: Request, @Res() res: Response) {
+  deleteByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     this.endpointService.deleteByAdmin(req, res);
   }
 

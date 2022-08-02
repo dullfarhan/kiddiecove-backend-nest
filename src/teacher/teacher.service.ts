@@ -135,7 +135,7 @@ export class TeacherService {
     this.logger.log('req body is valid');
     try {
       session.startTransaction();
-      let dd = await this.userService.checkUserAlreadyRegisteredOrNot(
+      const dd = await this.userService.checkUserAlreadyRegisteredOrNot(
         req.body.user_name,
       );
       console.log(dd);
@@ -230,7 +230,9 @@ export class TeacherService {
       const city = await this.cityService.checkCityExistOrNot(req.body.city_id);
       if (!city) return Util.getBadRequest('City Not Found with given id', res);
       this.logger.log('city found');
-      const school = await this.schoolService.checkSchoolExistOrNot(schoolId);
+      const school = await (
+        await this.schoolService.checkSchoolExistOrNot(schoolId)
+      ).toObject();
       if (!school) return Util.getBadRequest('School Not Found', res);
       this.logger.log('School found');
       const user = await this.UserModel.findOne({ _id: teacher.user_id });

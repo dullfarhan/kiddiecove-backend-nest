@@ -36,7 +36,12 @@ export class RolesController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Put('/update/by/admin/:id')
-  updateByAdmin(@Req() req: Request, @Res() res: Response) {
+  updateByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() createRoleDto: CreateRoleDto,
+  ) {
     this.rolesService.updateByAdmin(req, res);
   }
 
@@ -44,7 +49,7 @@ export class RolesController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/:id')
-  get(@Req() req: Request, @Res() res: Response) {
+  get(@Req() req: Request, @Res() res: Response, @Param('id') id: string) {
     this.rolesService.get(req, res);
   }
 
@@ -52,7 +57,11 @@ export class RolesController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/admin/:id')
-  deleteByAdmin(@Req() req: Request, @Res() res: Response) {
+  deleteByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
     this.rolesService.deleteByAdmin(req, res);
   }
 

@@ -3,14 +3,14 @@ import mongoose, { Model } from 'mongoose';
 import Util from 'src/utils/util';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { Permission, PermissionDocument } from 'src/Schemas';
+import { Permissions, PermissionDocument } from 'src/Schemas';
 import { InjectModel } from '@nestjs/mongoose';
 import { EndpointService } from 'src/endpoint/endpoint.service';
 
 @Injectable()
 export class PermissionService {
   constructor(
-    @InjectModel(Permission.name)
+    @InjectModel(Permissions.name)
     private PermissionModel: Model<PermissionDocument>,
     private readonly endpointService: EndpointService,
   ) {}
@@ -97,11 +97,9 @@ export class PermissionService {
     const permissionsGlobalArray = [];
     if (permissionsArray) {
       for (const permissions of permissionsArray) {
-        const permission = await this.PermissionModel.findOne({
-          _id: permissions._id,
-        });
+        const permission = await this.PermissionModel.findById(permissions);
         if (permission) {
-          permissionsGlobalArray.push(permissions._id);
+          permissionsGlobalArray.push(permissions);
         }
       }
     }

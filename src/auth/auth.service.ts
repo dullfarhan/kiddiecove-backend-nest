@@ -24,7 +24,7 @@ export class AuthService {
           select: 'name -_id',
           populate: {
             path: 'permissions',
-            model: 'Permission',
+            model: 'Permissions',
             select: 'endpoint -_id',
           },
         })

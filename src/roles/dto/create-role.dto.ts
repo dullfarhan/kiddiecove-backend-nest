@@ -15,21 +15,18 @@ import { RoleType } from 'src/utils/enums/RoleType';
 import { ApiProperty } from '@nestjs/swagger';
 
 class permissionItem {
-  @ApiProperty()
+  @ApiProperty({ type: String, required: true })
   @IsMongoId()
+  @IsNotEmpty()
   _id: mongoose.Types.ObjectId;
-
-  @ApiProperty({ type: String, required: false })
-  @IsString()
-  @IsOptional()
-  name: string;
 }
 export class CreateRoleDto {
-  @IsOptional()
-  @IsMongoId()
-  _id: mongoose.Types.ObjectId;
+  // @ApiProperty({ type: String, required: true })
+  // @IsNotEmpty()
+  // @IsMongoId()
+  // // _id: mongoose.Types.ObjectId;
 
-  @ApiProperty({ enum: RoleType, required: true })
+  @ApiProperty({ enum: RoleType, required: false })
   @IsString()
   @IsEnum(RoleType)
   @Length(3, 12)
@@ -38,9 +35,12 @@ export class CreateRoleDto {
 
   // @IsArray()
   // @IsNotEmpty()
-  @ApiProperty()
-  @Type(() => permissionItem)
-  permissions: [permissionItem] | null;
+
+  @ApiProperty({ type: [String], required: true })
+  @IsArray()
+  @IsMongoId({ each: true })
+  // @Type(() => mongoose.Types.ObjectId)
+  permissions: [mongoose.Types.ObjectId];
 
   @ApiProperty({ type: Boolean, required: false })
   @IsOptional()

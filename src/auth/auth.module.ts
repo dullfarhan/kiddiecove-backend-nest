@@ -12,7 +12,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   ClientSecret,
   ClientSecretSchema,
-  Permission,
+  Permissions,
   PermissionSchema,
   Role,
   RoleSchema,
@@ -28,7 +28,7 @@ import { AuthMiddleware } from './Middlewares/authentication.middleware';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Role.name, schema: RoleSchema },
-      { name: Permission.name, schema: PermissionSchema },
+      { name: Permissions.name, schema: PermissionSchema },
       { name: ClientSecret.name, schema: ClientSecretSchema },
     ]),
   ],
