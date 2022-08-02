@@ -4,26 +4,23 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Role {
+  @Prop({
+    type: String,
+    required: false,
+  })
+  name: string;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  })
   _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({
-    type: String,
-    required: true,
-    unique: true,
-    enum: ['PARENT', 'TEACHER', 'SCHOOL_ADMIN', 'ROOT', 'DRIVER', 'KID'],
-    minlength: 3,
-    maxlength: 12,
-    uppercase: true,
-    trim: true,
-  })
-  name: string;
-
-  @Prop({
     type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Permission',
+    ref: 'Permissions',
     required: true,
   })
-  permissions: mongoose.Schema.Types.ObjectId[];
+  permissions: [mongoose.Schema.Types.ObjectId];
 
   @Prop({ type: Date, default: Date.now() })
   created_at: Date;
@@ -37,6 +34,14 @@ export class Role {
   @Prop({ type: Boolean, default: false, minlength: 3, maxlength: 4 })
   deleted: boolean;
 }
+// @Schema()
+// class permission {
+//   @Prop()
+//   name: string;
+
+//   @Prop()
+//   id: string;
+// }
 
 type permissionType = [mongoose.Schema.Types.ObjectId] | null;
 

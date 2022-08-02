@@ -103,6 +103,8 @@ export class RolesService {
     try {
       this.logger.log('checking if role already exists or not?');
       const result = await this.RoleModel.findOne({ name: req.body.name });
+      const Dto: CreateRoleDto = req.body;
+      console.log(Dto.permissions);
       if (result) return Util.getBadRequest('Role Already exists', res);
       this.logger.log('Role not exists');
       this.logger.log('creating new role');
