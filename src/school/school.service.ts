@@ -226,20 +226,22 @@ export class SchoolService {
   async getQrCodeForAdmin(req, res) {
     try {
       this.logger.log('checking if School with given id exist or not');
-      const school = await this.SchoolModel.findOne({ _id: req.params.id });
+      const school = (
+        await this.SchoolModel.findOne({ _id: req.params.id })
+      ).toObject();
       if (!school)
         return Util.getBadRequest('School Not Found with given id', res);
       this.logger.log('School exist');
       this.logger.log('School Details Fetched Succesfully');
       const pdf = await this.generateQrCode(req, res, school);
       this.logger.log(school.name.replace(/\s/g, ''));
-      res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition':
-          'attachment; filename=' + school.name.replace(/\s/g, '') + '.pdf',
-        'Content-Length': pdf.length,
-      });
-      res.end(pdf);
+      // res.writeHead(200, {
+      //   'Content-Type': 'application/pdf',
+      //   'Content-Disposition':
+      //     'attachment; filename=' + school.name.replace(/\s/g, '') + '.pdf',
+      //   'Content-Length': pdf.length,
+      // });
+      return pdf;
     } catch (ex) {
       this.logger.log(ex);
       return Util.getBadRequest(ex.message, res);
@@ -249,9 +251,10 @@ export class SchoolService {
   async generateQrCode(req, res, school) {
     try {
       this.logger.log('Generating Pdf For School');
-      console.log(school);
+      console.log('School iD:', school._id);
       const qrCode = await generateQR(school._id.toString());
-      return await makePdf(qrCode, school);
+      const obj = await makePdf(qrCode, school);
+      return obj;
     } catch (ex) {
       this.logger.log(ex);
       return Util.getBadRequest(ex.message, res);
