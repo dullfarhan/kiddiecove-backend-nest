@@ -49,7 +49,7 @@ export class UserController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/:id')
-  getById(@Param('id') id: mongoose.Types.ObjectId, @Res() res: Response) {
+  getById(@Param('id') id: string, @Res() res: Response) {
     if (!mongoose.Types.ObjectId.isValid(id))
       Util.getBadRequest('invalid user id', res);
     else return this.userService.getUserForAdmin(id, res);

@@ -89,7 +89,7 @@ export class UserService {
       });
   }
 
-  async getUserForAdmin(_id: mongoose.Types.ObjectId, res: Response) {
+  async getUserForAdmin(_id: string, res: Response) {
     try {
       const user = await this.userModel.findOne({ _id });
       if (!user) return Util.getBadRequest('User Not Found with given id', res);
