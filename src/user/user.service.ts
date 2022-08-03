@@ -5,6 +5,8 @@ import mongoose, { ClientSession, Model } from 'mongoose';
 import { User, UserDocument } from 'src/Schemas';
 import Util from '../utils/util';
 import { UserType } from '../utils/enums/UserType.enum';
+import * as bcrypt from 'bcrypt';
+
 import Constant from 'src/utils/enums/Constant.enum';
 import { ParentType } from 'src/utils/enums/ParentType.enum';
 import { GenderType } from 'src/utils/enums/GenderType.enum';
@@ -109,6 +111,7 @@ export class UserService {
     return await this.setUserAndSave(
       user,
       {
+        avatar: reqBody.avatar,
         name: reqBody.name,
         password: reqBody.password,
         gender:
@@ -131,8 +134,10 @@ export class UserService {
       userId,
       {
         $set: {
+          avatar: reqBody.avatar,
           name: reqBody.name,
           email: reqBody.email,
+          password: await bcrypt.hash(reqBody.password, 10),
           gender:
             reqBody.gender != null
               ? reqBody.gender
@@ -155,6 +160,7 @@ export class UserService {
 
   async createAndSave(reqBody, role, address, userType, session) {
     this.logger.log('creating new user');
+    console.log(reqBody);
     return await this.save(
       {
         _id: new mongoose.Types.ObjectId(),
@@ -184,6 +190,8 @@ export class UserService {
   }
 
   async save(userObj, session: ClientSession) {
+    console.log('insave');
+    console.log(userObj);
     const user = new this.userModel(userObj);
     this.logger.log('saving user...');
     return await user.save({ session });

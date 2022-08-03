@@ -1,5 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 
 @Schema()
@@ -116,7 +117,7 @@ export class User {
   @Prop({ type: Boolean, required: true, minlength: 3, maxlength: 4 })
   connected: boolean;
 
-  generateAuthtoken: Function;
+  generateAuthtoken: () => string;
 }
 
 function extractPermissions(role) {
@@ -130,6 +131,15 @@ function extractPermissions(role) {
   return simplePermissions;
 }
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre('save', async function (next) {
+  // modelDebugger('user pre hook invoked');
+  // const user: User = this;
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
 
 UserSchema.methods.generateAuthtoken = function () {
   const simplePermissions = extractPermissions(this.role);

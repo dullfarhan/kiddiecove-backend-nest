@@ -162,6 +162,7 @@ export class SchoolAdminService {
   }
 
   async updateAndSaveSchoolAdmin(schoolAdmin, reqBody, city, session) {
+    console.log(reqBody);
     return await this.setSchoolAdminAndSave(
       schoolAdmin,
       {
@@ -174,6 +175,8 @@ export class SchoolAdminService {
         'user.address.area_name': reqBody.area_name,
         'user.address.city': city.name,
         'user.updated_at': Date.now(),
+        ///////extra
+        // 'user.user_name': reqBody.user_name,
       },
       session,
     );
@@ -235,8 +238,22 @@ export class SchoolAdminService {
       userAddressId,
       {
         $set: {
-          address_details: reqBody.address_details,
-          area_name: reqBody.area_name,
+          name: reqBody.name,
+          salary: reqBody.salary,
+
+          user: {
+            gender: reqBody.gender,
+            email: reqBody.email,
+            phone_number: reqBody.phone_number,
+            address: {
+              address_details: reqBody.address_details,
+              area_name: reqBody.area_name,
+              city: city.name,
+            },
+            // updated_at: Date.now(),
+            // address_details: reqBody.address_details,
+            // area_name: reqBody.area_name,
+          },
           location: {
             type: 'Point',
             coordinates: [-122.5, 37.7],
@@ -296,8 +313,9 @@ export class SchoolAdminService {
         await this.userService.checkUserAlreadyRegisteredOrNot(
           updateSchoolAdminDto.user_name,
         )
-      )
+      ) {
         return Util.getBadRequest('User already registered', res);
+      }
       this.logger.log('user not registered');
       const city = await this.cityService.checkCityExistOrNot(
         updateSchoolAdminDto.city_id,
