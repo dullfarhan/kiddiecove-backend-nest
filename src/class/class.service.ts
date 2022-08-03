@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import mongoose, { Model, Mongoose } from 'mongoose';
@@ -23,7 +23,9 @@ export class ClassService {
     private readonly classModel: Model<ClassDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectConnection() private readonly connection: mongoose.Connection,
+    @Inject(forwardRef(() => TeacherService))
     private readonly teacherService: TeacherService,
+    @Inject(forwardRef(() => SchoolService))
     private readonly schoolService: SchoolService,
     private readonly currentUser: CurrentUser,
   ) {}

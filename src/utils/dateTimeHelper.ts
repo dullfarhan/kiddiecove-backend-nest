@@ -19,6 +19,7 @@ function getDate() {
   const mm = today.getMonth() < 10 ? '0' + today.getMonth() : today.getMonth();
   const yyyy = today.getFullYear();
 
+  console.log(mm);
   //   today = mm + ', ' + dd + ' ' + yyyy
   const todayStr: string = dd + '-' + mm + '-' + yyyy;
 

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import mongoose, { ClientSession, Model } from 'mongoose';
@@ -32,6 +32,7 @@ export class KidService {
     @InjectConnection() private readonly connection: mongoose.Connection,
     private readonly parentService: ParentService,
     private readonly currentUser: CurrentUser,
+    @Inject(forwardRef(() => ClassService))
     private readonly classService: ClassService,
   ) {}
 
@@ -543,5 +544,44 @@ export class KidService {
       },
       { session, new: true },
     );
+  }
+  async updateStatusToRegister(parentId, session) {
+    return (
+      await this,
+      this.kidModel.updateMany(
+        {
+          parent_id: parentId,
+          registration_status: RegistartionStatus.PENDING,
+        },
+        {
+          $set: {
+            registered: true,
+            registration_status: RegistartionStatus.REGISTERED,
+            updated_at: Date.now(),
+          },
+        },
+        { session, new: true },
+      )
+    );
+  }
+
+  async updateStatusToRegisterBySchoolAdmin(parentId, schoolId, session) {
+    const obj = await this.kidModel.updateMany(
+      {
+        parent_id: parentId,
+        registration_status: RegistartionStatus.PENDING,
+        school_id: schoolId,
+      },
+      {
+        $set: {
+          registered: true,
+          registration_status: RegistartionStatus.REGISTERED,
+          updated_at: Date.now(),
+        },
+      },
+      { session, new: true },
+    );
+    console.log(obj);
+    return obj;
   }
 }

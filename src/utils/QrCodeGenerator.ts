@@ -1,6 +1,6 @@
-import QRCode from 'qrcode';
-import Debug from 'debug';
-
+import { Logger } from '@nestjs/common';
+const QRCode = require('qrcode');
+const logger: Logger = new Logger('app:utility:qr-code-generator');
 const options = {
   width: 800,
   height: 600,
@@ -8,11 +8,13 @@ const options = {
 };
 
 const generateQR = async (text) => {
-  const utiltiyDebugger = Debug('app:utility:qr-code-generator');
+  console.log({ text });
   try {
-    return await QRCode.toDataURL(text, options);
+    logger.log('Generating qr code');
+    const obj = await QRCode.toDataURL(text, options);
+    return obj;
   } catch (err) {
-    utiltiyDebugger(err);
+    logger.log(err.message);
   }
 };
 

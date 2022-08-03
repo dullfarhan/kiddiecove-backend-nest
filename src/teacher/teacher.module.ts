@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TeacherService } from './teacher.service';
 import { TeacherController } from './teacher.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -25,7 +25,7 @@ import { UserModule } from 'src/user/user.module';
     AddressModule,
     RolesModule,
     CityModule,
-    SchoolModule,
+    forwardRef(() => SchoolModule),
     UserModule,
   ],
   controllers: [TeacherController],
