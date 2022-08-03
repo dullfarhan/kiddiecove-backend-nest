@@ -116,7 +116,7 @@ export class User {
   @Prop({ type: Boolean, required: true, minlength: 3, maxlength: 4 })
   connected: boolean;
 
-  generateAuthtoken: Function;
+  generateAuthtoken: () => string;
 }
 
 function extractPermissions(role) {

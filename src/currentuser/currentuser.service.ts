@@ -27,7 +27,6 @@ class CurrentUser {
   ) {
     try {
       let currentUser;
-      console.log('hello' + userType);
       this.logger.log('user id is ' + req.user._id);
       const user = await userModel.findById(req.user._id).select('-password');
       if (!user) Util.getBadResponse('Current User Not Found with given id');

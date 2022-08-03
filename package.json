@@ -37,7 +37,6 @@
     "expo-server-sdk": "^3.6.0",
     "helmet": "^5.1.0",
     "html-pdf": "^3.0.1",
-    "html-pdf-node": "^1.0.8",
     "http-status-codes": "^2.2.0",
     "mongoose": "^6.4.2",
     "node-sass": "^7.0.1",
@@ -45,7 +44,6 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
-    "pdfkit": "^0.13.0",
     "pug": "^3.0.2",
     "qrcode": "^1.5.0",
     "reflect-metadata": "^0.1.13",
@@ -54,8 +52,7 @@
     "scss": "^0.2.4",
     "swagger-ui-express": "^4.4.0",
     "tea-school": "^1.5.0",
-    "twilio": "^3.78.0",
-    "wkhtmltopdf": "^0.4.0"
+    "twilio": "^3.78.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
@@ -63,12 +60,10 @@
     "@nestjs/testing": "^8.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
-    "@types/html-pdf": "^3.0.0",
     "@types/jest": "27.5.0",
     "@types/node": "^16.0.0",
     "@types/passport-jwt": "^3.0.6",
     "@types/passport-local": "^1.0.34",
-    "@types/pdfkit": "^0.12.6",
     "@types/pug": "^2.0.6",
     "@types/qrcode": "^1.4.2",
     "@types/supertest": "^2.0.11",

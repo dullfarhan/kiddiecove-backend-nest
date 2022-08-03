@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ClassService } from './class.service';
 import { ClassController } from './class.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -13,9 +13,9 @@ import { SchoolModule } from 'src/school/school.module';
       { name: Class.name, schema: ClassSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    SchoolAdminModule,
-    TeacherModule,
-    SchoolModule,
+    forwardRef(() => SchoolAdminModule),
+    forwardRef(() => TeacherModule),
+    forwardRef(() => SchoolModule),
   ],
   controllers: [ClassController],
   providers: [ClassService],

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import {
@@ -8,6 +8,8 @@ import {
   Parent,
   AddressDocument,
   Address,
+  UserDocument,
+  User,
 } from 'src/Schemas';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
@@ -21,18 +23,28 @@ import { UserType } from 'src/utils/enums/UserType.enum';
 import generateQR from 'src/utils/QrCodeGenerator';
 import makePdf from 'src/utils/PdfGenerator';
 import Constant from 'src/utils/enums/Constant.enum';
+import CurrentUser from 'src/currentuser/currentuser.service';
+import { ParentService } from 'src/parent/parent.service';
+import { KidService } from 'src/kid/kid.service';
 
 @Injectable()
 export class SchoolService {
   constructor(
     @InjectConnection() private readonly connection: mongoose.Connection,
     @InjectModel(School.name)
-    private SchoolModel: Model<SchoolDocument>,
+    private readonly SchoolModel: Model<SchoolDocument>,
     @InjectModel(Address.name)
-    private AddressModel: Model<AddressDocument>,
+    private readonly AddressModel: Model<AddressDocument>,
+    @InjectModel(User.name)
+    private readonly UserModel: Model<UserDocument>,
     private readonly schoolAdminService: SchoolAdminService,
     private readonly cityService: CityService,
     private readonly addressService: AddressService,
+    private readonly parentService: ParentService,
+    @Inject(forwardRef(() => KidService))
+    private readonly kidService: KidService,
+    private readonly userService: UserService,
+    private readonly currentUser: CurrentUser,
   ) {}
   private readonly logger = new Logger(SchoolService.name);
   pageNumber = 1;
@@ -253,7 +265,7 @@ export class SchoolService {
       this.logger.log('Generating Pdf For School');
       console.log('School iD:', school._id);
       const qrCode = await generateQR(school._id.toString());
-      const obj = await makePdf(qrCode, school);
+      const obj = await makePdf(qrCode, school, res);
       return obj;
     } catch (ex) {
       this.logger.log(ex);
@@ -261,131 +273,144 @@ export class SchoolService {
     }
   }
 
-  // async getQrCodeForSchoolAdmin(req, res) {
-  //   try {
-  //     const response = await CurrentUser.getCurrentUser(
-  //       req,
-  //       UserType.SCHOOL_ADMIN,
-  //     );
-  //     if (response.status === Constant.FAIL)
-  //       return Util.getBadRequest(response.message, res);
-  //     this.logger.log('Current School Admin User Found');
-  //     const schoolAdmin = response.data;
-  //     if (schoolAdmin.registered !== true)
-  //       return Util.getBadRequest('School Admin Not Registered', res);
-  //     this.logger.log('School Admin is registered');
-  //     this.logger.log('checking if School with given id exist or not');
-  //     const school = await this.SchoolModel.findOne({
-  //       _id: schoolAdmin.school_id,
-  //     });
-  //     if (!school)
-  //       return Util.getBadRequest(
-  //         'School Not Found with given id For School Admin',
-  //         res,
-  //       );
-  //     this.logger.log('School exist');
-  //     this.logger.log('School Details Fetched Succesfully');
-  //     const pdf = await this.generateQrCode(req, res, school);
-  //     this.logger.log(school.name.replace(/\s/g, ''));
-  //     res.writeHead(200, {
-  //       'Content-Type': 'application/pdf',
-  //       'Content-Disposition':
-  //         'attachment; filename=' + school.name.replace(/\s/g, '') + '.pdf',
-  //       'Content-Length': pdf.length,
-  //     });
-  //     res.end(pdf);
-  //   } catch (ex) {
-  //     this.logger.log(ex);
-  //     return Util.getBadRequest(ex.message, res);
-  //   }
-  // }
+  async getQrCodeForSchoolAdmin(req, res) {
+    try {
+      const response = await this.currentUser.getCurrentUser(
+        req,
+        UserType.SCHOOL_ADMIN,
+        this.UserModel,
+      );
+      if (response.status === Constant.FAIL)
+        return Util.getBadRequest(response.message, res);
+      this.logger.log('Current School Admin User Found');
+      const schoolAdmin = response.data;
+      if (schoolAdmin.registered !== true)
+        return Util.getBadRequest('School Admin Not Registered', res);
+      this.logger.log('School Admin is registered');
+      this.logger.log('checking if School with given id exist or not');
+      const school = await this.SchoolModel.findOne({
+        _id: schoolAdmin.school_id,
+      });
+      if (!school)
+        return Util.getBadRequest(
+          'School Not Found with given id For School Admin',
+          res,
+        );
+      this.logger.log('School exist');
+      this.logger.log('School Details Fetched Succesfully');
+      const pdf = await this.generateQrCode(req, res, school);
+      this.logger.log(school.name.replace(/\s/g, ''));
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition':
+          'attachment; filename=' + school.name.replace(/\s/g, '') + '.pdf',
+        'Content-Length': pdf.length,
+      });
+      res.end(pdf);
+    } catch (ex) {
+      this.logger.log(ex);
+      return Util.getBadRequest(ex.message, res);
+    }
+  }
 
-  // async approveRequest(req, res) {
-  //   const session = await this.connection.startSession();
-  //   try {
-  //     session.startTransaction();
-  //     const parent = await parentService.checkParentExistOrNot(req.params.id);
-  //     if (!parent) return Util.getBadRequest('parent not found', res);
-  //     if (!parent.schools)
-  //       return Util.getBadRequest('parent not requested yet', res);
-  //     //make reuse of this code also using in post get by parent
-  //     const schoolIds = [];
-  //     for (const school of parent.schools) {
-  //       this.logger.log('hello' + school);
-  //       schoolIds.push(school.school_id);
-  //     }
-  //     console.log('this is' + schoolIds);
-  //     await parentService.updateStatusToRegister(parent, schoolIds, session);
-  //     await kidService.updateStatusToRegister(parent._id, session);
-  //     await this.userService.updateParentUserConnection(
-  //       parent.user_id,
-  //       session,
-  //     );
-  //     await session.commitTransaction();
-  //     return Util.getSimpleOkRequest('Parent Successfully Registered', res);
-  //   } catch (ex) {
-  //     this.logger.log('Error While Submitting Parent Request ' + ex);
-  //     await session.abortTransaction();
-  //     return Util.getBadRequest(ex.message, res);
-  //   } finally {
-  //     session.endSession();
-  //   }
-  // }
+  //to be checked && discussed
 
-  // async approveRequestBySchoolAdmin(req, res) {
-  //   const session = await this.connection.startSession();
-  //   try {
-  //     session.startTransaction();
-  //     const parent = await parentService.checkParentExistOrNot(req.params.id);
-  //     if (!parent) return Util.getBadRequest('parent not found', res);
-  //     if (!parent.schools)
-  //       return Util.getBadRequest('parent not requested yet', res);
-  //     //get school admin school
-  //     const response = await CurrentUser.getCurrentUser(
-  //       req,
-  //       UserType.SCHOOL_ADMIN,
-  //     );
-  //     if (response.status === Constant.FAIL)
-  //       return Util.getBadRequest(response.message, res);
-  //     this.logger.log('Current School Admin User Found');
-  //     const schoolAdmin = response.data;
-  //     if (schoolAdmin.registered !== true)
-  //       return Util.getBadRequest('School Admin Not Registered', res);
-  //     this.logger.log('School Admin is registered');
-  //     this.logger.log('checking if School with given id exist or not');
-  //     const school = await this.SchoolModel.findOne({
-  //       _id: schoolAdmin.school_id,
-  //     });
-  //     if (!school)
-  //       return Util.getBadRequest(
-  //         'School Not Found with given id For School Admin',
-  //         res,
-  //       );
-  //     this.logger.log('School Admin School exist');
-  //     await parentService.updateStatusToRegister(
-  //       parent._id,
-  //       school._id,
-  //       session,
-  //     );
-  //     await kidService.updateStatusToRegisterBySchoolAdmin(
-  //       parent._id,
-  //       school._id,
-  //       session,
-  //     );
-  //     await this.userService.updateParentUserConnection(
-  //       parent.user_id,
-  //       session,
-  //     );
-  //     await session.commitTransaction();
-  //     return Util.getSimpleOkRequest('Parent Successfully Registered', res);
-  //   } catch (ex) {
-  //     this.logger.log('Error While Submitting Parent Request ' + ex);
-  //     await session.abortTransaction();
-  //     return Util.getBadRequest(ex.message, res);
-  //   } finally {
-  //     session.endSession();
-  //   }
-  // }
+  async approveRequest(req, res) {
+    const session = await this.connection.startSession();
+    try {
+      session.startTransaction();
+      const parent = await this.parentService.checkParentExistOrNot(
+        req.params.id,
+      );
+      if (!parent) return Util.getBadRequest('parent not found', res);
+      if (!parent.schools)
+        return Util.getBadRequest('parent not requested yet', res);
+      //make reuse of this code also using in post get by parent
+      const schoolIds = [];
+      for (const school of parent.schools) {
+        this.logger.log('hello' + school);
+        schoolIds.push(school.school_id);
+      }
+      console.log('this is' + schoolIds);
+      await this.parentService.updateStatusToRegister(
+        parent,
+        schoolIds,
+        session,
+      );
+      await this.kidService.updateStatusToRegister(parent._id, session);
+      await this.userService.updateParentUserConnection(
+        parent.user_id,
+        session,
+      );
+      await session.commitTransaction();
+      return Util.getSimpleOkRequest('Parent Successfully Registered', res);
+    } catch (ex) {
+      this.logger.log('Error While Submitting Parent Request ' + ex);
+      await session.abortTransaction();
+      return Util.getBadRequest(ex.message, res);
+    } finally {
+      session.endSession();
+    }
+  }
+
+  //returns true even if no record is updated
+  async approveRequestBySchoolAdmin(req, res) {
+    const session = await this.connection.startSession();
+    try {
+      session.startTransaction();
+      const parent = await this.parentService.checkParentExistOrNot(
+        req.params.id,
+      );
+      if (!parent) return Util.getBadRequest('parent not found', res);
+      if (!parent.schools)
+        return Util.getBadRequest('parent not requested yet', res);
+      //get school admin school
+      const response = await this.currentUser.getCurrentUser(
+        req,
+        UserType.SCHOOL_ADMIN,
+        this.UserModel,
+      );
+      if (response.status === Constant.FAIL)
+        return Util.getBadRequest(response.message, res);
+      this.logger.log('Current School Admin User Found');
+      const schoolAdmin = response.data;
+      if (schoolAdmin.registered !== true)
+        return Util.getBadRequest('School Admin Not Registered', res);
+      this.logger.log('School Admin is registered');
+      this.logger.log('checking if School with given id exist or not');
+      const school = await this.SchoolModel.findOne({
+        _id: schoolAdmin.school_id,
+      });
+      if (!school)
+        return Util.getBadRequest(
+          'School Not Found with given id For School Admin',
+          res,
+        );
+      this.logger.log('School Admin School exist');
+      await this.parentService.updateStatusToRegister(
+        parent._id,
+        school._id,
+        session,
+      );
+      await this.kidService.updateStatusToRegisterBySchoolAdmin(
+        parent._id,
+        school._id,
+        session,
+      );
+      await this.userService.updateParentUserConnection(
+        parent.user_id,
+        session,
+      );
+      await session.commitTransaction();
+      return Util.getSimpleOkRequest('Parent Successfully Registered', res);
+    } catch (ex) {
+      this.logger.log('Error While Submitting Parent Request ' + ex);
+      await session.abortTransaction();
+      return Util.getBadRequest(ex.message, res);
+    } finally {
+      session.endSession();
+    }
+  }
 
   async createByAdmin(req, res) {
     //Joi validation checking
@@ -396,6 +421,7 @@ export class SchoolService {
     this.logger.log('req body is valid');
     try {
       session.startTransaction();
+      console.log({ BODY: req.body });
       if (await this.checkSchoolAlreadyRegisteredOrNot(req.body.campus_code))
         return Util.getBadRequest('School already created', res);
       this.logger.log('school not created');
@@ -473,9 +499,9 @@ export class SchoolService {
         phone_number: reqBody.phone_number,
         address: {
           _id: new mongoose.Types.ObjectId(),
-          address_details: reqBody.address_details,
-          area_name: reqBody.area_name,
-          city: city.name,
+          // address_details: reqBody.address_details,
+          // area_name: reqBody.area_name,
+          // city: city.name,
         },
         address_id: address._id,
         school_admin_name: schoolAdmin.name,
@@ -485,9 +511,13 @@ export class SchoolService {
     );
   }
 
-  async checkSchoolAlreadyRegisteredOrNot(campus_code) {
+  async checkSchoolAlreadyRegisteredOrNot(campusCode) {
     this.logger.log('checking if school already registered or not?');
-    return await this.SchoolModel.findOne({ campus_code: campus_code });
+    console.log({ campusCode });
+    const school = await this.SchoolModel.findOne({
+      campus_code: campusCode,
+    }).exec();
+    return school;
   }
 
   async setSchoolAndSave(school, schoolObj, session) {
@@ -538,25 +568,25 @@ export class SchoolService {
   //////////////////////////////////////////////////////////////////
   // this.logger.log = Debug('app:services:school');
 
-  create(createSchoolDto: CreateSchoolDto) {
-    return 'This action adds a new school';
-  }
+  // create(createSchoolDto: CreateSchoolDto) {
+  //   return 'This action adds a new school';
+  // }
 
-  findAll() {
-    return `This action returns all school`;
-  }
+  // findAll() {
+  //   return `This action returns all school`;
+  // }
 
-  findOne(id: number) {
-    return `This action returns a #${id} school`;
-  }
+  // findOne(id: number) {
+  //   return `This action returns a #${id} school`;
+  // }
 
-  update(id: number, updateSchoolDto: UpdateSchoolDto) {
-    return `This action updates a #${id} school`;
-  }
+  // update(id: number, updateSchoolDto: UpdateSchoolDto) {
+  //   return `This action updates a #${id} school`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} school`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} school`;
+  // }
 
   // async checkSchoolExistOrNot(
   //   school_id: mongoose.Types.ObjectId,

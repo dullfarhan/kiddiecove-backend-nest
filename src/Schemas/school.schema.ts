@@ -1,6 +1,8 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { CustomAddress, CustomAddressSchema } from './customAddress.schema';
 
+@Schema()
 export class School {
   _id: mongoose.Schema.Types.ObjectId;
 
@@ -109,10 +111,10 @@ export class School {
   delete: boolean;
 
   @Prop({
-    type: String, //to be determined
+    type: CustomAddressSchema,
     required: true,
   })
-  address: string;
+  address: CustomAddress;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

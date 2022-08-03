@@ -7,10 +7,11 @@ import * as pug from 'pug';
 import * as pdf from 'html-pdf';
 import { join } from 'path';
 import { writeFileSync } from 'fs';
+import { Stream } from 'stream';
 
 const logger: Logger = new Logger('PDF GENERATOR');
 
-async function makePdf(bufferString, school) {
+async function makePdf(bufferString, school, res) {
   const data = pug.renderFile(
     join(
       '/home/faisal/work/nest/kiddiecove-backend-nest/src/views',
@@ -29,7 +30,20 @@ async function makePdf(bufferString, school) {
       schoolDescription: school.description,
     },
   );
-  return data;
+
+  pdf
+    .create(data, {
+      orientation: 'portrait',
+      // height: '11in',
+      // width: '8.5in',
+      format: 'A4',
+    })
+    .toStream((err, stream: Stream) => {
+      if (err) return err.message;
+      else {
+        stream.pipe(res);
+      }
+    });
 }
 
 // async function makePdf(bufferString, school) {
