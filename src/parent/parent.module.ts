@@ -16,6 +16,7 @@ import {
   ParentSchema,
 } from 'src/Schemas';
 import { MongooseModule } from '@nestjs/mongoose';
+import { KidModule } from 'src/kid/kid.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Parent.name, schema: ParentSchema }]),
@@ -26,6 +27,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     AddressModule,
     UserModule,
     CityModule,
+    forwardRef(() => SchoolModule),
+    forwardRef(() => KidModule),
     forwardRef(() => SchoolModule),
   ],
   controllers: [ParentController],

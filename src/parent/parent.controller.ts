@@ -15,15 +15,22 @@ import { ParentService } from './parent.service';
 import { CreateParentDto } from './dto/create-parent.dto';
 import { RequestParentDto } from './dto/request-parent.dto';
 import { Request, Response } from 'express';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PermissionGuard } from 'src/Guard/permission.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { REGISTRATION_STATUS } from 'src/utils/enums/Registration_status';
 
 @ApiTags('Parent')
 @Controller('parent')
 export class ParentController {
   constructor(private readonly parentService: ParentService) {}
 
+  @ApiQuery({ name: 'registration_status', enum: REGISTRATION_STATUS })
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
@@ -32,6 +39,7 @@ export class ParentController {
     this.parentService.getAllParentsForAdmin(req, res);
   }
 
+  @ApiQuery({ name: 'registration_status', enum: REGISTRATION_STATUS })
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
@@ -69,7 +77,31 @@ export class ParentController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/get')
   getSelfDetailsForParent(@Req() req: Request, @Res() res: Response) {
-    // this.parentService.getSelfDetailsForParent(req, res);
+    return this.parentService.getSelfDetailsForParent(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/create/by/parent')
+  createParentByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createParentDto: CreateParentDto,
+  ) {
+    this.parentService.createParentByAdmin(req, res);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/request/to/join')
+  requestToJoin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() requestParentDto: RequestParentDto,
+  ) {
+    this.parentService.requestToJoin(req, res);
   }
 
   @ApiBearerAuth()
@@ -130,29 +162,5 @@ export class ParentController {
     @Param('id') id: string,
   ) {
     this.parentService.deleteByParent(req, res);
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(PermissionGuard)
-  @UseGuards(AuthGuard('jwt'))
-  @Post('/create/by/parent')
-  createByParent(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() createParentDto: CreateParentDto,
-  ) {
-    this.parentService.createByParent(req, res);
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(PermissionGuard)
-  @UseGuards(AuthGuard('jwt'))
-  @Post('/request/to/join')
-  requestToJoin(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() requestParentDto: RequestParentDto,
-  ) {
-    // this.parentService.requestToJoin(req, res);
   }
 }

@@ -6,16 +6,22 @@ import { Type } from 'class-transformer';
 import { IsMongoId, IsNotEmpty } from 'class-validator';
 import mongoose from 'mongoose';
 
-class Submitting_info {
+class kid_id {
   @ApiProperty({ type: String, required: true })
   @IsMongoId()
   @IsNotEmpty()
   kid_id: mongoose.Types.ObjectId;
+}
 
+class class_id {
   @ApiProperty({ type: String, required: true })
   @IsMongoId()
   @IsNotEmpty()
   class_id: mongoose.Types.ObjectId;
+}
+
+class Submitting_info {
+  // static type submitting_info: (kid_id | class_id)[];
 }
 
 export class RequestParentDto {
@@ -24,7 +30,7 @@ export class RequestParentDto {
   @IsNotEmpty()
   school_id: mongoose.Types.ObjectId;
 
-  @ApiProperty({ type: Submitting_info, required: true })
+  @ApiProperty({ type: [kid_id, class_id], required: true })
   @Type(() => Submitting_info)
-  submitting_info: Submitting_info;
+  submitting_info: (kid_id | class_id)[];
 }

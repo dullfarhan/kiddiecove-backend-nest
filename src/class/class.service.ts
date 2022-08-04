@@ -27,6 +27,7 @@ export class ClassService {
     private readonly teacherService: TeacherService,
     @Inject(forwardRef(() => SchoolService))
     private readonly schoolService: SchoolService,
+    @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
   ) {}
 

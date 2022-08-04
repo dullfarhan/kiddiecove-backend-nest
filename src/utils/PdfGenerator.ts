@@ -12,24 +12,20 @@ import { Stream } from 'stream';
 const logger: Logger = new Logger('PDF GENERATOR');
 
 async function makePdf(bufferString, school, res) {
-  const data = pug.renderFile(
-    join(
-      '/home/faisal/work/nest/kiddiecove-backend-nest/src/views',
-      'pdf-template.pug',
-    ),
-    {
-      buffer: bufferString.toString('base64'),
-      datePrinted: dateTimeHelper.getDate(),
-      schoolName: school.name,
-      schoolAdminName: school.school_admin_name,
-      schoolAddressDetails: school.address.address_details,
-      schoolAreaName: school.address.area_name,
-      schoolCity: school.address.city,
-      schoolBranchName: school.branch_name,
-      schoolPhoneNumber: school.phone_number,
-      schoolDescription: school.description,
-    },
-  );
+  const url = '/home/faisal/work/nest/kiddiecove-backend-nest/src/views';
+
+  const data = pug.renderFile(join(url, 'pdf-template.pug'), {
+    buffer: bufferString.toString('base64'),
+    datePrinted: dateTimeHelper.getDate(),
+    schoolName: school.name,
+    schoolAdminName: school.school_admin_name,
+    schoolAddressDetails: school.address.address_details,
+    schoolAreaName: school.address.area_name,
+    schoolCity: school.address.city,
+    schoolBranchName: school.branch_name,
+    schoolPhoneNumber: school.phone_number,
+    schoolDescription: school.description,
+  });
 
   pdf
     .create(data, {
@@ -38,6 +34,7 @@ async function makePdf(bufferString, school, res) {
       // width: '8.5in',
       format: 'A4',
     })
+
     .toStream((err, stream: Stream) => {
       if (err) return err.message;
       else {

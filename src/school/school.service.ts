@@ -40,10 +40,12 @@ export class SchoolService {
     private readonly schoolAdminService: SchoolAdminService,
     private readonly cityService: CityService,
     private readonly addressService: AddressService,
+    @Inject(forwardRef(() => ParentService))
     private readonly parentService: ParentService,
     @Inject(forwardRef(() => KidService))
     private readonly kidService: KidService,
     private readonly userService: UserService,
+    @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
   ) {}
   private readonly logger = new Logger(SchoolService.name);
@@ -300,13 +302,13 @@ export class SchoolService {
       this.logger.log('School Details Fetched Succesfully');
       const pdf = await this.generateQrCode(req, res, school);
       this.logger.log(school.name.replace(/\s/g, ''));
-      res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition':
-          'attachment; filename=' + school.name.replace(/\s/g, '') + '.pdf',
-        'Content-Length': pdf.length,
-      });
-      res.end(pdf);
+      // res.writeHead(200, {
+      //   'Content-Type': 'application/pdf',
+      //   'Content-Disposition':
+      //     'attachment; filename=' + school.name.replace(/\s/g, '') + '.pdf',
+      //   'Content-Length': pdf.length,
+      // });
+      return pdf;
     } catch (ex) {
       this.logger.log(ex);
       return Util.getBadRequest(ex.message, res);
@@ -323,7 +325,7 @@ export class SchoolService {
         req.params.id,
       );
       if (!parent) return Util.getBadRequest('parent not found', res);
-      if (!parent.schools)
+      if (parent.schools?.length == 0)
         return Util.getBadRequest('parent not requested yet', res);
       //make reuse of this code also using in post get by parent
       const schoolIds = [];
@@ -362,7 +364,7 @@ export class SchoolService {
         req.params.id,
       );
       if (!parent) return Util.getBadRequest('parent not found', res);
-      if (!parent.schools)
+      if (parent.schools?.length == 0)
         return Util.getBadRequest('parent not requested yet', res);
       //get school admin school
       const response = await this.currentUser.getCurrentUser(

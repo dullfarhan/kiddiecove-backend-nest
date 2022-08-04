@@ -62,8 +62,7 @@ export class SchoolController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/qr-code/for/school/admin')
   getQrCodeForSchoolAdmin(@Req() req: Request, @Res() res: Response) {
-    // this.schoolService.getQrCodeForSchoolAdmin(req, res);
-    //issue: pdf is being streamed to response whereas this route required it to be a file
+    this.schoolService.getQrCodeForSchoolAdmin(req, res);
   }
 
   @ApiBearerAuth()

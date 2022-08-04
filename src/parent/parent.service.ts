@@ -25,13 +25,12 @@ import { GenderType } from 'src/utils/enums/GenderType';
 import { ParentType } from 'src/utils/enums/ParentType';
 import { RegistartionStatus } from 'src/utils/enums/RegistartionStatus';
 import CurrentUser from 'src/currentuser/currentuser.service';
+import { KidService } from 'src/kid/kid.service';
 // import UserType from 'src/utils/enums/UserType.enum';
 
 // mongo req return no data
 @Injectable()
 export class ParentService {
-  pageNumber = 1;
-  pageSize = 10;
   constructor(
     @InjectModel(User.name)
     private readonly UserModel: Model<UserDocument>,
@@ -47,15 +46,18 @@ export class ParentService {
     private readonly rolesService: RolesService,
     @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
+    private readonly kidService: KidService,
+    private readonly schoolService: SchoolService,
   ) {}
+  pageNumber = 1;
+  pageSize = 10;
   private readonly logger = new Logger(ParentService.name);
-  getAllParents(req, res, filter, selects) {
+  getAllParents(req, res, filter) {
     this.logger.log('getting Parents list');
     this.ParentModel.aggregate(filter)
-      // .skip((pageNumber - 1) * pageSize)
-      // .limit(pageSize)
-      // .sort({ name: 1 })
-      // .select(selects)
+      .skip((this.pageNumber - 1) * this.pageSize)
+      .limit(this.pageSize)
+      .sort({ name: 1 })
       .then((result) => {
         this.logger.log(result);
         return Util.getOkRequest(
@@ -72,27 +74,25 @@ export class ParentService {
 
   getAllParentsForAdmin(req, res) {
     this.logger.log('getting Parents list for admin');
-    this.getAllParents(
-      req,
-      res,
-      [
-        { $match: { enable: true } },
-        { $unwind: '$schools' },
-        {
-          $match: {
-            'schools.registration_status': req.query.registration_status,
-          },
-        },
-      ],
+    this.getAllParents(req, res, [
+      { $match: { enable: true } },
+      { $unwind: '$schools' },
       {
-        name: 1,
-        type: 1,
-        user: 1,
-        enable: 1,
-        deleted: 1,
-        schools: 1,
+        $match: {
+          'schools.registration_status': req.query.registration_status,
+        },
       },
-    );
+      {
+        $project: {
+          name: 1,
+          type: 1,
+          user: 1,
+          enable: 1,
+          deleted: 1,
+          schools: 1,
+        },
+      },
+    ]);
   }
 
   async getAllParentsForSchoolAdmin(req, res) {
@@ -106,34 +106,33 @@ export class ParentService {
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
-    this.getAllParents(
-      req,
-      res,
-      [
-        { $match: { enable: true } },
-        { $unwind: '$schools' },
-        {
-          $match: {
-            'schools.school_id': schoolAdmin.school_id,
-            'schools.registration_status': req.query.registration_status,
-          },
-        },
-      ],
+    this.getAllParents(req, res, [
+      { $match: { enable: true } },
+      { $unwind: '$schools' },
       {
-        name: 1,
-        type: 1,
-        user: 1,
-        enable: 1,
-        deleted: 1,
-        schools: 1,
+        $match: {
+          'schools.school_id': schoolAdmin.school_id,
+          'schools.registration_status': req.query.registration_status,
+        },
       },
-    );
+      {
+        $project: {
+          name: 1,
+          type: 1,
+          user: 1,
+          enable: 1,
+          deleted: 1,
+          schools: 1,
+        },
+      },
+    ]);
   }
 
   async getParent(req, res, filter) {
     try {
       this.logger.log('checking if Parent with given id exist or not');
-      const parent = await this.ParentModel.find(filter);
+      const parent = await this.ParentModel.aggregate(filter);
+      console.log({ parent });
       if (!parent)
         return Util.getBadRequest('Parent Not Found with given id', res);
       this.logger.log('Parent exist');
@@ -151,13 +150,27 @@ export class ParentService {
   }
 
   async getParentForAdmin(req, res) {
+    const id = new mongoose.Types.ObjectId(req.params.id);
     this.logger.log('getting Parent detail for admin');
     this.getParent(req, res, [
-      { $match: { enable: true, _id: req.params._id } },
+      { $match: { enable: true, _id: id } },
       { $unwind: '$schools' },
       {
         $match: {
           'schools.registered': true,
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          enable: 1,
+          type: 1,
+          _id: 1,
+          user: 1,
+          user_id: 1,
+          create_at: 1,
+          updated: 1,
+          schools: 1,
         },
       },
     ]);
@@ -174,8 +187,9 @@ export class ParentService {
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
+    const id = new mongoose.Types.ObjectId(req.params.id);
     this.getParent(req, res, [
-      { $match: { enable: true, _id: req.params._id } },
+      { $match: { enable: true, _id: id } },
       { $unwind: '$schools' },
       {
         $match: {
@@ -183,21 +197,34 @@ export class ParentService {
           'schools.registered': true,
         },
       },
+      {
+        $project: {
+          name: 1,
+          enable: 1,
+          type: 1,
+          _id: 1,
+          user: 1,
+          user_id: 1,
+          create_at: 1,
+          updated: 1,
+          schools: 1,
+        },
+      },
     ]);
   }
 
-  // async getSelfDetailsForParent(req, res) {
-  //   this.logger.log('getting self details for parent');
-  //   const response = await CurrentUser.getCurrentUser(
-  //     req,
-  //     UserType.PARENT,
-  //     this.UserModel,
-  //   );
-  //   if (response.status === Constant.FAIL)
-  //     return Util.getBadRequest(response.message, res);
-  //   this.logger.log('Current Parent User Found');
-  //   return Util.getOkRequest(response.data, 'Current Parent User Found', res);
-  // }
+  async getSelfDetailsForParent(req, res) {
+    this.logger.log('getting self details for parent');
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.PARENT,
+      this.UserModel,
+    );
+    if (response.status === Constant.FAIL)
+      return Util.getBadRequest(response.message, res);
+    this.logger.log('Current Parent User Found');
+    return Util.getOkRequest(response.data, 'Current Parent User Found', res);
+  }
 
   async updateByParent(req, res) {
     const session = await this.connection.startSession();
@@ -427,7 +454,7 @@ export class ParentService {
     );
   }
 
-  async createByParent(req, res) {
+  async createParentByAdmin(req, res) {
     //Joi validation checking
     console.log(JSON.stringify(req.body, null, 4));
     const session = await this.connection.startSession();
@@ -478,55 +505,55 @@ export class ParentService {
     }
   }
 
-  // async requestToJoin(req, res) {
-  //   const session = await this.connection.startSession();
-  //   this.logger.log('validating req body');
-  //   this.logger.log(JSON.stringify(req.body, null, 4));
-  //   // const { error } = validateParentRequest(req.body);
-  //   // if (error) return Util.getBadRequest(error.details[0].message, res);
-  //   this.logger.log('req body is valid');
-  //   try {
-  //     session.startTransaction();
-  //     const response = await this.currentUser.getCurrentUser(
-  //       req,
-  //       UserType.PARENT,
-  //       this.UserModel,
-  //     );
-  //     if (response.status === Constant.FAIL)
-  //       return Util.getBadRequest(response.message, res);
-  //     this.logger.log('Current Parent User Found');
-  //     let parent = response.data;
-  //     if (!parent.schools) this.logger.log('parent not registered');
-  //     const school = await this.schoolService.checkSchoolExistOrNot(
-  //       req.body.school_id,
-  //     );
-  //     if (!school) return Util.getBadRequest('School Not Found', res);
-  //     const checkExistence = await this.checkParentExistenceWithSchool(
-  //       parent._id,
-  //       school._id,
-  //     );
-  //     if (!checkExistence)
-  //       parent = await this.updateStatusToPending(parent, school, session);
-  //     else
-  //       this.logger.log(
-  //         'Parent Already requested for this school ' +
-  //           JSON.stringify(checkExistence, null, 4),
-  //       );
-  //     await kidService.updateStatusToPending(
-  //       req.body.submitting_info,
-  //       school,
-  //       session,
-  //     );
-  //     await session.commitTransaction();
-  //     return Util.getSimpleOkRequest('Request Submitted Succesfully', res);
-  //   } catch (ex) {
-  //     this.logger.log('Error While Submitting Parent Request ' + ex);
-  //     await session.abortTransaction();
-  //     return Util.getBadRequest(ex.message, res);
-  //   } finally {
-  //     session.endSession();
-  //   }
-  // }
+  async requestToJoin(req, res) {
+    const session = await this.connection.startSession();
+    this.logger.log('validating req body');
+    this.logger.log(JSON.stringify(req.body, null, 4));
+    // const { error } = validateParentRequest(req.body);
+    // if (error) return Util.getBadRequest(error.details[0].message, res);
+    this.logger.log('req body is valid');
+    try {
+      session.startTransaction();
+      const response = await this.currentUser.getCurrentUser(
+        req,
+        UserType.PARENT,
+        this.UserModel,
+      );
+      if (response.status === Constant.FAIL)
+        return Util.getBadRequest(response.message, res);
+      this.logger.log('Current Parent User Found');
+      let parent = response.data;
+      if (!parent.schools) this.logger.log('parent not registered');
+      const school = await this.schoolService.checkSchoolExistOrNot(
+        req.body.school_id,
+      );
+      if (!school) return Util.getBadRequest('School Not Found', res);
+      const checkExistence = await this.checkParentExistenceWithSchool(
+        parent._id,
+        school._id,
+      );
+      if (!checkExistence)
+        parent = await this.updateStatusToPending(parent, school, session);
+      else
+        this.logger.log(
+          'Parent Already requested for this school ' +
+            JSON.stringify(checkExistence, null, 4),
+        );
+      await this.kidService.updateStatusToPending(
+        req.body.submitting_info,
+        school,
+        session,
+      );
+      await session.commitTransaction();
+      return Util.getSimpleOkRequest('Request Submitted Succesfully', res);
+    } catch (ex) {
+      this.logger.log('Error While Submitting Parent Request ' + ex);
+      await session.abortTransaction();
+      return Util.getBadRequest(ex.message, res);
+    } finally {
+      session.endSession();
+    }
+  }
 
   async save(parentObj, session) {
     this.logger.log('creating new Parent');

@@ -30,7 +30,9 @@ export class KidService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Class.name) private readonly classModel: Model<ClassDocument>,
     @InjectConnection() private readonly connection: mongoose.Connection,
+    @Inject(forwardRef(() => ParentService))
     private readonly parentService: ParentService,
+    @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
     @Inject(forwardRef(() => ClassService))
     private readonly classService: ClassService,
@@ -565,6 +567,7 @@ export class KidService {
     );
   }
 
+  //no check applied
   async updateStatusToRegisterBySchoolAdmin(parentId, schoolId, session) {
     const obj = await this.kidModel.updateMany(
       {
@@ -581,7 +584,6 @@ export class KidService {
       },
       { session, new: true },
     );
-    console.log(obj);
     return obj;
   }
 }
