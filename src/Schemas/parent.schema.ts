@@ -72,7 +72,7 @@ export class Parent {
   })
   deleted: boolean;
 
-  @Prop({ type: MongooseSchema.Types.Array })
+  @Prop()
   schools: CustomParentSchool[];
 }
 

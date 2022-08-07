@@ -505,11 +505,14 @@ export class KidService {
 
   async updateStatusToPending(submittingInfo, school, session) {
     this.logger.log('updating pending status for Kids');
+
     for (var info of submittingInfo) {
+      console.log('CLASS ID', info.class_id);
       var standard = await this.classService.checkClassExistOrNot(
         info.class_id,
       );
       if (!standard) continue;
+      this.logger.log('class found!');
       await this.kidModel.findByIdAndUpdate(
         info.kid_id,
         {

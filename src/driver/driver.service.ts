@@ -106,7 +106,7 @@ export class DriverService {
     this.logger.log('getting Drivers list for school admin');
     const response = await this.currentUser.getCurrentUser(
       req,
-      UserType.DRIVER,
+      UserType.SCHOOL_ADMIN,
       this.userModel,
     );
     this.logger.log('Response: ', response.status);

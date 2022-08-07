@@ -229,12 +229,10 @@ export class ParentService {
   async updateByParent(req, res) {
     const session = await this.connection.startSession();
     this.logger.log('validating req body');
-    // const { error } = validateParent(req.body);
-    // if (error) return Util.getBadRequest(error.details[0].message, res);
     this.logger.log('req body is valid');
     try {
       session.startTransaction();
-      this.logger.log('getting current parent uself details forser');
+      this.logger.log('getting current parent user details');
       const response = await this.currentUser.getCurrentUser(
         req,
         UserType.PARENT,
@@ -280,7 +278,7 @@ export class ParentService {
     this.logger.log('req body is valid');
     try {
       session.startTransaction();
-      this.logger.log('getting current parent uself details forser');
+      this.logger.log('getting current parent user details');
       const response = await this.currentUser.getCurrentUser(
         req,
         UserType.PARENT,
@@ -356,89 +354,90 @@ export class ParentService {
     }
   }
 
-  // async deleteByAdmin(req, res) {
-  //   const session = await this.connection.startSession();
+  async deleteByAdmin(req, res) {
+    const session = await this.connection.startSession();
+    const schoolId = new mongoose.Types.ObjectId(req.query.school_id);
+    const parentId = new mongoose.Types.ObjectId(req.params.id);
+    try {
+      session.startTransaction();
+      const parent = await this.removeSchool(parentId, schoolId, session);
+      if (!parent)
+        return Util.getBadRequest('Failed To Delete Parent From School', res);
+      else {
+        this.logger.log('Parent found!');
+      }
+      await this.kidService.removeSchoolDueToParentRemoval(
+        parentId,
+        schoolId,
+        session,
+      );
+      this.logger.log('Parent Successfully Deleted From School');
+      await session.commitTransaction();
+      return Util.getSimpleOkRequest(
+        'Parent Successfully deleted From School',
+        res,
+      );
+    } catch (ex) {
+      this.logger.log(ex);
+      await session.abortTransaction();
+      return Util.getBadRequest(ex.message, res);
+    } finally {
+      session.endSession();
+    }
+  }
 
-  //   try {
-  //     session.startTransaction();
-  //     const parent = await this.removeSchool(
-  //       req.params.id,
-  //       req.query.school_id,
-  //       session,
-  //     );
-  //     if (!parent)
-  //       return Util.getBadRequest('Failed To Delete Parent From School', res);
-  //     await kidService.removeSchoolDueToParentRemoval(
-  //       parent._id,
-  //       req.query.school_id,
-  //       session,
-  //     );
-  //     this.logger.log('Parent Successfully Deleted From School');
-  //     await session.commitTransaction();
-  //     return Util.getSimpleOkRequest(
-  //       'Parent Successfully deleted From School',
-  //       res,
-  //     );
-  //   } catch (ex) {
-  //     this.logger.log(ex);
-  //     await session.abortTransaction();
-  //     return Util.getBadRequest(ex.message, res);
-  //   } finally {
-  //     session.endSession();
-  //   }
-  // }
-
-  // async deleteBySchoolAdmin(req, res) {
-  //   const session = await this.connection.startSession();
-  //   try {
-  //     session.startTransaction();
-  //     const response = await this.currentUser.getCurrentUser(
-  //       req,
-  //       UserType.SCHOOL_ADMIN,
-  //       this.UserModel,
-  //     );
-  //     if (response.status === Constant.FAIL)
-  //       return Util.getBadRequest(response.message, res);
-  //     this.logger.log('Current School Admin User Found');
-  //     const schoolAdmin = response.data;
-  //     if (schoolAdmin.registered !== true)
-  //       return Util.getBadRequest('School Admin Not Registered', res);
-  //     this.logger.log('School Admin is registered');
-  //     let parent = await this.checkParentExistenceWithSchool(
-  //       req.params.id,
-  //       schoolAdmin.school_id,
-  //     );
-  //     if (!parent)
-  //       return Util.getBadRequest('Parent Not Exist With This School', res);
-  //     parent = await this.removeSchool(
-  //       parent.id,
-  //       schoolAdmin.school_id,
-  //       session,
-  //     );
-  //     if (!parent)
-  //       return Util.getBadRequest('Failed To Delete Parent From School', res);
-  //     await kidService.removeSchoolDueToParentRemoval(
-  //       parent._id,
-  //       schoolAdmin.school_id,
-  //       session,
-  //     );
-  //     this.logger.log('Parent Successfully Deleted From School');
-  //     await session.commitTransaction();
-  //     return Util.getSimpleOkRequest(
-  //       'Parent Successfully deleted From School',
-  //       res,
-  //     );
-  //   } catch (ex) {
-  //     this.logger.log(ex);
-  //     await session.abortTransaction();
-  //     return Util.getBadRequest(ex.message, res);
-  //   } finally {
-  //     session.endSession();
-  //   }
-  // }
+  async deleteBySchoolAdmin(req, res) {
+    const session = await this.connection.startSession();
+    try {
+      session.startTransaction();
+      const response = await this.currentUser.getCurrentUser(
+        req,
+        UserType.SCHOOL_ADMIN,
+        this.UserModel,
+      );
+      if (response.status === Constant.FAIL)
+        return Util.getBadRequest(response.message, res);
+      this.logger.log('Current School Admin User Found');
+      const schoolAdmin = response.data;
+      if (schoolAdmin.registered !== true)
+        return Util.getBadRequest('School Admin Not Registered', res);
+      this.logger.log('School Admin is registered');
+      let parent = await this.checkParentExistenceWithSchool(
+        req.params.id,
+        schoolAdmin.school_id,
+      );
+      if (!parent)
+        return Util.getBadRequest('Parent Not Exist With This School', res);
+      parent = await this.removeSchool(
+        parent.id,
+        schoolAdmin.school_id,
+        session,
+      );
+      if (!parent)
+        return Util.getBadRequest('Failed To Delete Parent From School', res);
+      await this.kidService.removeSchoolDueToParentRemoval(
+        parent._id,
+        schoolAdmin.school_id,
+        session,
+      );
+      this.logger.log('Parent Successfully Deleted From School');
+      await session.commitTransaction();
+      return Util.getSimpleOkRequest(
+        'Parent Successfully deleted From School',
+        res,
+      );
+    } catch (ex) {
+      this.logger.log(ex);
+      await session.abortTransaction();
+      return Util.getBadRequest(ex.message, res);
+    } finally {
+      session.endSession();
+    }
+  }
 
   async removeSchool(id, schoolId, session) {
-    return await this.ParentModel.findByIdAndUpdate(
+    console.log({ schoolId });
+    const obj = await this.ParentModel.findByIdAndUpdate(
       id,
       {
         $pull: {
@@ -452,6 +451,8 @@ export class ParentService {
       },
       { session, new: true },
     );
+    console.log('OBJ', obj);
+    return obj;
   }
 
   async createParentByAdmin(req, res) {
@@ -523,7 +524,7 @@ export class ParentService {
         return Util.getBadRequest(response.message, res);
       this.logger.log('Current Parent User Found');
       let parent = response.data;
-      if (!parent.schools) this.logger.log('parent not registered');
+      if (parent.schools.length == 0) this.logger.log('parent not registered');
       const school = await this.schoolService.checkSchoolExistOrNot(
         req.body.school_id,
       );
@@ -534,11 +535,16 @@ export class ParentService {
       );
       if (!checkExistence)
         parent = await this.updateStatusToPending(parent, school, session);
-      else
+      else {
         this.logger.log(
           'Parent Already requested for this school ' +
             JSON.stringify(checkExistence, null, 4),
         );
+        return Util.getBadRequest(
+          'Parent already requested for this school',
+          res,
+        );
+      }
       await this.kidService.updateStatusToPending(
         req.body.submitting_info,
         school,
@@ -632,18 +638,28 @@ export class ParentService {
   }
 
   async updateStatusToPending(parent, school, session) {
-    const customParentSchool: CustomParentSchool = {
-      school_id: school._id,
-      school_name: school.name,
-      registration_status: RegistartionStatus.PENDING,
-    };
-    const scl: School = {
+    const customParentSchool = [
+      {
+        school_id: school._id,
+        school_name: school.name,
+        registration_status: RegistartionStatus.PENDING,
+        registered: false,
+      },
+    ];
+    const scl = {
       schools: customParentSchool,
     };
     return await this.ParentModel.findByIdAndUpdate(
       parent._id,
       {
-        $push: { scl },
+        $push: {
+          schools: {
+            school_id: school._id,
+            school_name: school.name,
+            registration_status: RegistartionStatus.PENDING,
+            registered: false,
+          },
+        },
         $set: {
           updated_at: Date.now(),
           'user.updated_at': Date.now(),

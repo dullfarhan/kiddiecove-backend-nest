@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Put,
@@ -15,12 +14,7 @@ import { ParentService } from './parent.service';
 import { CreateParentDto } from './dto/create-parent.dto';
 import { RequestParentDto } from './dto/request-parent.dto';
 import { Request, Response } from 'express';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PermissionGuard } from 'src/Guard/permission.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { REGISTRATION_STATUS } from 'src/utils/enums/Registration_status';
@@ -80,9 +74,6 @@ export class ParentController {
     return this.parentService.getSelfDetailsForParent(req, res);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(PermissionGuard)
-  @UseGuards(AuthGuard('jwt'))
   @Post('/create/by/parent')
   createParentByAdmin(
     @Req() req: Request,
@@ -128,6 +119,7 @@ export class ParentController {
     this.parentService.updateDirectlyByParent(req, res);
   }
 
+  @ApiQuery({ name: 'school_id' })
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
@@ -137,7 +129,7 @@ export class ParentController {
     @Res() res: Response,
     @Param('id') id: string,
   ) {
-    // this.parentService.deleteByAdmin(req, res);
+    this.parentService.deleteByAdmin(req, res);
   }
 
   @ApiBearerAuth()
@@ -149,7 +141,7 @@ export class ParentController {
     @Res() res: Response,
     @Param('id') id: string,
   ) {
-    // this.parentService.deleteBySchoolAdmin(req, res);
+    this.parentService.deleteBySchoolAdmin(req, res);
   }
 
   @ApiBearerAuth()

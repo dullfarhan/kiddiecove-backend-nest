@@ -133,11 +133,7 @@ function extractPermissions(role) {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', async function (next) {
-  // modelDebugger('user pre hook invoked');
-  // const user: User = this;
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 

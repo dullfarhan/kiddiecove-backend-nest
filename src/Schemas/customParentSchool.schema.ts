@@ -1,10 +1,10 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
-export class CustomParentSchool extends Document {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: false })
-  _id: mongoose.Schema.Types.ObjectId;
-
+// @Schema()
+export class CustomParentSchool {
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, required: false })
+  // _id: mongoose.Schema.Types.ObjectId;
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School' })
   school_id: mongoose.Schema.Types.ObjectId;
 
@@ -36,7 +36,7 @@ export class CustomParentSchool extends Document {
   registration_status: string;
 }
 
-export const CustomParentSchoolSchema =
-  SchemaFactory.createForClass(CustomParentSchool);
+// export const CustomParentSchoolSchema =
+//   SchemaFactory.createForClass(CustomParentSchool);
 
-export type CustomParentSchoolDocument = CustomParentSchool & Document;
+// export type CustomParentSchoolDocument = CustomParentSchool & Document;
