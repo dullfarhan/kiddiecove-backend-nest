@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import {
-  IsDataURI,
+  IsUrl,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -44,7 +44,7 @@ export class UpdateKidDto extends PartialType(CreateKidDto) {
   gender: string;
 
   @ApiProperty({ type: String, required: true })
-  @IsDataURI()
+  @IsUrl()
   @IsOptional()
   avatar: string;
 }

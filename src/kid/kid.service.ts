@@ -265,6 +265,10 @@ export class KidService {
         age: updateKidDto.age,
         updated_at: Date.now(),
         gender: updateKidDto.gender,
+        avatar:
+          updateKidDto.avatar !== undefined
+            ? updateKidDto.avatar
+            : 'https://i.ibb.co/hcV96cm/pp-boy.png',
         birthday_date: updateKidDto.birthday_date,
       },
       session,

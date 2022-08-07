@@ -40,7 +40,7 @@ export class Class {
     set: (v: number): number => Math.round(v),
     get: (v: number): number => Math.round(v),
   })
-  strength: number;
+  strenght: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true })
   school_id: mongoose.Schema.Types.ObjectId;
