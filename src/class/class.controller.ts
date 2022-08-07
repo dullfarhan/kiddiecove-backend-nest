@@ -182,7 +182,7 @@ export class ClassController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/admin/:id')
-  deleteClassByAdmin(@Param() id: string, @Res() res: Response) {
+  deleteClassByAdmin(@Param('id') id: string, @Res() res: Response) {
     if (!mongoose.Types.ObjectId.isValid(id))
       return Util.getBadRequest('invalid user id', res);
     else this.classService.deleteClassByAdmin(id, res);

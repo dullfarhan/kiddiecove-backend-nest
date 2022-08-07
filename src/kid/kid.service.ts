@@ -265,6 +265,10 @@ export class KidService {
         age: updateKidDto.age,
         updated_at: Date.now(),
         gender: updateKidDto.gender,
+        avatar:
+          updateKidDto.avatar !== undefined
+            ? updateKidDto.avatar
+            : 'https://i.ibb.co/hcV96cm/pp-boy.png',
         birthday_date: updateKidDto.birthday_date,
       },
       session,
@@ -505,8 +509,8 @@ export class KidService {
 
   async updateStatusToPending(submittingInfo, school, session) {
     this.logger.log('updating pending status for Kids');
-    for (var info of submittingInfo) {
-      var standard = await this.classService.checkClassExistOrNot(
+    for (const info of submittingInfo) {
+      const standard = await this.classService.checkClassExistOrNot(
         info.class_id,
       );
       if (!standard) continue;
