@@ -507,15 +507,30 @@ export class KidService {
     return await kid.save({ session });
   }
 
-  async updateStatusToPending(submittingInfo, school, session) {
+  async updateStatusToPending(req, school, session) {
     this.logger.log('updating pending status for Kids');
-
-    for (var info of submittingInfo) {
+    const submittingInfo = req.body.submitting_info;
+    for (const info of submittingInfo) {
       console.log('CLASS ID', info.class_id);
-      var standard = await this.classService.checkClassExistOrNot(
+      const standard = await this.classService.checkClassExistOrNot(
         info.class_id,
       );
+      const kid = await this.kidModel.findById(info.kid_id);
+      if (!kid) {
+        this.logger.log('kid not found');
+        continue;
+      }
       if (!standard) continue;
+      this.logger.log('class found!');
+      if (standard.school_name != school.name) {
+        this.logger.log('the class does not belog to given school');
+        continue;
+      }
+      if (req.user._id != kid.parent_id) {
+        this.logger.log('the user is not kid parent');
+        continue;
+      }
+
       this.logger.log('class found!');
       await this.kidModel.findByIdAndUpdate(
         info.kid_id,

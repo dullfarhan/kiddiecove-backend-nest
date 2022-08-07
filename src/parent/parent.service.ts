@@ -545,11 +545,7 @@ export class ParentService {
           res,
         );
       }
-      await this.kidService.updateStatusToPending(
-        req.body.submitting_info,
-        school,
-        session,
-      );
+      await this.kidService.updateStatusToPending(req, school, session);
       await session.commitTransaction();
       return Util.getSimpleOkRequest('Request Submitted Succesfully', res);
     } catch (ex) {
