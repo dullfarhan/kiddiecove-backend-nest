@@ -220,10 +220,10 @@ export class ClassService {
     );
   }
 
-  async setClassAndSave(class_, classObj, session) {
-    await class_.set(classObj);
+  async setClassAndSave(standard, classObj, session) {
+    await standard.set(classObj);
     this.logger.log('updating Class');
-    return await class_.save({ session });
+    return await standard.save({ session });
   }
 
   async updateClassBySchoolAdmin(

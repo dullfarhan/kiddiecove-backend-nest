@@ -436,8 +436,7 @@ export class ParentService {
   }
 
   async removeSchool(id, schoolId, session) {
-    console.log({ schoolId });
-    const obj = await this.ParentModel.findByIdAndUpdate(
+    return await this.ParentModel.findByIdAndUpdate(
       id,
       {
         $pull: {
@@ -451,8 +450,6 @@ export class ParentService {
       },
       { session, new: true },
     );
-    console.log('OBJ', obj);
-    return obj;
   }
 
   async createParentByAdmin(req, res) {
