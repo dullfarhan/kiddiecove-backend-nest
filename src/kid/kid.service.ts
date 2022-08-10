@@ -1,7 +1,13 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
-import mongoose, { ClientSession, Model } from 'mongoose';
+import mongoose, {
+  ClientSession,
+  Model,
+  mongo,
+  Mongoose,
+  ObjectId,
+} from 'mongoose';
 import { ClassService } from 'src/class/class.service';
 import CurrentUser from 'src/currentuser/currentuser.service';
 import { ParentService } from 'src/parent/parent.service';
@@ -345,6 +351,19 @@ export class KidService {
       school_id: schoolId,
       _id: { $ne: kidId },
     });
+  }
+
+  async deleteAllSiblingsInSchool(parentId: mongoose.Types.ObjectId) {
+    this.logger.log(
+      'checking if Kid has siblings in this school from which he had been removed?',
+    );
+
+    const KidsDeleted = await this.kidModel.deleteMany({
+      parent_id: parentId,
+    });
+    this.logger.log('The total seleted kids are ' + KidsDeleted.deletedCount);
+
+    return KidsDeleted;
   }
 
   async deleteBySchoolAdmin(id, req, res) {

@@ -340,6 +340,9 @@ export class ParentService {
           session,
         },
       );
+      if (parent._id) {
+        this.kidService.deleteAllSiblingsInSchool(parent._id);
+      }
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);
       this.logger.log('Address Successfully Deleted');
