@@ -84,10 +84,10 @@ export class Kid {
   deleted: boolean;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Types.ObjectId,
     ref: 'Parent',
   })
-  parent_id: mongoose.Schema.Types.ObjectId;
+  parent_id: mongoose.Types.ObjectId;
 
   @Prop({
     type: String,

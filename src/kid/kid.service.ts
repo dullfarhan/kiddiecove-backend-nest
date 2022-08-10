@@ -211,6 +211,7 @@ export class KidService {
       enable: true,
       registered: true,
       school_id: schoolAdmin.school_id,
+      _id: req.params.id,
     });
   }
 
@@ -228,6 +229,7 @@ export class KidService {
     this.getKid(res, {
       enable: true,
       parent_id: parent._id,
+      _id: req.params.id,
     });
   }
 
@@ -510,6 +512,7 @@ export class KidService {
   async updateStatusToPending(req, school, session) {
     this.logger.log('updating pending status for Kids');
     const submittingInfo = req.body.submitting_info;
+    let response;
     for (const info of submittingInfo) {
       console.log('CLASS ID', info.class_id);
       const standard = await this.classService.checkClassExistOrNot(
@@ -518,16 +521,26 @@ export class KidService {
       const kid = await this.kidModel.findById(info.kid_id);
       if (!kid) {
         this.logger.log('kid not found');
+        response = { ...response, [info.kid_id]: 'kid not found' };
         continue;
       }
       if (!standard) continue;
       this.logger.log('class found!');
       if (standard.school_name != school.name) {
         this.logger.log('the class does not belog to given school');
+        response = {
+          ...response,
+          [info.class_id]: 'the class does not belog to given school',
+        };
         continue;
       }
-      if (req.user._id != kid.parent_id) {
+
+      if (req.user.name !== kid.parent_name) {
         this.logger.log('the user is not kid parent');
+        response = {
+          ...response,
+          [info.kid_id]: 'the user is not kid parent',
+        };
         continue;
       }
 
@@ -547,7 +560,13 @@ export class KidService {
         },
         { session, new: true, runValidators: true },
       );
+
+      response = {
+        ...response,
+        [info.kid_id]: 'success',
+      };
     }
+    return response;
   }
 
   async removeSchoolDueToParentRemoval(parentId, schoolId, session) {

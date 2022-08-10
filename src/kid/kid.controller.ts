@@ -94,7 +94,6 @@ export class KidController {
     else return this.kidService.getKidForAdmin(id, res);
   }
 
-  //doubt: fetching first kid under current school admin
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
@@ -109,7 +108,6 @@ export class KidController {
     else return this.kidService.getKidForSchoolAdmin(req, res);
   }
 
-  //doubt: fetching first kid under current parent
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))

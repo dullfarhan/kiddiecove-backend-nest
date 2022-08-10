@@ -533,9 +533,15 @@ export class ParentService {
         parent._id,
         school._id,
       );
-      if (!checkExistence)
-        parent = await this.updateStatusToPending(parent, school, session);
-      else {
+
+      const result = await this.kidService.updateStatusToPending(
+        req,
+        school,
+        session,
+      );
+      console.log(result);
+
+      if (checkExistence) {
         this.logger.log(
           'Parent Already requested for this school ' +
             JSON.stringify(checkExistence, null, 4),
@@ -545,9 +551,17 @@ export class ParentService {
           res,
         );
       }
-      await this.kidService.updateStatusToPending(req, school, session);
+
+      let msg;
+      for (const res in result) {
+        msg = { ...msg, [res]: result[res] };
+        if (result[res] === 'success') {
+          parent = await this.updateStatusToPending(parent, school, session);
+        }
+      }
+
       await session.commitTransaction();
-      return Util.getSimpleOkRequest('Request Submitted Succesfully', res);
+      return Util.getSimpleOkRequest(msg, res);
     } catch (ex) {
       this.logger.log('Error While Submitting Parent Request ' + ex);
       await session.abortTransaction();
@@ -634,17 +648,6 @@ export class ParentService {
   }
 
   async updateStatusToPending(parent, school, session) {
-    const customParentSchool = [
-      {
-        school_id: school._id,
-        school_name: school.name,
-        registration_status: RegistartionStatus.PENDING,
-        registered: false,
-      },
-    ];
-    const scl = {
-      schools: customParentSchool,
-    };
     return await this.ParentModel.findByIdAndUpdate(
       parent._id,
       {
