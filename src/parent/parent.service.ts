@@ -340,8 +340,18 @@ export class ParentService {
           session,
         },
       );
+
       if (parent._id) {
-        this.kidService.deleteAllSiblingsInSchool(parent._id);
+        const WiteConcern = await this.kidService.deleteAllSiblingsInSchool(
+          parent._id,
+        );
+        if (!WiteConcern) {
+          await session.abortTransaction();
+          return Util.getBadRequest(
+            'Unable to delete childs transection aborted due to write concern is false',
+            res,
+          );
+        }
       }
       if (!address)
         return Util.getBadRequest('Address Not Found with given id', res);

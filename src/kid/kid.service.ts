@@ -362,6 +362,7 @@ export class KidService {
       parent_id: parentId,
     });
     this.logger.log('The total seleted kids are ' + KidsDeleted.deletedCount);
+
     return KidsDeleted;
   }
 
