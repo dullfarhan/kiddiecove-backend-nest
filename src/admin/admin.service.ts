@@ -175,7 +175,6 @@ export class AdminService {
       {
         name: reqBody.name,
         admin_type: reqBody.admin_type,
-        'user.user_name': reqBody.user_name,
         'user.gender': reqBody.gender,
         'user.email': reqBody.email,
         'user.phone_number': reqBody.phone_number,
@@ -193,7 +192,7 @@ export class AdminService {
     return await admin.save({ session });
   }
 
-  async deleteAdmin(id: mongoose.Types.ObjectId, res: Response) {
+  async deleteAdmin(id: string, res: Response) {
     const session = await this.connection.startSession();
     try {
       session.startTransaction();

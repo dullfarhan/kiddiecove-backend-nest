@@ -28,7 +28,7 @@ import { TrackingServiceModule } from './tracking-service/tracking-service.modul
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27018/kiddiecove'),
+    MongooseModule.forRoot('mongodb://localhost:28017/kiddiecove'),
     DatabaseModule,
     TeacherModule,
     AuthModule,
