@@ -38,7 +38,7 @@ export class CreateCountryDto {
   @Max(15)
   @IsNotEmpty()
   @IsNumber()
-  number_length: number;
+  number_lenght: number;
 
   @ApiProperty({ type: Boolean, required: false, default: true })
   @IsOptional()
