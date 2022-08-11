@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsOptional,
   IsString,
@@ -7,6 +8,7 @@ import {
 } from 'class-validator';
 
 export class CreateCommentDto {
+  @ApiProperty({ type: String, required: false })
   @IsString()
   @IsOptional()
   @MinLength(2)
@@ -14,11 +16,13 @@ export class CreateCommentDto {
   @IsUrl()
   avatar: string;
 
+  @ApiProperty({ type: String, required: true })
   @MinLength(3)
   @MaxLength(80)
   @IsString()
   date: string;
 
+  @ApiProperty({ type: String, required: true })
   @MinLength(2)
   @MaxLength(500)
   @IsString()

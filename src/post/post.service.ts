@@ -182,6 +182,8 @@ export class PostService {
       post,
       school && { school_id: school._id, school_name: school.name },
     );
+    console.log(post);
+    console.log(school);
     return await this.save(post, session);
   }
 
@@ -260,11 +262,24 @@ export class PostService {
       },
     };
 
+    var dateObj = new Date().toLocaleDateString();
+    // var month = dateObj.getUTCMonth() + 1;
+    // var day = dateObj.getUTCDate();
+    // var year = dateObj.getUTCFullYear();
+
     return await this.postModel.findByIdAndUpdate(
       post._id,
       {
         $push: {
-          newComment,
+          comments: {
+            _id: new mongoose.Types.ObjectId(),
+            from: currentUser.name,
+            avatar: createCommentDto.avatar,
+            date: createCommentDto.date,
+            message: createCommentDto.message,
+            updated_at: dateObj,
+            created_at: dateObj,
+          },
         },
         $set: {
           updated_at: Date.now(),

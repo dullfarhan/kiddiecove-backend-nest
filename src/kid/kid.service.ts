@@ -363,7 +363,7 @@ export class KidService {
     });
     this.logger.log('The total seleted kids are ' + KidsDeleted.deletedCount);
 
-    return KidsDeleted;
+    return KidsDeleted.acknowledged;
   }
 
   async deleteBySchoolAdmin(id, req, res) {

@@ -85,8 +85,8 @@ export class Post {
   })
   liked: boolean;
 
-  @Prop({ type: CustomComment })
-  comments: CustomComment;
+  @Prop()
+  comments: CustomComment[];
 
   @Prop({
     type: Number,
