@@ -11,6 +11,7 @@ import Constant from 'src/utils/enums/Constant.enum';
 import Util from 'src/utils/util';
 import { UpdateClassDto } from './dto/update-class.dto';
 import CurrentUser from 'src/currentuser/currentuser.service';
+import { CreateClassDto } from './dto/create-class.dto';
 
 @Injectable()
 export class ClassService {
@@ -163,8 +164,8 @@ export class ClassService {
     try {
       session.startTransaction();
       const teacher = await this.teacherService.checkTeacherExistenceWithSchool(
-        updateClassDto.teacher_id,
-        schoolId,
+        new mongoose.Types.ObjectId(updateClassDto.teacher_id),
+        new mongoose.Types.ObjectId(schoolId),
       );
       if (!teacher)
         return Util.getBadRequest(
@@ -172,12 +173,30 @@ export class ClassService {
           res,
         );
       if (isDirect) {
+        const classFromDb = await this.classModel.findOne({
+          _id: new mongoose.Types.ObjectId(id),
+        });
+        if (!classFromDb.school_id.equals(teacher.school_id)) {
+          return Util.getBadRequest(
+            'Class does not belong to this school',
+            res,
+          );
+        }
         const standard = await this.updateDirectly(id, teacher, session);
         this.logger.log(`directly updated Class ${standard}`);
       } else {
-        const standard = await this.classModel.findOne({ _id: id });
+        const standard = await this.classModel.findOne({
+          _id: new mongoose.Types.ObjectId(id),
+        });
+        if (!standard.school_id.equals(teacher.school_id)) {
+          return Util.getBadRequest(
+            'Class does not belong to this school',
+            res,
+          );
+        }
         if (!standard)
           return Util.getBadRequest('Class Not Found with given id', res);
+
         this.logger.log('Class found');
         await this.updateAndSaveClass(standard, teacher, session);
         this.logger.log(`updated Class ${standard}`);
@@ -196,7 +215,7 @@ export class ClassService {
 
   async updateDirectly(classId, teacher, session) {
     return await this.classModel.findByIdAndUpdate(
-      classId,
+      new mongoose.Types.ObjectId(classId),
       {
         $set: {
           teacher_id: teacher._id,
@@ -261,9 +280,12 @@ export class ClassService {
     const session = await this.connection.startSession();
     try {
       session.startTransaction();
-      const standard = await this.classModel.findByIdAndRemove(id, {
-        session,
-      });
+      const standard = await this.classModel.findByIdAndRemove(
+        new mongoose.Types.ObjectId(id),
+        {
+          session,
+        },
+      );
       if (!standard)
         return Util.getBadRequest('Class Not Found with given id', res);
       this.logger.log('Class Successfully Deleted');
@@ -295,26 +317,29 @@ export class ClassService {
     );
     if (!standard)
       return Util.getBadRequest('Class Does not Belong To this School', res);
-    return await this.deleteClass(req, res);
+    return await this.deleteClass(id, res);
   }
 
   async checkClassExistenceWithSchool(classId, schoolId) {
     this.logger.log('checking class existence with school');
-    return await this.classModel.findOne({ _id: classId, school_id: schoolId });
+    return await this.classModel.findOne({
+      _id: new mongoose.Types.ObjectId(classId),
+      school_id: schoolId,
+    });
   }
 
-  async createClassByAdmin(updateClassDto, res) {
+  async createClassByAdmin(createClassDto, res) {
     this.logger.log('req body is valid');
     return await this.createClass(
-      updateClassDto,
+      createClassDto,
       res,
-      updateClassDto.school_id,
-      updateClassDto.teacher_id,
+      createClassDto.school_id,
+      createClassDto.teacher_id,
     );
   }
 
   async createClass(
-    updateClassDto: UpdateClassDto,
+    createClassDto: CreateClassDto,
     res: Response,
     schoolId: mongoose.Types.ObjectId,
     teacherId: mongoose.Types.ObjectId,
@@ -333,7 +358,7 @@ export class ClassService {
         return Util.getBadRequest('Teacher Not Found With This school', res);
       this.logger.log('teacher found');
       const standard = await this.createAndSave(
-        updateClassDto,
+        createClassDto,
         school,
         teacher,
         session,
@@ -350,12 +375,12 @@ export class ClassService {
     }
   }
 
-  async createAndSave(updateClassDto, school, teacher, session) {
+  async createAndSave(createClassDto, school, teacher, session) {
     this.logger.log('creating new class');
     return await this.save(
       {
         _id: new mongoose.Types.ObjectId(),
-        standard: updateClassDto.standard,
+        standard: createClassDto.standard,
         strenght: 0,
         school_id: school._id,
         school_name: school.name,
@@ -375,7 +400,7 @@ export class ClassService {
 
   async createClassBySchoolAdmin(
     req: Request,
-    updateClassDto: UpdateClassDto,
+    createClassDto: CreateClassDto,
     res: Response,
   ) {
     this.logger.log('req body is valid');
@@ -389,10 +414,10 @@ export class ClassService {
     this.logger.log('Current School Admin User Found');
     const schoolAdmin: any = response.data;
     return await this.createClass(
-      updateClassDto,
+      createClassDto,
       res,
       schoolAdmin.school_id,
-      updateClassDto.teacher_id,
+      createClassDto.teacher_id,
     );
   }
 

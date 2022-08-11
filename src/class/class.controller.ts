@@ -17,6 +17,7 @@ import mongoose from 'mongoose';
 import { PermissionGuard } from 'src/Guard/permission.guard';
 import Util from 'src/utils/util';
 import { ClassService } from './class.service';
+import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 
 @ApiTags('Class')
@@ -100,7 +101,7 @@ export class ClassController {
     @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
-    updateClassDto: UpdateClassDto,
+    @Body() updateClassDto: UpdateClassDto,
   ) {
     if (!mongoose.Types.ObjectId.isValid(id))
       return Util.getBadRequest('invalid user id', res);
@@ -160,10 +161,10 @@ export class ClassController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/')
   createClassByAdmin(
-    @Body() updateClassDto: UpdateClassDto,
+    @Body() createClassDto: CreateClassDto,
     @Res() res: Response,
   ) {
-    this.classService.createClassByAdmin(updateClassDto, res);
+    this.classService.createClassByAdmin(createClassDto, res);
   }
 
   @ApiBearerAuth()
@@ -171,11 +172,11 @@ export class ClassController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/create/by/school/admin')
   createClassBySchoolAdmin(
-    @Body() updateClassDto: UpdateClassDto,
+    @Body() createClassDto: CreateClassDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    this.classService.createClassBySchoolAdmin(req, updateClassDto, res);
+    this.classService.createClassBySchoolAdmin(req, createClassDto, res);
   }
 
   @ApiBearerAuth()

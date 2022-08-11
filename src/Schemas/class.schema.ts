@@ -17,9 +17,9 @@ enum Level {
 @Schema()
 export class Class {
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Types.ObjectId,
   })
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -42,15 +42,15 @@ export class Class {
   })
   strenght: number;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true })
-  school_id: mongoose.Schema.Types.ObjectId;
+  @Prop({ type: mongoose.Types.ObjectId, ref: 'School', required: true })
+  school_id: mongoose.Types.ObjectId;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Types.ObjectId,
     ref: 'Teacher',
     required: true,
   })
-  teacher_id: mongoose.Schema.Types.ObjectId;
+  teacher_id: mongoose.Types.ObjectId;
 
   @Prop({
     type: String,
