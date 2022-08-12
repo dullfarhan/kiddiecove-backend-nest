@@ -147,12 +147,15 @@ export class ParentController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Delete('/delete/by/parent/:id')
-  deleteByParent(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Param('id') id: string,
-  ) {
+  @Delete('/delete/by/parent')
+  deleteByParent(@Req() req: Request, @Res() res: Response) {
     this.parentService.deleteByParent(req, res);
   }
+  // @ApiBearerAuth()
+  // @UseGuards(PermissionGuard)
+  // @UseGuards(AuthGuard('jwt'))
+  // @Delete('/delete/by/parent/:id')
+  // deleteByParent(@Req() req: Request, @Res() res: Response) {
+  //   this.parentService.deleteByParent(req, res);
+  // }
 }

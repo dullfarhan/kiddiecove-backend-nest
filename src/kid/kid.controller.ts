@@ -134,7 +134,7 @@ export class KidController {
   ) {
     if (!mongoose.Types.ObjectId.isValid(id))
       return Util.getBadRequest('Invalid id', res);
-    else return this.kidService.updateByParent(id, updateKidDto, res);
+    else return this.kidService.updateByParent(id, updateKidDto, req, res);
   }
 
   @ApiBearerAuth()
@@ -177,9 +177,13 @@ export class KidController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/parent/:id')
-  deleteByParent(@Param('id') id: string, @Res() res: Response) {
+  deleteByParent(
+    @Param('id') id: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     if (!mongoose.Types.ObjectId.isValid(id))
       return Util.getBadRequest('Invalid id', res);
-    else return this.kidService.deleteByParent(id, res);
+    else return this.kidService.deleteByParent(id, req, res);
   }
 }

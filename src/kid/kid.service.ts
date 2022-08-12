@@ -239,14 +239,27 @@ export class KidService {
     });
   }
 
-  async updateByParent(id, updateKidDto: UpdateKidDto, res) {
+  async updateByParent(id, updateKidDto: UpdateKidDto, req, res) {
     const session = await this.connection.startSession();
     this.logger.log('req body is valid');
+    if (!req?.user?._id) {
+      return Util.getBadRequest('user id in req not found', res);
+    }
     try {
       session.startTransaction();
       const kid = await this.kidModel.findOne({ _id: id });
       if (!kid) return Util.getBadRequest('Kid Not Found with given id', res);
       this.logger.log('Kid found');
+
+      const user_parent_id = await (
+        await this.parentService.getCurrentParent(req.user._id)
+      )._id;
+      if (!user_parent_id) {
+        return Util.getBadRequest('userID is not found in parent', res);
+      }
+      if (!kid.parent_id.equals(user_parent_id)) {
+        return Util.getBadRequest('logged in parent is not kids parent', res);
+      }
       await this.updateAndSaveKid(kid, updateKidDto, session);
       this.logger.log(`updated Kid ${kid}`);
       await session.commitTransaction();
@@ -424,7 +437,10 @@ export class KidService {
     return await this.kidModel.findOne({ _id: kidId, school_id: schoolId });
   }
 
-  async deleteByParent(id: string, res: Response) {
+  async deleteByParent(id: string, req: any, res: Response) {
+    if (!req?.user?._id) {
+      return Util.getBadRequest('user id in req not found', res);
+    }
     const session = await this.connection.startSession();
     try {
       session.startTransaction();
@@ -437,6 +453,23 @@ export class KidService {
         kid.school_id,
         kid._id,
       );
+
+      const user_parent = await this.parentService.getCurrentParent(
+        req.user._id,
+      );
+      if (!user_parent) {
+        await session.abortTransaction();
+        return Util.getBadRequest('parent not found', res);
+      }
+      console.log('parent' + user_parent);
+      if (!user_parent._id) {
+        await session.abortTransaction();
+        return Util.getBadRequest('userID is not found in parent', res);
+      }
+      if (!kid.parent_id.equals(user_parent._id)) {
+        return Util.getBadRequest('logged in parent is not kids parent', res);
+      }
+
       if (!siblings)
         await this.parentService.removeSchool(
           kid.parent_id,

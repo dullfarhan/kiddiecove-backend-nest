@@ -320,12 +320,18 @@ export class ParentService {
 
   async deleteByParent(req, res) {
     const session = await this.connection.startSession();
-
+    // return await this.ParentModel.findOne({ user_id: userId });
+    if (!req?.user?._id) {
+      return Util.getBadRequest('user id in req not found', res);
+    }
     try {
       session.startTransaction();
-      const parent = await this.ParentModel.findByIdAndRemove(req.params.id, {
-        session,
-      });
+      const parent = await this.ParentModel.findOneAndRemove(
+        { user_id: req.user._id },
+        {
+          session,
+        },
+      );
       if (!parent)
         return Util.getBadRequest('Parent Not Found with given id', res);
       this.logger.log('Parent Successfully Deleted');
