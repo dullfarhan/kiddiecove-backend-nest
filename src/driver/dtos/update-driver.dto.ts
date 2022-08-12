@@ -14,7 +14,7 @@ import { CreateAddressDto } from 'src/address/dto/create-address.dto';
 import { CreateUserDto } from 'src/user/Dtos/create-user.dto';
 import { CreateDriverDto } from './create-driver.dto';
 
-export class UpdateDriverDto extends PartialType(CreateDriverDto) {
+export class UpdateDriverDto {
   @ApiProperty({ type: String, required: true })
   @IsString()
   @MinLength(3)
@@ -36,11 +36,11 @@ export class UpdateDriverDto extends PartialType(CreateDriverDto) {
   salary: number;
 
   @ApiProperty({
-    type: mongoose.Types.ObjectId,
+    type: String,
     required: false,
   })
   @IsOptional()
-  school_id: mongoose.Types.ObjectId;
+  school_id: string;
 }
 
 export class UpdateDriverDtoWithCreateUserDtoAndCreateAddressDto extends IntersectionType(
@@ -52,7 +52,3 @@ export class UpdateDriverDtoWithUserAndAddress extends IntersectionType(
   UpdateDriverDtoWithCreateUserDtoAndCreateAddressDto,
   UpdateDriverDto,
 ) {}
-
-// export type UpdateDriverDtoWithUserAndAddress = UpdateDriverDto &
-//   CreateUserDto &
-//   CreateAddressDto;
