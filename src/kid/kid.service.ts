@@ -16,9 +16,12 @@ import {
   ClassDocument,
   Kid,
   KidDocument,
+  SchoolAdminDocument,
   User,
   UserDocument,
 } from 'src/Schemas';
+import { CreateSchoolAdminDto } from 'src/school-admin/dto/create-school-admin.dto';
+import { UpdateSchoolAdminDto } from 'src/school-admin/dto/update-school-admin.dto';
 import Constant from 'src/utils/enums/Constant.enum';
 import { RegistartionStatus } from 'src/utils/enums/RegistartionStatus';
 import { UserType } from 'src/utils/enums/UserType.enum';
@@ -399,8 +402,10 @@ export class KidService {
         id,
         schoolAdmin.school_id,
       );
-      if (!kid)
+      if (!kid) {
         return Util.getBadRequest('Kid Not Exist With This School', res);
+      }
+
       kid = await this.removeSchool(kid.id, session);
       if (!kid)
         return Util.getBadRequest('Failed To Delete Kid From School', res);

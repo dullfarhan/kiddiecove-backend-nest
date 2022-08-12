@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { Schema as MongooseSchema } from 'mongoose';
 import { CustomParentSchool } from './customParentSchool.schema';
 import { CustomUser } from './customUser.schema';
 
