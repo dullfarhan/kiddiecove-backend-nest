@@ -24,12 +24,12 @@ enum STANDARD {
 }
 
 export class UpdateClassDto extends PartialType(CreateClassDto) {
-  @ApiProperty({ enum: STANDARD, required: true })
-  @MinLength(3)
-  @MaxLength(5)
-  @IsNotEmpty()
-  @IsEnum(STANDARD)
-  standard: string;
+  // @ApiProperty({ enum: STANDARD, required: true })
+  // @MinLength(3)
+  // @MaxLength(5)
+  // @IsNotEmpty()
+  // @IsEnum(STANDARD)
+  // standard: string;
 
   @ApiProperty({ type: String, required: false })
   @IsMongoId()

@@ -4,6 +4,6 @@ import mongoose from 'mongoose';
 
 export class GetChatDto {
   @IsNotEmpty()
-  @ApiProperty({ type: mongoose.Types.ObjectId, required: true })
-  id: mongoose.Types.ObjectId;
+  @ApiProperty({ type: String, required: true })
+  id: string;
 }

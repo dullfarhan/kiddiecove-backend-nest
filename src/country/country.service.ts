@@ -115,7 +115,7 @@ export class CountryService {
       name: createCountryDto.name,
       code: createCountryDto.code,
       country_code: createCountryDto.country_code,
-      number_length: createCountryDto.number_length,
+      number_lenght: createCountryDto.number_lenght,
     });
   }
 
@@ -152,7 +152,7 @@ export class CountryService {
       name: createCountryDto.name,
       code: createCountryDto.code,
       country_code: createCountryDto.country_code,
-      number_length: createCountryDto.number_length,
+      number_lenght: createCountryDto.number_lenght,
       enable: createCountryDto.enable,
       deleted: createCountryDto.deleted,
       updated_at: Date.now(),

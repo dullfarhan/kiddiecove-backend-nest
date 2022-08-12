@@ -41,7 +41,7 @@ export class Country {
     minlength: 5,
     maxlength: 15,
   })
-  number_length: number;
+  number_lenght: number;
 
   @Prop({
     type: Date,

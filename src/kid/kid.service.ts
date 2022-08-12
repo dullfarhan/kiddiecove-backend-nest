@@ -374,7 +374,7 @@ export class KidService {
     const KidsDeleted = await this.kidModel.deleteMany({
       parent_id: parentId,
     });
-    this.logger.log('The total deleted kids are ' + KidsDeleted.deletedCount);
+    this.logger.log('The total seleted kids are ' + KidsDeleted.deletedCount);
 
     return KidsDeleted.acknowledged;
   }

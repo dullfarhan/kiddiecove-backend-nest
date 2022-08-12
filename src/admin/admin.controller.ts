@@ -42,7 +42,6 @@ export class AdminController {
     if (!mongoose.Types.ObjectId.isValid(id))
       Util.getBadRequest('invalid user id', res);
     else {
-      console.log('VERIFIED');
       return this.adminService.getAdmin(id, res);
     }
   }
@@ -67,6 +66,7 @@ export class AdminController {
     @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
+    @Body() createAdminDto: CreateAdminDto,
   ) {
     if (!mongoose.Types.ObjectId.isValid(id))
       Util.getBadRequest('invalid user id', res);
@@ -92,7 +92,7 @@ export class AdminController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/:id')
-  deleteAdmin(@Param('id') id: mongoose.Types.ObjectId, @Res() res: Response) {
+  deleteAdmin(@Param('id') id: string, @Res() res: Response) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       Util.getBadRequest('invalid user id', res);
     } else {

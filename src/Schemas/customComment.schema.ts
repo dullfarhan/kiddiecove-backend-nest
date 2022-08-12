@@ -2,8 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
 export class CustomComment {
-  @Prop({ type: mongoose.Schema.Types.ObjectId })
-  _id: mongoose.Schema.Types.ObjectId;
+  @Prop({ type: mongoose.Types.ObjectId })
+  _id: mongoose.Types.ObjectId;
 
   @Prop({
     type: String,
@@ -44,13 +44,13 @@ export class CustomComment {
     type: Date,
     default: Date.now,
   })
-  created_at: Date;
+  created_at;
 
   @Prop({
     type: Date,
     default: Date.now,
   })
-  updated_at: Date;
+  updated_at;
 }
 
-export type CustomCommentDocument = CustomComment & Document;
+// export type CustomCommentDocument = CustomComment & Document;

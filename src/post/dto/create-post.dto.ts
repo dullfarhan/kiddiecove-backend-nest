@@ -26,7 +26,7 @@ export class CreatePostDto {
   @IsString()
   @MinLength(3)
   @MaxLength(80)
-  data: string;
+  date: string;
 
   @ApiProperty({ type: String, required: true })
   @IsString()

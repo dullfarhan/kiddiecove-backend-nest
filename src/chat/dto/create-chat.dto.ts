@@ -6,10 +6,10 @@ export class CreateChatDto {
   @IsNotEmpty()
   @ApiProperty({ type: String, required: true })
   @IsMongoId()
-  fromUser: mongoose.Types.ObjectId;
+  fromUser: string;
 
   @IsNotEmpty()
   @IsMongoId()
-  @ApiProperty({ type: mongoose.Types.ObjectId, required: true })
-  toUser: mongoose.Types.ObjectId;
+  @ApiProperty({ type: String, required: true })
+  toUser: string;
 }

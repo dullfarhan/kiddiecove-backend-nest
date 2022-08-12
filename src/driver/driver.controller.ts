@@ -16,19 +16,8 @@ import mongoose, { ObjectId } from 'mongoose';
 import { PermissionGuard } from 'src/Guard/permission.guard';
 import { DriverService } from './driver.service';
 import Util from 'src/utils/util';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { CreateUserDto } from 'src/user/Dtos/create-user.dto';
-import { CreateDriverDto } from './dtos/create-driver.dto';
-import { CreateAddressDto } from 'src/address/dto/create-address.dto';
-import {
-  UpdateDriverDto,
-  UpdateDriverDtoWithUserAndAddress,
-} from './dtos/update-driver.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UpdateDriverDtoWithUserAndAddress } from './dtos/update-driver.dto';
 
 @ApiTags('Driver')
 @Controller('driver')
@@ -48,10 +37,7 @@ export class DriverController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/for/admin/:id')
-  getDriverForAdmin(
-    @Param('id') id: mongoose.Types.ObjectId,
-    @Res() res: Response,
-  ) {
+  getDriverForAdmin(@Param('id') id: string, @Res() res: Response) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       Util.getBadRequest('invalid user id', res);
     } else return this.driverService.getDriverForAdmin(id, res);
@@ -70,7 +56,7 @@ export class DriverController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/for/school/admin/:id')
   getDriverForSchoolAdmin(
-    @Param('id') id: mongoose.Types.ObjectId,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -84,7 +70,7 @@ export class DriverController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/get/all/as/lisitng/for/admin/:id')
   getAllDriversAsListingForAdmin(
-    @Param('id') id: mongoose.Types.ObjectId,
+    @Param('id') id: string,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid(id))
@@ -109,7 +95,7 @@ export class DriverController {
   @Put('/update/by/admin/:id')
   updateDriverByAdmin(
     @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
-    @Param('id') id: mongoose.Types.ObjectId,
+    @Param('id') id: string,
     @Res() res: Response,
   ) {
     if (!mongoose.Types.ObjectId.isValid) {
@@ -122,7 +108,7 @@ export class DriverController {
   @UseGuards(AuthGuard('jwt'))
   @Put('/update/directly/by/admin/:id')
   updateDriverDirectlyByAdmin(
-    @Param('id') id: mongoose.Types.ObjectId,
+    @Param('id') id: string,
     @Res() res: Response,
     @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
   ) {
@@ -137,7 +123,7 @@ export class DriverController {
   @UseGuards(AuthGuard('jwt'))
   @Put('/update/by/school/admin/:id')
   updateDriverBySchoolAdmin(
-    @Param('id') id: mongoose.Types.ObjectId,
+    @Param('id') id: string,
     @Res() res: Response,
     @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     @Req() req: Request,
@@ -158,7 +144,7 @@ export class DriverController {
   @UseGuards(AuthGuard('jwt'))
   @Put('/update/directly/by/school/admin/:id')
   updateDriverDirectlyBySchoolAdmin(
-    @Param('id') id: mongoose.Types.ObjectId,
+    @Param('id') id: string,
     @Res() res: Response,
     @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     @Req() req: Request,
@@ -171,6 +157,7 @@ export class DriverController {
         res,
         updateDriverDto,
         req,
+        true,
       );
   }
 
@@ -179,7 +166,7 @@ export class DriverController {
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/admin/:id')
   deleteDriverByAdmin(
-    @Param('id') id: mongoose.Types.ObjectId,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -193,7 +180,7 @@ export class DriverController {
   @UseGuards(AuthGuard('jwt'))
   @Delete('/delete/by/school/admin/:id')
   deleteDriverBySchoolAdmin(
-    @Param('id') id: mongoose.Types.ObjectId,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -206,7 +193,11 @@ export class DriverController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Post('/')
-  createDriverByAdmin(@Req() req: Request, @Res() res: Response) {
+  createDriverByAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
+  ) {
     this.driverService.createDriverByAdmin(req, res);
   }
 
@@ -214,7 +205,11 @@ export class DriverController {
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
   @Post('/create/by/school/admin')
-  createDriverBySchoolAdmin(@Req() req: Request, @Res() res: Response) {
+  createDriverBySchoolAdmin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() updateDriverDto: UpdateDriverDtoWithUserAndAddress,
+  ) {
     this.driverService.createDriverBySchoolAdmin(req, res);
   }
 }

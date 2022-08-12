@@ -53,19 +53,22 @@ export class DriverService {
 
   getAllDrivers(res: Response, filter: Object, selects: Object) {
     this.logger.log('getting driver list');
-    const result = this.driverModel
+    this.driverModel
       .find(filter)
       .skip((this.pageNumber - 1) * this.pageSize)
       .limit(this.pageSize)
       .sort({ name: 1 })
       .select(selects)
       .then((result) => {
-        console.log(result);
-        return Util.getOkRequest(
-          result,
-          'Drivers Listing Fetched Successfully',
-          res,
-        );
+        if (result.length !== 0)
+          return Util.getOkRequest(
+            result,
+            'Drivers Listing Fetched Successfully',
+            res,
+          );
+        else {
+          Util.getBadRequest('No Driver Found', res);
+        }
       })
       .catch((ex) => {
         this.logger.error(ex.message);
@@ -97,7 +100,7 @@ export class DriverService {
     this.getAllDrivers(res, { enable: true }, {});
   }
 
-  async getDriverForAdmin(id: mongoose.Types.ObjectId, res: Response) {
+  async getDriverForAdmin(id: string, res: Response) {
     this.logger.log('getting Driver detail for admin');
     this.getDriver(res, { _id: id, enable: true });
   }
@@ -129,15 +132,11 @@ export class DriverService {
     return this.schoolAdminModel.findOne({ user_id: _id });
   }
 
-  async getDriverForSchoolAdmin(
-    id: mongoose.Types.ObjectId,
-    req: Request,
-    res: Response,
-  ) {
+  async getDriverForSchoolAdmin(id: String, req: Request, res: Response) {
     this.logger.log('getting Driver detail for school admin');
     const response = await this.currentUser.getCurrentUser(
       req,
-      UserType.DRIVER,
+      UserType.SCHOOL_ADMIN,
       this.userModel,
     );
     if (response.status === Constant.FAIL)
@@ -155,7 +154,7 @@ export class DriverService {
     this.logger.log('getting Drivers listing for school admin');
     const response = await this.currentUser.getCurrentUser(
       req,
-      UserType.DRIVER,
+      UserType.SCHOOL_ADMIN,
       this.userModel,
     );
     if (response.status === Constant.FAIL)
@@ -172,7 +171,7 @@ export class DriverService {
     );
   }
 
-  getAllDriversAsListingForAdmin(id: mongoose.Types.ObjectId, res: Response) {
+  getAllDriversAsListingForAdmin(id: string, res: Response) {
     this.logger.log('getting Driver listing for admin');
     this.getAllDrivers(
       res,
@@ -185,7 +184,7 @@ export class DriverService {
   }
 
   async updateDriverByAdmin(
-    id: mongoose.Types.ObjectId,
+    id: string,
     res: Response,
     updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     isDirect: boolean = false,
@@ -195,25 +194,33 @@ export class DriverService {
   }
 
   async updateDriverBySchoolAdmin(
-    id: mongoose.Types.ObjectId,
+    id: string,
     res: Response,
     updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     req,
+    isDirect = false,
   ) {
     this.logger.log('School Admin is updating Driver Details');
     const response = await this.currentUser.getCurrentUser(
       req,
-      UserType.DRIVER,
+      UserType.SCHOOL_ADMIN,
       this.userModel,
     );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
-    return await this.updateDriver(id, res, updateDriverDto);
+    if (!schoolAdmin.school_id.equals(updateDriverDto.school_id)) {
+      return Util.getBadRequest(
+        "Driver doesn't belong to current school admin",
+        res,
+      );
+    }
+
+    return await this.updateDriver(id, res, updateDriverDto, isDirect);
   }
 
-  async deleteDriverByAdmin(id: mongoose.Types.ObjectId, res: Response) {
+  async deleteDriverByAdmin(id: string, res: Response) {
     this.logger.log('Admin is deleting Driver');
 
     const session = await this.connection.startSession();
@@ -250,15 +257,11 @@ export class DriverService {
     }
   }
 
-  async deleteDriverBySchoolAdmin(
-    id: mongoose.Types.ObjectId,
-    req: Request,
-    res: Response,
-  ) {
+  async deleteDriverBySchoolAdmin(id: string, req: Request, res: Response) {
     this.logger.log('School Admin is deleting Driver');
     const response = await this.currentUser.getCurrentUser(
       req,
-      UserType.DRIVER,
+      UserType.SCHOOL_ADMIN,
       this.userModel,
     );
     if (response.status === Constant.FAIL)
@@ -282,7 +285,7 @@ export class DriverService {
     });
   }
 
-  async deleteDriver(id: mongoose.Types.ObjectId, res: Response) {
+  async deleteDriver(id: string, res: Response) {
     const session = await this.connection.startSession();
     try {
       session.startTransaction();
@@ -361,12 +364,10 @@ export class DriverService {
   }
 
   async save(driverObj, session: ClientSession) {
-    console.log(driverObj);
     this.logger.log('creating new Driver');
     const driver = new this.driverModel(driverObj);
     this.logger.log('saving Driver...');
     const driverCreated = await driver.save({ session });
-    console.log('DRIVERCREATED', driverCreated);
     return driverCreated;
   }
 
@@ -374,13 +375,21 @@ export class DriverService {
     this.logger.log('school admin is creating Driver');
     const response = await this.currentUser.getCurrentUser(
       req,
-      UserType.DRIVER,
+      UserType.SCHOOL_ADMIN,
       this.userModel,
     );
     if (response.status === Constant.FAIL)
       return Util.getBadRequest(response.message, res);
     this.logger.log('Current School Admin User Found');
     const schoolAdmin = response.data;
+
+    if (!schoolAdmin.school_id.equals(req.body.school_id)) {
+      return Util.getBadRequest(
+        "Can't create driver in the school provided",
+        res,
+      );
+    }
+
     return await this.createDriver(req, res, schoolAdmin.school_id);
   }
 
@@ -413,7 +422,6 @@ export class DriverService {
         city,
         session,
       );
-      console.log('address', address);
       this.logger.log('User Address Created Successfully');
       const user = await this.userService.createAndSave(
         req.body,
@@ -444,13 +452,14 @@ export class DriverService {
   }
 
   async updateDriver(
-    id: mongoose.Types.ObjectId,
+    id: string,
     res: Response,
     updateDriverDto: UpdateDriverDtoWithUserAndAddress,
-    isDirect = false,
+    isDirect,
   ) {
     const session: ClientSession = await this.connection.startSession();
     try {
+      session.startTransaction();
       const driver = await this.driverModel.findOne({
         _id: id,
       });
@@ -548,7 +557,7 @@ export class DriverService {
         name: reqBody.name,
         designation: reqBody.designation,
         salary: reqBody.salary,
-        'user.user_name': reqBody.user_name,
+        // 'user.user_name': reqBody.user_name,
         'user.gender': reqBody.gender,
         'user.email': reqBody.email,
         'user.phone_number': reqBody.phone_number,
@@ -570,7 +579,7 @@ export class DriverService {
   }
 
   async updateDirectly(
-    id: mongoose.Types.ObjectId,
+    id: string,
     updateDriverDto: UpdateDriverDtoWithUserAndAddress,
     city: CityDocument,
     school: SchoolDocument,
@@ -599,7 +608,7 @@ export class DriverService {
   }
 
   async updateDirectly2(
-    id: mongoose.Types.ObjectId,
+    id: string,
     reqBody: UpdateDriverDtoWithUserAndAddress,
     city: CityDocument,
     school: SchoolDocument,

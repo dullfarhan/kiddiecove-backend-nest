@@ -52,9 +52,10 @@ export class ChatService {
       .populate('toUser', { name: 1, type: 1, avatar: 1 })
       .populate('fromUser', { name: 1, type: 1, avatar: 1 });
 
-    if (!registeredUser) {
+    if (!registeredUser || registeredUser.length === 0) {
       return Util.getBadRequest('User  is invalid', res);
     }
+    console.log(registeredUser);
 
     this.logger.log('Getting OK');
     return Util.getOkRequest(registeredUser, 'Chat Found...', res);

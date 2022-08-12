@@ -83,10 +83,10 @@ export class Teacher {
   deleted: boolean;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Types.ObjectId,
     ref: 'School',
   })
-  school_id: mongoose.Schema.Types.ObjectId;
+  school_id: mongoose.Types.ObjectId;
 
   @Prop({
     type: String,
