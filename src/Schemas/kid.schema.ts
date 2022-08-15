@@ -19,6 +19,17 @@ export class Kid {
   name: string;
 
   @Prop({
+    type: String,
+    required: true,
+    enum: ['MALE', 'FEMALE'],
+    minlength: 4,
+    maxlength: 6,
+    uppercase: true,
+    trim: true,
+  })
+  gender: string;
+
+  @Prop({
     type: Number,
     required: function () {
       return this.enable;
