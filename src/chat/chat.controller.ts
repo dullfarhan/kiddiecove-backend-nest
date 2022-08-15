@@ -1,6 +1,8 @@
 import { Controller, Post, Body, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import mongoose from 'mongoose';
+import Util from 'src/utils/util';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { GetChatDto } from './dto/get-chat.dto';
@@ -17,7 +19,11 @@ export class ChatController {
 
   @Post('/get')
   getChat(@Body() getChatDto: GetChatDto, @Res() res: Response) {
-    return this.chatService.getChat(getChatDto, res);
+    if (!mongoose.Types.ObjectId.isValid(getChatDto?.id)) {
+      return Util.getBadRequest('Invalid id', res);
+    } else {
+      return this.chatService.getChat(getChatDto, res);
+    }
   }
 
   @Post('/get/recent')

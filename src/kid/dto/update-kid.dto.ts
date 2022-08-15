@@ -1,4 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsUrl,
   IsDateString,
@@ -11,6 +12,7 @@ import {
   MaxLength,
   Min,
   MinLength,
+  MaxDate,
 } from 'class-validator';
 import { GenderType } from 'src/utils/enums/GenderType.enum';
 import { CreateKidDto } from './create-kid.dto';
@@ -23,12 +25,12 @@ export class UpdateKidDto extends PartialType(CreateKidDto) {
   @MaxLength(40)
   name: string;
 
-  @ApiProperty({ type: Number, required: true })
-  @IsNumber()
-  @Min(5)
-  @Max(20)
-  @IsNotEmpty()
-  age: number;
+  // @ApiProperty({ type: Number, required: true })
+  // @IsNumber()
+  // @Min(5)
+  // @Max(20)
+  // @IsNotEmpty()
+  // age: number;
 
   @ApiProperty({ type: Date })
   @IsDateString()

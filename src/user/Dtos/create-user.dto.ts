@@ -9,6 +9,7 @@ import {
   IsPhoneNumber,
   IsString,
   IsUrl,
+  MaxDate,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -56,6 +57,13 @@ export class CreateUserDto {
   @ApiProperty({ type: Date, required: true })
   @Type(() => Date)
   @IsOptional()
+  @MaxDate(
+    new Date(
+      new Date().getFullYear() - 9,
+      new Date().getMonth(),
+      new Date().getDate(),
+    ),
+  )
   @IsDate()
   birthday_date: Date;
 
