@@ -16,7 +16,7 @@ import CurrentUser from 'src/currentuser/currentuser.service';
 export class UserService {
   private readonly logger = new Logger(UserService.name);
   pageNumber = 1;
-  pageSize = 20;
+  pageSize = 40;
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @Inject(forwardRef(() => CurrentUser))

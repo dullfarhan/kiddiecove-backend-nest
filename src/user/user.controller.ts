@@ -28,12 +28,18 @@ export class UserController {
     this.userService.getAllForAdmin(res);
   }
 
-  @Post('getAll/for/admin')
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Get('getAll/for/admin')
   getAllForAdminListing(@Res() res: Response) {
     return this.userService.getAllForAdminListing(res);
   }
 
-  @Post('/getAll')
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/getAll')
   getAllForParentListing(@Res() res: Response) {
     return this.userService.getAllForParentListing(res);
   }

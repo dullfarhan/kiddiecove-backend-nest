@@ -36,6 +36,7 @@ import { AuthMiddleware } from './Middlewares/authentication.middleware';
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('auth/signin');
+    console.log('HERE');
+    consumer.apply(AuthMiddleware).forRoutes('auth/token');
   }
 }
