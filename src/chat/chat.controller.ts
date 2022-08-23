@@ -2,7 +2,9 @@ import { Controller, Post, Body, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import mongoose from 'mongoose';
 import { PermissionGuard } from 'src/Guard/permission.guard';
+import Util from 'src/utils/util';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { GetChatDto } from './dto/get-chat.dto';
@@ -25,7 +27,11 @@ export class ChatController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/get')
   getChat(@Body() getChatDto: GetChatDto, @Res() res: Response) {
-    return this.chatService.getChat(getChatDto, res);
+    if (!mongoose.Types.ObjectId.isValid(getChatDto?.id)) {
+      return Util.getBadRequest('Invalid id', res);
+    } else {
+      return this.chatService.getChat(getChatDto, res);
+    }
   }
 
   @ApiBearerAuth()

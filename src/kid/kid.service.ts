@@ -244,10 +244,18 @@ export class KidService {
 
   async updateByParent(id, updateKidDto: UpdateKidDto, req, res) {
     const session = await this.connection.startSession();
+    const Kid_Age = this.getAge(updateKidDto.birthday_date);
+    if (Kid_Age < 10) {
+      return Util.getBadRequest(
+        'the calculated age is less than 10 year change the date',
+        res,
+      );
+    }
     this.logger.log('req body is valid');
     if (!req?.user?._id) {
       return Util.getBadRequest('user id in req not found', res);
     }
+
     try {
       session.startTransaction();
       const kid = await this.kidModel.findOne({ _id: id });
@@ -263,7 +271,7 @@ export class KidService {
       if (!kid.parent_id.equals(user_parent_id)) {
         return Util.getBadRequest('logged in parent is not kids parent', res);
       }
-      await this.updateAndSaveKid(kid, updateKidDto, session);
+      await this.updateAndSaveKid(kid, updateKidDto, session, Kid_Age);
       this.logger.log(`updated Kid ${kid}`);
       await session.commitTransaction();
       this.logger.log('Kid and Kid User Updated Successfully');
@@ -281,12 +289,13 @@ export class KidService {
     kid,
     updateKidDto: UpdateKidDto,
     session: ClientSession,
+    Kid_Age: number,
   ) {
     return await this.setKidAndSave(
       kid,
       {
         name: updateKidDto.name,
-        age: updateKidDto.age,
+        age: Kid_Age,
         updated_at: Date.now(),
         gender: updateKidDto.gender,
         avatar:
@@ -500,6 +509,13 @@ export class KidService {
     req: Request,
     res: Response,
   ) {
+    const Kid_Age = this.getAge(createUserBody.birthday_date);
+    if (Kid_Age < 10) {
+      return Util.getBadRequest(
+        'the calculated age is less than 10 year change the date',
+        res,
+      );
+    }
     const session = await this.connection.startSession();
     this.logger.log('req body is valid');
     try {
@@ -515,7 +531,12 @@ export class KidService {
       const parent = response.data;
       if (!parent) return Util.getBadRequest('Parent Not Found', res);
       this.logger.log('parent found');
-      const kid = await this.createAndSave(createUserBody, parent, session);
+      const kid = await this.createAndSave(
+        createUserBody,
+        parent,
+        session,
+        Kid_Age,
+      );
       await session.commitTransaction();
       this.logger.log('Kid Created Successfully');
       return Util.getSimpleOkRequest('Kid Created Successfully', res);
@@ -532,12 +553,13 @@ export class KidService {
     createUserBody: UpdateKidDto,
     parent,
     session: ClientSession,
+    Kid_Age: number,
   ) {
     return await this.save(
       {
         _id: new mongoose.Types.ObjectId(),
         name: createUserBody.name,
-        age: createUserBody.age,
+        age: Kid_Age,
         registration_status: RegistartionStatus.NOT_REGISTERED,
         registered: parent.registered,
         gender: createUserBody.gender,
@@ -683,5 +705,16 @@ export class KidService {
       { session, new: true },
     );
     return obj;
+  }
+
+  getAge(dateString) {
+    const today = new Date();
+    const birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
   }
 }
