@@ -42,12 +42,12 @@ export class CreateRoleDto {
   // @Type(() => mongoose.Types.ObjectId)
   permissions: [mongoose.Types.ObjectId];
 
-  @ApiProperty({ type: Boolean, required: false })
+  @ApiProperty({ type: Boolean, required: false, default: true })
   @IsOptional()
   @IsBoolean()
   enable: boolean;
 
-  @ApiProperty({ type: Boolean, required: false })
+  @ApiProperty({ type: Boolean, required: false, default: false })
   @IsOptional()
   @IsBoolean()
   deleted: boolean;

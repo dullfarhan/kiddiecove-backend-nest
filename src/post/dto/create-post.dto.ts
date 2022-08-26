@@ -55,8 +55,8 @@ export class CreatePostDto {
   @IsNotEmpty()
   image: string;
 
-  @ApiProperty({ type: String, required: true })
-  @IsString()
+  @ApiProperty({ type: String, required: false })
+  @IsOptional()
   @MinLength(2)
   @MaxLength(500)
   content: string;

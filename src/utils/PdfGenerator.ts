@@ -12,7 +12,7 @@ import { Stream } from 'stream';
 const logger: Logger = new Logger('PDF GENERATOR');
 
 async function makePdf(bufferString, school, res) {
-  const url = '/home/faisal/work/nest/kiddiecove-backend-nest/src/views';
+  const url = '/home/faisal/work/kiddiecove/kiddiecove-backend-nest/src/views';
 
   const data = pug.renderFile(join(url, 'pdf-template.pug'), {
     buffer: bufferString.toString('base64'),
