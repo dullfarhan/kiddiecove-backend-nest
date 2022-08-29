@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
@@ -41,6 +41,7 @@ export class CreateUserDto {
   @MinLength(4)
   @MaxLength(6)
   @IsOptional()
+  @Transform((param) => param.value.toUpperCase())
   gender: GenderType;
 
   @ApiProperty({ type: String, required: true })

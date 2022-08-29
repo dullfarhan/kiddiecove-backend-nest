@@ -5,7 +5,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Stats')
-@Controller('stat')
+@Controller('stats')
 export class StatController {
   constructor(private readonly statService: StatService) {}
 
