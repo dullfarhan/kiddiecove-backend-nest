@@ -36,6 +36,7 @@ export class TeacherService {
     @InjectModel(Address.name) private AddressModel: Model<AddressDocument>,
     @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly addressService: AddressService,
     private readonly rolesService: RolesService,
@@ -500,5 +501,34 @@ export class TeacherService {
       _id: teacherId,
       school_id: schoolId,
     });
+  }
+  async getTeacherUserForSchoolAdmin(req, res): Promise<any> {
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.SCHOOL_ADMIN,
+      this.UserModel,
+    );
+    if (response.status === Constant.FAIL)
+      return Util.getBadRequest(response.message, res);
+    this.logger.log('Current School Admin User Found');
+    const schoolAdmin = response.data;
+    const filter = {
+      enable: true,
+      school_id: schoolAdmin.school_id,
+    };
+    this.logger.log('checking if teacher with given id exist or not');
+    return await this.TeacherModel.find(filter)
+      .then((teacher) => {
+        if (!teacher) {
+          return Util.getBadRequest('Teacher Not Found with given id', res);
+        }
+        this.logger.log('Teacher exist');
+        this.logger.log('Teacher Details Fetched Succesfully');
+        return teacher;
+})
+      .catch((ex) => {
+        this.logger.log(ex);
+        return ex.message;
+      });
   }
 }

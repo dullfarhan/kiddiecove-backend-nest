@@ -30,7 +30,7 @@ import { KidModule } from 'src/kid/kid.module';
       { name: Address.name, schema: AddressSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    SchoolAdminModule,
+    forwardRef(() => SchoolAdminModule),
     CityModule,
     RolesModule,
     UserModule,

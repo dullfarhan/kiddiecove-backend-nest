@@ -60,4 +60,12 @@ export class UserController {
       Util.getBadRequest('invalid user id', res);
     else return this.userService.getUserForAdmin(id, res);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(PermissionGuard)
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/get/chat/user/for/school/admin')
+  getParentforschooladmin(@Req() req: Request, @Res() res: Response) {
+    return this.userService.getUserForSchoolAdminListing(res, req);
+  }
 }

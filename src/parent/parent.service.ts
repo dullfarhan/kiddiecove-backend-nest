@@ -750,6 +750,50 @@ export class ParentService {
     this.logger.log('checking parent exist or not?');
     return await this.ParentModel.findOne({ _id: parentId });
   }
+
+  async getAllUserParentsforAdmin(req, res): Promise<any> {
+    this.logger.log('getting Parent detail for school admin');
+    const response = await this.currentUser.getCurrentUser(
+      req,
+      UserType.SCHOOL_ADMIN,
+      this.UserModel,
+    );
+    if (response.status === Constant.FAIL)
+      return Util.getBadRequest(response.message, res);
+    this.logger.log('Current School Admin User Found');
+    const schoolAdmin = response.data;
+    const id = new mongoose.Types.ObjectId(req.params.id);
+    const filter = [
+      { $match: { enable: true } },
+      { $unwind: '$schools' },
+      {
+        $match: {
+          'schools.school_id': schoolAdmin.school_id,
+          'schools.registration_status': 'REGISTERED',
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          type: 1,
+          user: 1,
+          enable: 1,
+          deleted: 1,
+          schools: 1,
+        },
+      },
+    ];
+    this.logger.log('getting Parents list');
+    return await this.ParentModel.aggregate(filter)
+      .then((result) => {
+        // this.logger.log(JSON.stringify(result));
+        return result;
+      })
+      .catch((ex) => {
+        this.logger.log(ex);
+        return ex.message;
+      });
+  }
 }
 class School {
   schools: CustomParentSchool;

@@ -11,6 +11,10 @@ import Constant from 'src/utils/enums/Constant.enum';
 import { ParentType } from 'src/utils/enums/ParentType.enum';
 import { GenderType } from 'src/utils/enums/GenderType.enum';
 import CurrentUser from 'src/currentuser/currentuser.service';
+import { ParentService } from 'src/parent/parent.service';
+import { RoleType } from 'src/utils/enums/RoleType';
+import { TeacherService } from 'src/teacher/teacher.service';
+import { Teacher } from 'src/database/teacher.schema';
 
 @Injectable()
 export class UserService {
@@ -21,6 +25,10 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
+    @Inject(forwardRef(() => ParentService))
+    private readonly parentService: ParentService,
+    @Inject(forwardRef(() => TeacherService))
+    private readonly teacherService: TeacherService,
   ) {}
 
   getAllForAdmin(res: Response) {
@@ -59,6 +67,67 @@ export class UserService {
       .catch((ex) => {
         return Util.getBadRequest(ex.message, res);
       });
+  }
+
+async getUserForSchoolAdminListing(res: Response, req: Request) {
+    let parentUser: any[];
+    let teacherUser: any[];
+    let user: [];
+    // const currentUser = this.getCurrentUser(req, res);
+    // currentUser
+    //  parents
+    const parentsPromis = this.parentService.getAllUserParentsforAdmin(
+      req,
+      res,
+    );
+    // parents
+
+    let User1 = await parentsPromis.then((parents) => {
+      // console.log(parents);
+      parentUser = parents.map((parent) => {
+        // console.log(parent);
+        const newParent = {
+          type: RoleType.PARENT,
+          _id: parent.user._id,
+          name: parent.name,
+          avatar:
+            parent.avatar !== undefined
+              ? parent.avatar
+              : 'https://www.pngarts.com/files/5/User-Avatar-Transparent.png',
+        };
+        return newParent;
+      });
+
+      // console.log('324');
+      // console.log(user2);
+      return parentUser;
+    });
+    const teacherPromise = this.teacherService.getTeacherUserForSchoolAdmin(
+      req,
+      res,
+    );
+   let User2 = await teacherPromise.then((teachers) => {
+      // console.log(parents);
+      teacherUser = teachers.map((teacher) => {
+        // console.log(teacher);
+        const newteacher = {
+          type: RoleType.TEACHER,
+          _id: teacher.user._id,
+          name: teacher.name,
+          avatar:
+            teacher.avatar !== undefined
+              ? teacher.avatar
+              : 'https://www.pngarts.com/files/5/User-Avatar-Transteacher.png',
+        };
+        return newteacher;
+      });
+
+      // console.log('324');
+      // console.log(user2);
+      return teacherUser;
+  });
+    User1 = User1.concat(await User2);
+    return Util.getOkRequest(User1, 'Users Listing Fetched Successfully', res);
   }
   async getCurrentUser(req: Request, res: Response) {
     const response = await this.currentUser.getCurrentUserDetails(
