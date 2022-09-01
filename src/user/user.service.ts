@@ -69,65 +69,37 @@ export class UserService {
       });
   }
 
-async getUserForSchoolAdminListing(res: Response, req: Request) {
+  async getUserForSchoolAdminListing(res: Response, req: Request) {
     let parentUser: any[];
     let teacherUser: any[];
     let user: [];
-    // const currentUser = this.getCurrentUser(req, res);
-    // currentUser
-    //  parents
     const parentsPromis = this.parentService.getAllUserParentsforAdmin(
       req,
       res,
     );
-    // parents
 
     let User1 = await parentsPromis.then((parents) => {
-      // console.log(parents);
       parentUser = parents.map((parent) => {
-        // console.log(parent);
-        const newParent = {
-          type: RoleType.PARENT,
-          _id: parent.user._id,
-          name: parent.name,
-          avatar:
-            parent.avatar !== undefined
-              ? parent.avatar
-              : 'https://www.pngarts.com/files/5/User-Avatar-Transparent.png',
-        };
-        return newParent;
+        return parent.user_id;
       });
 
-      // console.log('324');
-      // console.log(user2);
       return parentUser;
     });
     const teacherPromise = this.teacherService.getTeacherUserForSchoolAdmin(
       req,
       res,
     );
-   let User2 = await teacherPromise.then((teachers) => {
-      // console.log(parents);
+    const User2 = await teacherPromise.then((teachers) => {
       teacherUser = teachers.map((teacher) => {
-        // console.log(teacher);
-        const newteacher = {
-          type: RoleType.TEACHER,
-          _id: teacher.user._id,
-          name: teacher.name,
-          avatar:
-            teacher.avatar !== undefined
-              ? teacher.avatar
-              : 'https://www.pngarts.com/files/5/User-Avatar-Transteacher.png',
-        };
-        return newteacher;
+        return teacher.user_id;
       });
 
-      // console.log('324');
-      // console.log(user2);
       return teacherUser;
-  });
+    });
     User1 = User1.concat(await User2);
-    return Util.getOkRequest(User1, 'Users Listing Fetched Successfully', res);
+
+    const data = await this.userModel.find({ _id: { $in: User1 } });
+    return Util.getOkRequest(data, 'Users Listing Fetched Successfully', res);
   }
   async getCurrentUser(req: Request, res: Response) {
     const response = await this.currentUser.getCurrentUserDetails(

@@ -772,16 +772,6 @@ export class ParentService {
           'schools.registration_status': 'REGISTERED',
         },
       },
-      {
-        $project: {
-          name: 1,
-          type: 1,
-          user: 1,
-          enable: 1,
-          deleted: 1,
-          schools: 1,
-        },
-      },
     ];
     this.logger.log('getting Parents list');
     return await this.ParentModel.aggregate(filter)
