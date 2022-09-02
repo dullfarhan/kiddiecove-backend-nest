@@ -28,7 +28,7 @@ import { TrackingServiceModule } from './tracking-service/tracking-service.modul
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/kiddiecove'),
+    MongooseModule.forRoot('mongodb://mongo1:27017/kiddiecove?replicaSet=dbrs'),
     DatabaseModule,
     TeacherModule,
     AuthModule,
@@ -56,4 +56,10 @@ import { TrackingServiceModule } from './tracking-service/tracking-service.modul
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.log(
+      process.env.CONNECTION || `mongodb://localhost:27017/kiddiecove`,
+    );
+  }
+}

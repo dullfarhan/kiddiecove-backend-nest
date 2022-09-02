@@ -8,7 +8,7 @@ export class Parent {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
 
   @Prop({
     type: String,

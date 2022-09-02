@@ -47,7 +47,6 @@ export class CityController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Get('/get/list/:id')
   @Get('/get/:id')
   getForAdmin(@Req() req: Request, @Res() res: Response) {
     this.cityService.getForAdmin(req, res);
@@ -56,7 +55,6 @@ export class CityController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Get('/get/list/:id')
   @Put('/update/:id')
   updateByAdmin(@Req() req: Request, @Res() res: Response) {
     this.cityService.updateByAdmin(req, res);
@@ -65,7 +63,6 @@ export class CityController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Get('/get/list/:id')
   @Put('/update/directly/:id')
   updateDirectlyByAdmin(@Req() req: Request, @Res() res: Response) {
     this.cityService.updateDirectlyByAdmin(req, res);
@@ -74,7 +71,6 @@ export class CityController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Get('/get/list/:id')
   @Delete('/delete/:id')
   deleteByAdmin(@Req() req: Request, @Res() res: Response) {
     this.cityService.deleteByAdmin(req, res);
@@ -83,7 +79,6 @@ export class CityController {
   @ApiBearerAuth()
   @UseGuards(PermissionGuard)
   @UseGuards(AuthGuard('jwt'))
-  @Get('/get/list/:id')
   @Post('/create')
   createByAdmin(
     @Req() req: Request,

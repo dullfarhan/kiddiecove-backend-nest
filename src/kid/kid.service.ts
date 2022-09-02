@@ -378,7 +378,7 @@ export class KidService {
     });
   }
 
-  async deleteAllSiblingsInSchool(parentId: mongoose.Types.ObjectId) {
+  async deleteAllSiblingsInSchool(parentId) {
     this.logger.log(
       'checking if Kid has siblings in this school from which he had been removed?',
     );

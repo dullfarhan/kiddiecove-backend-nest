@@ -31,8 +31,9 @@ class CurrentUser {
       const user = await userModel.findById(req.user._id).select('-password');
       if (!user) Util.getBadResponse('Current User Not Found with given id');
       this.logger.log('Current User Details Fetched Succesfully');
-      if (user.type !== userType)
+      if (user.type !== userType) {
         return Util.getBadResponse('Current User Is Not ' + userType);
+      }
       this.logger.log('Current User is ' + userType);
       switch (user.type) {
         case 'ADMIN':

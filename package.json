@@ -51,7 +51,6 @@
     "rxjs": "^7.2.0",
     "scss": "^0.2.4",
     "swagger-ui-express": "^4.4.0",
-    "tea-school": "^1.5.0",
     "twilio": "^3.78.0"
   },
   "devDependencies": {
