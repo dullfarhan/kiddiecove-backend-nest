@@ -11,6 +11,10 @@ import Constant from 'src/utils/enums/Constant.enum';
 import { ParentType } from 'src/utils/enums/ParentType.enum';
 import { GenderType } from 'src/utils/enums/GenderType.enum';
 import CurrentUser from 'src/currentuser/currentuser.service';
+import { ParentService } from 'src/parent/parent.service';
+import { RoleType } from 'src/utils/enums/RoleType';
+import { TeacherService } from 'src/teacher/teacher.service';
+import { Teacher } from 'src/database/teacher.schema';
 
 @Injectable()
 export class UserService {
@@ -21,6 +25,10 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
+    @Inject(forwardRef(() => ParentService))
+    private readonly parentService: ParentService,
+    @Inject(forwardRef(() => TeacherService))
+    private readonly teacherService: TeacherService,
   ) {}
 
   getAllForAdmin(res: Response) {
@@ -59,6 +67,39 @@ export class UserService {
       .catch((ex) => {
         return Util.getBadRequest(ex.message, res);
       });
+  }
+
+  async getUserForSchoolAdminListing(res: Response, req: Request) {
+    let parentUser: any[];
+    let teacherUser: any[];
+    let user: [];
+    const parentsPromis = this.parentService.getAllUserParentsforAdmin(
+      req,
+      res,
+    );
+
+    let User1 = await parentsPromis.then((parents) => {
+      parentUser = parents.map((parent) => {
+        return parent.user_id;
+      });
+
+      return parentUser;
+    });
+    const teacherPromise = this.teacherService.getTeacherUserForSchoolAdmin(
+      req,
+      res,
+    );
+    const User2 = await teacherPromise.then((teachers) => {
+      teacherUser = teachers.map((teacher) => {
+        return teacher.user_id;
+      });
+
+      return teacherUser;
+    });
+    User1 = User1.concat(await User2);
+
+    const data = await this.userModel.find({ _id: { $in: User1 } });
+    return Util.getOkRequest(data, 'Users Listing Fetched Successfully', res);
   }
   async getCurrentUser(req: Request, res: Response) {
     const response = await this.currentUser.getCurrentUserDetails(

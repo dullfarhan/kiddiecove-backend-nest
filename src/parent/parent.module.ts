@@ -25,7 +25,7 @@ import { KidModule } from 'src/kid/kid.module';
     MongooseModule.forFeature([{ name: Parent.name, schema: ParentSchema }]),
     RolesModule,
     AddressModule,
-    UserModule,
+    forwardRef(() => UserModule),
     CityModule,
     forwardRef(() => SchoolModule),
     forwardRef(() => KidModule),

@@ -37,6 +37,7 @@ export class SchoolService {
     private readonly AddressModel: Model<AddressDocument>,
     @InjectModel(User.name)
     private readonly UserModel: Model<UserDocument>,
+    @Inject(forwardRef(() => SchoolAdminService))
     private readonly schoolAdminService: SchoolAdminService,
     private readonly cityService: CityService,
     private readonly addressService: AddressService,
@@ -44,6 +45,7 @@ export class SchoolService {
     private readonly parentService: ParentService,
     @Inject(forwardRef(() => KidService))
     private readonly kidService: KidService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject(forwardRef(() => CurrentUser))
     private readonly currentUser: CurrentUser,
