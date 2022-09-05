@@ -1,3 +1,5 @@
 dcoker-compose-stuff
 Dockerfile
 docker-compose.yml
+rs-init.sh
+startdb.sh

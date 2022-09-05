@@ -56,10 +56,4 @@ import { TrackingServiceModule } from './tracking-service/tracking-service.modul
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor() {
-    console.log(
-      process.env.CONNECTION || `mongodb://localhost:27017/kiddiecove`,
-    );
-  }
-}
+export class AppModule {}

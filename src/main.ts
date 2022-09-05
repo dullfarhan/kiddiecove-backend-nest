@@ -34,7 +34,7 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setViewEngine('pug');
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-  app.enableCors({ origin: 'http://localhost:3000' });
+  app.enableCors();
   app.setGlobalPrefix('api');
   createParentSwagger(app);
   createSwagger(app, 'teacher', TeacherModule);
